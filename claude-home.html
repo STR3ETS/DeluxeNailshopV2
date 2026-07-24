@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deluxe Nail Shop — Professionele nagelproducten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --caramel:#b38867;
+  --caramel-deep:#9a7052;
+  --espresso:#3d2b21;
+  --espresso-soft:#5a443a;
+  --cream:#faf4ee;
+  --cream-deep:#f3e7db;
+  --blush:#e9c9c2;
+  --blush-soft:#f6e3de;
+  --gold:#d8bb98;
+  --white:#fffdfb;
+  --shadow:0 20px 50px -20px rgba(61,43,33,.25);
+  --radius:22px;
+  --serif:"Fraunces", Georgia, serif;
+  --sans:"Outfit", "Segoe UI", sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--cream);color:var(--espresso);overflow-x:hidden}
+img{max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--sans);cursor:pointer;border:none}
+
+::selection{background:var(--caramel);color:var(--white)}
+
+/* ---------- announcement ---------- */
+.announce{background:var(--espresso);color:var(--cream);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:.6rem 1rem}
+.announce em{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:.02em;color:var(--gold)}
+
+/* ---------- nav ---------- */
+header{position:sticky;top:0;z-index:60;background:rgba(250,244,238,.85);backdrop-filter:blur(14px);border-bottom:1px solid rgba(179,136,103,.18)}
+.nav{max-width:1240px;margin:0 auto;padding:.9rem 1.5rem;display:flex;align-items:center;gap:2rem}
+.logo{font-family:var(--serif);font-size:1.45rem;font-weight:600;letter-spacing:.01em;white-space:nowrap}
+.logo span{font-style:italic;color:var(--caramel)}
+.nav-links{display:flex;gap:1.4rem;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.nav-links a{font-size:.85rem;font-weight:500;letter-spacing:.02em;position:relative;padding:.25rem 0;transition:color .25s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:var(--caramel);border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.6,0,.2,1)}
+.nav-links a:hover{color:var(--caramel-deep)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-actions{display:flex;gap:.6rem;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:50%;background:transparent;display:grid;place-items:center;transition:background .25s;position:relative}
+.icon-btn:hover{background:var(--cream-deep)}
+.icon-btn svg{width:19px;height:19px;stroke:var(--espresso);fill:none;stroke-width:1.7}
+.cart-count{position:absolute;top:2px;right:0;background:var(--caramel);color:#fff;font-size:.62rem;font-weight:600;width:16px;height:16px;border-radius:50%;display:grid;place-items:center}
+
+/* ---------- hero ---------- */
+.hero{max-width:1240px;margin:0 auto;padding:4.5rem 1.5rem 5.5rem;display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;position:relative}
+.hero-blob{position:absolute;border-radius:46% 54% 60% 40%/48% 44% 56% 52%;filter:blur(60px);opacity:.5;pointer-events:none;z-index:0}
+.hero-blob.b1{width:420px;height:420px;background:var(--blush);top:-80px;right:6%}
+.hero-blob.b2{width:340px;height:340px;background:var(--gold);bottom:-120px;left:-60px;opacity:.35}
+.hero-copy{position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-size:.74rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--caramel-deep);margin-bottom:1.3rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:var(--caramel);border-radius:2px}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,5.2vw,4.4rem);line-height:1.06;letter-spacing:-.01em}
+.hero h1 .line{display:block;overflow:hidden}
+.hero h1 .line>span{display:inline-block}
+.hero h1 em{font-style:italic;color:var(--caramel);font-weight:500}
+.hero p{margin:1.5rem 0 2.2rem;font-size:1.05rem;font-weight:300;line-height:1.7;color:var(--espresso-soft);max-width:44ch}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:1rem 1.8rem;border-radius:999px;font-size:.92rem;font-weight:600;letter-spacing:.02em;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,background .3s}
+.btn-primary{background:var(--caramel);color:#fff;box-shadow:0 14px 30px -12px rgba(179,136,103,.7)}
+.btn-primary:hover{transform:translateY(-3px);background:var(--caramel-deep);box-shadow:0 20px 36px -12px rgba(154,112,82,.75)}
+.btn-ghost{background:transparent;color:var(--espresso);border:1.5px solid rgba(61,43,33,.25)}
+.btn-ghost:hover{border-color:var(--espresso);transform:translateY(-3px)}
+.hero-stats{display:flex;gap:2.4rem;margin-top:3rem}
+.stat b{font-family:var(--serif);font-size:1.6rem;font-weight:500;display:block}
+.stat small{font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--espresso-soft)}
+
+/* swatch fan — signature element */
+.fan-wrap{position:relative;z-index:1;display:grid;place-items:center;min-height:480px}
+.fan{position:relative;width:120px;height:400px}
+.swatch{position:absolute;left:50%;bottom:0;width:74px;height:340px;margin-left:-37px;border-radius:60px 60px 18px 18px;transform-origin:50% 92%;box-shadow:0 18px 40px -18px rgba(61,43,33,.35);border:1px solid rgba(255,255,255,.5)}
+.swatch::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 38%)}
+.swatch:nth-of-type(1){transform:rotate(-54deg)}
+.swatch:nth-of-type(2){transform:rotate(-36deg)}
+.swatch:nth-of-type(3){transform:rotate(-18deg)}
+.swatch:nth-of-type(4){transform:rotate(0deg)}
+.swatch:nth-of-type(5){transform:rotate(18deg)}
+.swatch:nth-of-type(6){transform:rotate(36deg)}
+.swatch:nth-of-type(7){transform:rotate(54deg)}
+.swatch i{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-style:normal;font-size:.55rem;font-weight:700;color:var(--espresso);letter-spacing:.02em}
+.fan-pin{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:38px;height:38px;border-radius:50%;background:var(--espresso);z-index:9;box-shadow:0 8px 20px -6px rgba(61,43,33,.5);display:grid;place-items:center}
+.fan-pin::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.fan-caption{position:absolute;bottom:-2.6rem;left:50%;transform:translateX(-50%);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--espresso-soft);white-space:nowrap}
+
+/* ---------- marquee ---------- */
+.marquee{background:var(--espresso);color:var(--cream);overflow:hidden;padding:1.15rem 0;position:relative}
+.marquee-track{display:flex;gap:3.2rem;width:max-content;will-change:transform}
+.marquee-track span{font-family:var(--serif);font-size:1.15rem;font-style:italic;white-space:nowrap;display:flex;align-items:center;gap:3.2rem}
+.marquee-track span::after{content:"✦";font-style:normal;font-size:.8rem;color:var(--caramel)}
+
+/* ---------- sections ---------- */
+section{padding:5.5rem 1.5rem}
+.inner{max-width:1240px;margin:0 auto}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;margin-bottom:3rem;flex-wrap:wrap}
+.sec-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:1.15}
+.sec-head h2 em{font-style:italic;color:var(--caramel)}
+.sec-link{font-size:.86rem;font-weight:600;letter-spacing:.04em;display:inline-flex;align-items:center;gap:.5rem;color:var(--caramel-deep);transition:gap .25s}
+.sec-link:hover{gap:.9rem}
+
+/* categories */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.2rem}
+.cat{position:relative;background:var(--white);border:1px solid rgba(179,136,103,.16);border-radius:var(--radius);padding:1.7rem 1.5rem 1.5rem;overflow:hidden;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s,border-color .35s;display:flex;flex-direction:column;gap:.9rem;min-height:170px}
+.cat:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:rgba(179,136,103,.4)}
+.cat .dab{width:52px;height:52px;border-radius:58% 42% 55% 45%/50% 60% 40% 50%;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.cat:hover .dab{transform:rotate(18deg) scale(1.12)}
+.cat h3{font-family:var(--serif);font-weight:500;font-size:1.18rem;margin-top:auto}
+.cat small{font-size:.78rem;color:var(--espresso-soft);letter-spacing:.02em}
+.cat .go{position:absolute;top:1.2rem;right:1.2rem;width:32px;height:32px;border-radius:50%;border:1px solid rgba(61,43,33,.2);display:grid;place-items:center;font-size:.85rem;transition:background .3s,color .3s,transform .3s}
+.cat:hover .go{background:var(--caramel);color:#fff;border-color:var(--caramel);transform:rotate(-45deg)}
+
+/* products */
+.products-sec{background:linear-gradient(180deg,var(--cream) 0%,var(--cream-deep) 100%)}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.5rem}
+.card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:0 8px 26px -16px rgba(61,43,33,.2);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
+.card-visual{position:relative;height:230px;display:grid;place-items:center;overflow:hidden}
+.card-visual .bg{position:absolute;inset:0}
+.badge{position:absolute;top:1rem;left:1rem;background:var(--espresso);color:var(--cream);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .75rem;border-radius:999px;z-index:2}
+.badge.gold{background:var(--caramel)}
+.wish{position:absolute;top:.85rem;right:.85rem;z-index:2;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;transition:transform .3s,background .3s}
+.wish:hover{transform:scale(1.12);background:#fff}
+.wish svg{width:17px;height:17px;fill:none;stroke:var(--espresso);stroke-width:1.8;transition:fill .25s,stroke .25s}
+.wish.active svg{fill:var(--caramel);stroke:var(--caramel)}
+.bottle{position:relative;z-index:1;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.card:hover .bottle{transform:rotate(-7deg) translateY(-6px) scale(1.05)}
+.card-body{padding:1.3rem 1.4rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+.brand-tag{font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--caramel-deep)}
+.card-body h3{font-family:var(--serif);font-weight:500;font-size:1.12rem;line-height:1.3}
+.stars{color:var(--caramel);font-size:.8rem;letter-spacing:.12em}
+.stars small{color:var(--espresso-soft);letter-spacing:0;margin-left:.35rem;font-size:.74rem}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:.8rem}
+.price{font-family:var(--serif);font-size:1.25rem;font-weight:600}
+.price s{font-size:.85rem;color:var(--espresso-soft);font-weight:400;margin-right:.4rem}
+.add{background:var(--espresso);color:#fff;border-radius:999px;padding:.62rem 1.15rem;font-size:.8rem;font-weight:600;letter-spacing:.03em;display:inline-flex;gap:.45rem;align-items:center;transition:background .3s,transform .3s}
+.add:hover{background:var(--caramel);transform:scale(1.05)}
+.add.added{background:var(--caramel)}
+
+/* brands */
+.brands{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.brand-panel{border-radius:calc(var(--radius) + 8px);padding:3.2rem 2.8rem;position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end}
+.brand-panel .big{position:absolute;top:1.6rem;right:1.8rem;font-family:var(--serif);font-style:italic;font-size:clamp(4rem,8vw,7rem);opacity:.14;line-height:1;pointer-events:none;white-space:nowrap}
+.brand-dnka{background:var(--espresso);color:var(--cream)}
+.brand-dnka .big{color:var(--gold)}
+.brand-valeri{background:linear-gradient(140deg,var(--blush-soft),var(--blush));color:var(--espresso)}
+.brand-valeri .big{color:#fff}
+.brand-panel h3{font-family:var(--serif);font-size:2rem;font-weight:500;margin-bottom:.7rem}
+.brand-panel p{font-weight:300;line-height:1.65;max-width:40ch;margin-bottom:1.6rem;opacity:.85}
+.brand-panel .btn{align-self:flex-start}
+.brand-dnka .btn{background:var(--gold);color:var(--espresso)}
+.brand-dnka .btn:hover{background:#e6ccab}
+.brand-valeri .btn{background:var(--espresso);color:var(--cream)}
+
+/* USP */
+.usps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.usp{display:flex;gap:1rem;align-items:flex-start;background:var(--white);border-radius:var(--radius);padding:1.5rem;border:1px solid rgba(179,136,103,.16)}
+.usp .ico{width:46px;height:46px;flex:0 0 46px;border-radius:14px;background:var(--blush-soft);display:grid;place-items:center;font-size:1.15rem}
+.usp b{display:block;font-size:.95rem;margin-bottom:.25rem}
+.usp small{font-size:.82rem;color:var(--espresso-soft);line-height:1.5}
+
+/* newsletter */
+.news{background:linear-gradient(120deg,var(--caramel) 0%,var(--caramel-deep) 100%);border-radius:calc(var(--radius) + 10px);padding:4rem 3rem;text-align:center;color:#fff;position:relative;overflow:hidden}
+.news::before,.news::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.09)}
+.news::before{width:300px;height:300px;top:-140px;left:-80px}
+.news::after{width:220px;height:220px;bottom:-110px;right:-40px}
+.news h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.4vw,2.6rem);margin-bottom:.8rem;position:relative}
+.news h2 em{font-style:italic}
+.news p{font-weight:300;opacity:.9;margin-bottom:2rem;position:relative}
+.news-form{display:flex;gap:.7rem;max-width:460px;margin:0 auto;position:relative;flex-wrap:wrap;justify-content:center}
+.news-form input{flex:1;min-width:230px;padding:1rem 1.4rem;border-radius:999px;border:none;font-family:var(--sans);font-size:.92rem;outline:none;background:rgba(255,255,255,.95);color:var(--espresso)}
+.news-form .btn{background:var(--espresso);color:#fff}
+.news-form .btn:hover{background:#2b1e17}
+
+/* footer */
+footer{background:var(--espresso);color:var(--cream);padding:4rem 1.5rem 2rem;margin-top:5.5rem}
+.foot{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2.5rem}
+.foot .logo{color:var(--cream);margin-bottom:1rem;display:block}
+.foot p{font-weight:300;font-size:.88rem;opacity:.75;line-height:1.7;max-width:32ch}
+.foot h4{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.1rem}
+.foot ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.foot ul a{font-size:.9rem;font-weight:300;opacity:.85;transition:opacity .25s,color .25s}
+.foot ul a:hover{opacity:1;color:var(--gold)}
+.foot-bottom{max-width:1240px;margin:3rem auto 0;padding-top:1.5rem;border-top:1px solid rgba(250,244,238,.12);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem;opacity:.6}
+
+/* reveal defaults (GSAP zet ze terug) */
+.reveal{opacity:0;transform:translateY(36px)}
+
+@media (max-width:960px){
+  .hero{grid-template-columns:1fr;padding-top:3rem}
+  .fan-wrap{min-height:430px;order:-1}
+  .brands{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+}
+@media (max-width:560px){
+  .foot{grid-template-columns:1fr}
+  .hero-stats{gap:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="announce">Gratis verzending vanaf €50 &nbsp;·&nbsp; <em>Voor 16:00 besteld, morgen in huis</em></div>
+
+<header>
+  <nav class="nav">
+    <a href="#" class="logo">Deluxe <span>Nail</span> Shop</a>
+    <div class="nav-links">
+      <a href="#">Base Coat</a><a href="#">Top Coat</a><a href="#">Acrylgel</a><a href="#">Gel</a>
+      <a href="#">Builder in a Bottle</a><a href="#">Gelpolish</a><a href="#">Liquids</a>
+      <a href="#">Nail Art</a><a href="#">Werkmateriaal</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Zoeken"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.2-4.2"/></svg></button>
+      <button class="icon-btn" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg></button>
+      <button class="icon-btn" aria-label="Winkelwagen"><svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 11H7.2L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:4.5rem">
+  <div class="hero-blob b1"></div>
+  <div class="hero-blob b2"></div>
+
+  <div class="hero-copy">
+    <span class="eyebrow" id="heroEyebrow">Professionele nagelproducten</span>
+    <h1 id="heroTitle">
+      <span class="line"><span>Nagels die</span></span>
+      <span class="line"><span><em>voor zich</em> spreken</span></span>
+    </h1>
+    <p id="heroText">Van Builder in a Bottle tot de perfecte nude gelpolish: alles wat jij als nagelstyliste of thuis-artist nodig hebt. Salonkwaliteit van DNKa &amp; Valeri, morgen al op je werktafel.</p>
+    <div class="hero-cta" id="heroCta">
+      <a href="#bestsellers" class="btn btn-primary">Shop bestsellers →</a>
+      <a href="#categorieen" class="btn btn-ghost">Ontdek categorieën</a>
+    </div>
+    <div class="hero-stats" id="heroStats">
+      <div class="stat"><b data-count="12000">0</b><small>Tevreden klanten</small></div>
+      <div class="stat"><b data-count="350">0</b><small>Producten</small></div>
+      <div class="stat"><b>4.9<span style="color:var(--caramel)">★</span></b><small>Beoordeling</small></div>
+    </div>
+  </div>
+
+  <div class="fan-wrap">
+    <div class="fan" id="fan">
+      <div class="swatch" style="background:linear-gradient(180deg,#f2ded2,#e3c3ae)"><i>01</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#ecc9bf,#dba496)"><i>02</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#d9ab8d,#c08a66)"><i>03</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#b38867,#96674a)"><i>04</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#8a5a44,#6b4032)"><i>05</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#f7e8ea,#eccdd4)"><i>06</i></div>
+      <div class="swatch" style="background:linear-gradient(180deg,#e8d9c8,#cbb090)"><i>07</i></div>
+      <div class="fan-pin"></div>
+      <span class="fan-caption">Onze nude collectie · 48 tinten</span>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee"></div>
+</div>
+
+<!-- CATEGORIEËN -->
+<section id="categorieen">
+  <div class="inner">
+    <div class="sec-head reveal">
+      <h2>Shop per <em>categorie</em></h2>
+      <a href="#" class="sec-link">Alle producten <span>→</span></a>
+    </div>
+    <div class="cats">
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#f6e3de,#e9c9c2)"></span><span class="go">→</span><h3>Base Coat</h3><small>De perfecte basis</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#f3e7db,#d8bb98)"></span><span class="go">→</span><h3>Top Coat</h3><small>Wekenlang glans</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#e8d3c2,#c9a184)"></span><span class="go">→</span><h3>Acrylgel</h3><small>Sterk &amp; flexibel</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#dcb99e,#b38867)"></span><span class="go">→</span><h3>Gel</h3><small>Sculpting &amp; verlenging</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#c99b78,#9a7052)"></span><span class="go">→</span><h3>Builder in a Bottle</h3><small>Onze bestseller</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#eec4bb,#d99a90)"></span><span class="go">→</span><h3>Gelpolish</h3><small>48 tinten nude &amp; kleur</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#f0e6dc,#cfc0b0)"></span><span class="go">→</span><h3>Liquids</h3><small>Cleanser, primer &amp; meer</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#e6cfd8,#c9a3b4)"></span><span class="go">→</span><h3>Nail Art</h3><small>Foils, glitters &amp; charms</small></a>
+      <a href="#" class="cat reveal"><span class="dab" style="background:linear-gradient(135deg,#d9cfc5,#a89685)"></span><span class="go">→</span><h3>Werkmateriaal</h3><small>Vijlen, lampen &amp; tools</small></a>
+    </div>
+  </div>
+</section>
+
+<!-- BESTSELLERS -->
+<section class="products-sec" id="bestsellers">
+  <div class="inner">
+    <div class="sec-head reveal">
+      <h2>Deze week <em>favoriet</em></h2>
+      <a href="#" class="sec-link">Bekijk alle bestsellers <span>→</span></a>
+    </div>
+    <div class="prods">
+
+      <article class="card reveal">
+        <div class="card-visual">
+          <div class="bg" style="background:linear-gradient(160deg,#f6e3de,#ecc9bf)"></div>
+          <span class="badge gold">Bestseller</span>
+          <button class="wish" aria-label="Bewaar als favoriet"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9-9c-1.4-3.2.8-6.5 4-6.5 2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.4 3.3 4 6.5-2 4.4-9 9-9 9z"/></svg></button>
+          <svg class="bottle" width="86" height="150" viewBox="0 0 86 150">
+            <rect x="33" y="6" width="20" height="34" rx="4" fill="#3d2b21"/>
+            <rect x="30" y="36" width="26" height="8" rx="3" fill="#5a443a"/>
+            <rect x="16" y="44" width="54" height="98" rx="16" fill="#fffdfb" stroke="#e5d5c8"/>
+            <rect x="24" y="58" width="38" height="70" rx="10" fill="#e9c9c2"/>
+            <text x="43" y="98" text-anchor="middle" font-family="Georgia" font-size="9" fill="#3d2b21" font-style="italic">DNKa</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="brand-tag">DNKa</span>
+          <h3>Builder in a Bottle — Milky Rose 15ml</h3>
+          <div class="stars">★★★★★<small>(482)</small></div>
+          <div class="card-foot"><span class="price"><s>€21,95</s>€17,95</span><button class="add">+ Winkelwagen</button></div>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card-visual">
+          <div class="bg" style="background:linear-gradient(160deg,#f3e7db,#e0c5a8)"></div>
+          <span class="badge">Nieuw</span>
+          <button class="wish" aria-label="Bewaar als favoriet"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9-9c-1.4-3.2.8-6.5 4-6.5 2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.4 3.3 4 6.5-2 4.4-9 9-9 9z"/></svg></button>
+          <svg class="bottle" width="86" height="150" viewBox="0 0 86 150">
+            <rect x="35" y="4" width="16" height="30" rx="3" fill="#b38867"/>
+            <rect x="20" y="34" width="46" height="110" rx="12" fill="#fffdfb" stroke="#e5d5c8"/>
+            <rect x="27" y="46" width="32" height="86" rx="8" fill="#b38867"/>
+            <text x="43" y="92" text-anchor="middle" font-family="Georgia" font-size="9" fill="#fff" font-style="italic">Valeri</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="brand-tag">Valeri</span>
+          <h3>Gelpolish — Caramel Latte №112</h3>
+          <div class="stars">★★★★★<small>(96)</small></div>
+          <div class="card-foot"><span class="price">€9,95</span><button class="add">+ Winkelwagen</button></div>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card-visual">
+          <div class="bg" style="background:linear-gradient(160deg,#efe4ea,#dcc2ce)"></div>
+          <button class="wish" aria-label="Bewaar als favoriet"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9-9c-1.4-3.2.8-6.5 4-6.5 2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.4 3.3 4 6.5-2 4.4-9 9-9 9z"/></svg></button>
+          <svg class="bottle" width="86" height="150" viewBox="0 0 86 150">
+            <rect x="33" y="6" width="20" height="34" rx="4" fill="#3d2b21"/>
+            <rect x="30" y="36" width="26" height="8" rx="3" fill="#5a443a"/>
+            <rect x="16" y="44" width="54" height="98" rx="16" fill="#fffdfb" stroke="#e5d5c8"/>
+            <rect x="24" y="58" width="38" height="70" rx="10" fill="#fdf7f2"/>
+            <text x="43" y="98" text-anchor="middle" font-family="Georgia" font-size="9" fill="#3d2b21" font-style="italic">DNKa</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="brand-tag">DNKa</span>
+          <h3>Rubber Base Coat — Clear 15ml</h3>
+          <div class="stars">★★★★★<small>(311)</small></div>
+          <div class="card-foot"><span class="price">€12,95</span><button class="add">+ Winkelwagen</button></div>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card-visual">
+          <div class="bg" style="background:linear-gradient(160deg,#eadfd2,#cdb79c)"></div>
+          <span class="badge gold">Top rated</span>
+          <button class="wish" aria-label="Bewaar als favoriet"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9-9c-1.4-3.2.8-6.5 4-6.5 2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.4 3.3 4 6.5-2 4.4-9 9-9 9z"/></svg></button>
+          <svg class="bottle" width="86" height="150" viewBox="0 0 86 150">
+            <rect x="35" y="4" width="16" height="30" rx="3" fill="#3d2b21"/>
+            <rect x="20" y="34" width="46" height="110" rx="12" fill="#fffdfb" stroke="#e5d5c8"/>
+            <rect x="27" y="46" width="32" height="86" rx="8" fill="#d8bb98"/>
+            <text x="43" y="92" text-anchor="middle" font-family="Georgia" font-size="8" fill="#3d2b21" font-style="italic">Valeri</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="brand-tag">Valeri</span>
+          <h3>No-Wipe Top Coat — High Gloss</h3>
+          <div class="stars">★★★★★<small>(258)</small></div>
+          <div class="card-foot"><span class="price">€11,50</span><button class="add">+ Winkelwagen</button></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- MERKEN -->
+<section>
+  <div class="inner">
+    <div class="sec-head reveal">
+      <h2>Onze <em>merken</em></h2>
+    </div>
+    <div class="brands">
+      <div class="brand-panel brand-dnka reveal">
+        <span class="big">DNKa</span>
+        <h3>DNKa</h3>
+        <p>Professionele gelsystemen waar salons op bouwen. Sterke hechting, prachtige viscositeit en tinten die iedere huidtint flatteren.</p>
+        <a href="#" class="btn">Ontdek DNKa →</a>
+      </div>
+      <div class="brand-panel brand-valeri reveal">
+        <span class="big">Valeri</span>
+        <h3>Valeri</h3>
+        <p>Kleuren met karakter. Van zachte nudes tot statement-tinten: gelpolish die strak dekt in één tot twee lagen en wekenlang blijft glanzen.</p>
+        <a href="#" class="btn">Ontdek Valeri →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USP -->
+<section style="padding-top:1rem">
+  <div class="inner">
+    <div class="usps">
+      <div class="usp reveal"><span class="ico">🚚</span><div><b>Snel geleverd</b><small>Voor 16:00 besteld, de volgende werkdag in huis.</small></div></div>
+      <div class="usp reveal"><span class="ico">💅</span><div><b>Salonkwaliteit</b><small>Alleen merken die wij zelf op de werktafel gebruiken.</small></div></div>
+      <div class="usp reveal"><span class="ico">💬</span><div><b>Persoonlijk advies</b><small>Vragen over een product? Ons team denkt met je mee.</small></div></div>
+      <div class="usp reveal"><span class="ico">↩️</span><div><b>30 dagen retour</b><small>Niet blij? Retourneren is gratis en zonder gedoe.</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NIEUWSBRIEF -->
+<section style="padding-top:1rem">
+  <div class="inner">
+    <div class="news reveal">
+      <h2>Als eerste de <em>nieuwe tinten</em> zien?</h2>
+      <p>Schrijf je in en ontvang 10% korting op je eerste bestelling.</p>
+      <form class="news-form" onsubmit="return false">
+        <input type="email" placeholder="jouw@email.nl" aria-label="E-mailadres">
+        <button class="btn" id="newsBtn">Inschrijven</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <div>
+      <a href="#" class="logo">Deluxe <span>Nail</span> Shop</a>
+      <p>Dé webshop voor professionele nagelproducten. Voor nagelstylistes én iedereen die thuis salonresultaat wil.</p>
+    </div>
+    <div><h4>Shoppen</h4><ul><li><a href="#">Base &amp; Top Coat</a></li><li><a href="#">Builder in a Bottle</a></li><li><a href="#">Gelpolish</a></li><li><a href="#">Nail Art</a></li><li><a href="#">Werkmateriaal</a></li></ul></div>
+    <div><h4>Merken</h4><ul><li><a href="#">DNKa</a></li><li><a href="#">Valeri</a></li><li><a href="#">Alle merken</a></li></ul></div>
+    <div><h4>Klantenservice</h4><ul><li><a href="#">Verzenden &amp; retour</a></li><li><a href="#">Veelgestelde vragen</a></li><li><a href="#">Contact</a></li></ul></div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 deluxenailshop.nl</span>
+    <span>iDEAL · Klarna · PayPal · Mastercard</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* marquee content */
+const items = ["DNKa","Valeri","Builder in a Bottle","Gelpolish","Acrylgel","Nail Art","Rubber Base","No-Wipe Top Coat"];
+const track = document.getElementById("marquee");
+for (let r = 0; r < 3; r++) items.forEach(t => { const s = document.createElement("span"); s.textContent = t; track.appendChild(s); });
+
+if (window.gsap && !reduce) {
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* hero laad-sequence */
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  tl.from("#heroEyebrow", { y: 20, opacity: 0, duration: .6 })
+    .from("#heroTitle .line > span", { yPercent: 110, duration: .9, stagger: .12, ease: "power4.out" }, "-=.3")
+    .from("#heroText", { y: 24, opacity: 0, duration: .7 }, "-=.5")
+    .from("#heroCta .btn", { y: 20, opacity: 0, duration: .5, stagger: .1 }, "-=.4")
+    .from("#heroStats .stat", { y: 20, opacity: 0, duration: .5, stagger: .1 }, "-=.3");
+
+  /* signature: waaier staat open, komt zacht binnen */
+  const angles = [-54, -36, -18, 0, 18, 36, 54];
+  gsap.set(".swatch", { rotate: i => angles[i] });
+  tl.from(".swatch", {
+    opacity: 0,
+    y: 34,
+    duration: .8,
+    stagger: { each: .06, from: "center" },
+    ease: "power3.out"
+  }, .4);
+  tl.from(".fan-caption", { opacity: 0, y: 10, duration: .5 }, "-=.4");
+
+  /* waaier ademt zachtjes mee op scroll */
+  gsap.to(".swatch", {
+    rotate: i => angles[i] * 1.18,
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 }
+  });
+
+  /* blobs zweven */
+  gsap.to(".hero-blob.b1", { y: 40, x: -30, duration: 7, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  gsap.to(".hero-blob.b2", { y: -30, x: 20, duration: 9, yoyo: true, repeat: -1, ease: "sine.inOut" });
+
+  /* tellers */
+  document.querySelectorAll("[data-count]").forEach(el => {
+    const end = +el.dataset.count;
+    gsap.fromTo(el, { innerText: 0 }, {
+      innerText: end, duration: 1.8, delay: 1, snap: { innerText: 1 }, ease: "power2.out",
+      onUpdate() { el.innerText = Math.round(el.innerText).toLocaleString("nl-NL") + "+"; }
+    });
+  });
+
+  /* marquee loop */
+  gsap.to(track, { xPercent: -33.33, duration: 22, repeat: -1, ease: "none" });
+
+  /* scroll reveals */
+  gsap.utils.toArray(".reveal").forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: .8, ease: "power3.out",
+      scrollTrigger: { trigger: el, start: "top 86%" }
+    });
+  });
+} else {
+  document.querySelectorAll(".reveal").forEach(el => { el.style.opacity = 1; el.style.transform = "none"; });
+  document.querySelectorAll(".swatch").forEach((el, i) => { el.style.transform = `rotate(${[-54,-36,-18,0,18,36,54][i]}deg)`; });
+}
+
+/* micro-interacties */
+let cart = 0;
+document.querySelectorAll(".add").forEach(btn => btn.addEventListener("click", () => {
+  cart++; document.getElementById("cartCount").textContent = cart;
+  btn.classList.add("added"); const old = btn.textContent; btn.textContent = "✓ Toegevoegd";
+  if (window.gsap && !reduce) gsap.fromTo("#cartCount", { scale: 1.6 }, { scale: 1, duration: .4, ease: "back.out(2)" });
+  setTimeout(() => { btn.classList.remove("added"); btn.textContent = old; }, 1600);
+}));
+document.querySelectorAll(".wish").forEach(b => b.addEventListener("click", () => b.classList.toggle("active")));
+</script>
+</body>
+</html>

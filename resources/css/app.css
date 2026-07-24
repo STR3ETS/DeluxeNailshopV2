@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    /*
+     * Kleuren, fonts en radius komen uit config/theme.php en worden in de
+     * <head> als :root-variabelen gezet. Hier koppelen we ze aan
+     * Tailwind-tokens zodat je bg-primary, text-dark-soft, rounded-card enz.
+     * kunt gebruiken — pas de config aan en de hele site kleurt mee.
+     */
+    --font-sans: var(--sans);
+    --font-serif: var(--serif);
+
+    --color-primary: var(--primary);
+    --color-primary-deep: var(--primary-deep);
+    --color-dark: var(--dark);
+    --color-dark-soft: var(--dark-soft);
+    --color-cream: var(--bg);
+    --color-cream-deep: var(--bg-deep);
+    --color-accent: var(--accent);
+    --color-accent-soft: var(--accent-soft);
+    --color-gold: var(--gold);
+    --color-offwhite: var(--white);
+
+    --radius-card: var(--radius);
+
+    --shadow-card: 0 20px 50px -20px color-mix(in srgb, var(--dark) 25%, transparent);
+
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+::selection {
+    background: var(--color-primary);
+    color: var(--color-offwhite);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Startstand voor scroll-reveals; GSAP animeert ze naar zichtbaar */
+.reveal {
+    opacity: 0;
+    transform: translateY(36px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
