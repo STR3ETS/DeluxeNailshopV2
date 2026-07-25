@@ -25,6 +25,12 @@
         $badgeGold = true;
     }
 
+    // Uitverkocht gaat boven alles: eigen badge + gedimde foto
+    if (! $opVoorraad) {
+        $badge = 'Uitverkocht';
+        $badgeGold = false;
+    }
+
     // Detailcontent met standaardteksten als fallback
     $description = $product['description']
         ?? 'De '.$product['brand'].' '.$product['name'].' is een professioneel product van salonkwaliteit. Ontwikkeld voor nagelstylistes én thuis-artists die het beste resultaat willen: mooi in gebruik, betrouwbaar in resultaat en wekenlang houdbaar.';
@@ -86,7 +92,7 @@
                     <i class="fa-heart text-[1.05rem]" :class="wished ? 'fa-solid text-primary' : 'fa-light text-dark'"></i>
                 </button>
                 <img src="{{ asset($product['image']) }}" alt="{{ $product['brand'] }} {{ $product['name'] }}"
-                     class="relative z-[1] max-h-[340px] w-auto object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] lg:max-h-[400px]">
+                     class="relative z-[1] max-h-[340px] w-auto object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] lg:max-h-[400px] {{ $opVoorraad ? '' : 'opacity-50 saturate-50' }}">
             </div>
 
             {{-- Productinfo --}}
@@ -116,31 +122,32 @@
 
                 {{-- Aantal + toevoegen + voorraad --}}
                 <div class="load-reveal mt-6 flex flex-wrap items-center gap-4">
-                    <div class="inline-flex items-center gap-3 rounded-full border border-dark/20">
-                        <button type="button" @click="qty = Math.max(1, qty - 1)" class="grid h-12 w-11 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Minder"><i class="fa-light fa-minus text-[.8rem]"></i></button>
-                        <span class="min-w-4 text-center text-[1rem] font-semibold" x-text="qty">1</span>
-                        <button type="button" @click="qty++" class="grid h-12 w-11 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Meer"><i class="fa-light fa-plus text-[.8rem]"></i></button>
-                    </div>
-
-                    <button type="button"
-                            data-cart-item="{{ json_encode($cartItem) }}"
-                            @click="added = true; pop = true; setTimeout(() => pop = false, 180); $store.cart.add(JSON.parse($el.dataset.cartItem), qty); qty = 1; setTimeout(() => added = false, 1600)"
-                            :class="[added ? 'bg-primary-deep' : 'bg-primary hover:bg-primary-deep', pop ? 'scale-95' : '']"
-                            class="relative inline-flex items-center gap-2.5 rounded-full bg-primary px-8 py-4 text-[.95rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-all duration-300">
-                        <i x-show="!added" class="fa-light fa-bag-shopping-plus text-[1.05rem]"></i>
-                        <i x-show="added" x-cloak class="fa-solid fa-check text-[1.05rem]"></i>
-                        In winkelwagen
-                        <template x-if="added"><span class="cart-ring"></span></template>
-                    </button>
-
                     @if ($opVoorraad)
+                        <div class="inline-flex items-center gap-3 rounded-full border border-dark/20">
+                            <button type="button" @click="qty = Math.max(1, qty - 1)" class="grid h-12 w-11 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Minder"><i class="fa-light fa-minus text-[.8rem]"></i></button>
+                            <span class="min-w-4 text-center text-[1rem] font-semibold" x-text="qty">1</span>
+                            <button type="button" @click="qty++" class="grid h-12 w-11 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Meer"><i class="fa-light fa-plus text-[.8rem]"></i></button>
+                        </div>
+
+                        <button type="button"
+                                data-cart-item="{{ json_encode($cartItem) }}"
+                                @click="added = true; pop = true; setTimeout(() => pop = false, 180); $store.cart.add(JSON.parse($el.dataset.cartItem), qty); qty = 1; setTimeout(() => added = false, 1600)"
+                                :class="[added ? 'bg-primary-deep' : 'bg-primary hover:bg-primary-deep', pop ? 'scale-95' : '']"
+                                class="relative inline-flex items-center gap-2.5 rounded-full bg-primary px-8 py-4 text-[.95rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-all duration-300">
+                            <i x-show="!added" class="fa-light fa-bag-shopping-plus text-[1.05rem]"></i>
+                            <i x-show="added" x-cloak class="fa-solid fa-check text-[1.05rem]"></i>
+                            In winkelwagen
+                            <template x-if="added"><span class="cart-ring"></span></template>
+                        </button>
+
                         <span class="inline-flex items-center gap-2 text-[.88rem] font-medium text-emerald-700">
                             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>Op voorraad
                         </span>
                     @else
-                        <span class="inline-flex items-center gap-2 text-[.88rem] font-medium text-dark-soft">
-                            <span class="h-2 w-2 rounded-full bg-dark/40"></span>Tijdelijk uitverkocht
+                        <span class="inline-flex items-center gap-2.5 rounded-full bg-dark/8 px-8 py-4 text-[.95rem] font-semibold tracking-[.02em] text-dark-soft">
+                            <i class="fa-light fa-clock-rotate-left text-[1.05rem]"></i>Tijdelijk uitverkocht
                         </span>
+                        <span class="max-w-[26ch] text-[.85rem] leading-[1.55] font-light text-dark-soft">We vullen onze voorraad zo snel mogelijk aan.</span>
                     @endif
                 </div>
 

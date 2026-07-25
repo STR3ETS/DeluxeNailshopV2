@@ -44,11 +44,11 @@
             <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gold/15 text-gold"><i class="fa-light fa-box-open text-[.78rem]"></i></span>
             <p class="text-[.9rem] font-light text-cream/85">
                 @if ($openBestellingen === 0)
-                    Er staan geen bestellingen meer open.
+                    Er liggen geen bestellingen klaar om te verzenden.
                 @elseif ($openBestellingen === 1)
-                    Er staat nog <b class="font-semibold text-cream">1</b> bestelling open.
+                    Er ligt <b class="font-semibold text-cream">1</b> betaalde bestelling klaar om te verzenden.
                 @else
-                    Er staan nog <b class="font-semibold text-cream">{{ $openBestellingen }}</b> bestellingen open.
+                    Er liggen <b class="font-semibold text-cream">{{ $openBestellingen }}</b> betaalde bestellingen klaar om te verzenden.
                 @endif
             </p>
         </div>

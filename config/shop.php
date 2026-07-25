@@ -98,9 +98,15 @@ return [
 
     'brands' => ['DNKa', 'Valeri'],
 
-    // Drempel voor gratis verzending (in euro's) - gebruikt in de
-    // announcement-balk en de winkelwagen-dropdown.
-    'free_shipping_from' => 50,
+    // Drempel voor gratis verzending binnen Nederland (in euro's) - gebruikt
+    // in de announcement-balk en de winkelwagen-dropdown.
+    'free_shipping_from' => 75,
+
+    // Verzendtarieven per land (conform deluxenailshop.nl, verzending via PostNL).
+    'verzending' => [
+        'NL' => ['kosten' => 7.45,  'gratis_vanaf' => 75],
+        'BE' => ['kosten' => 12.35, 'gratis_vanaf' => 100],
+    ],
 
     // Tijdelijke productfoto's + zachte achtergrondtinten; rouleren over
     // producten zonder eigen 'image'/'bg'-veld.

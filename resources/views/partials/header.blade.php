@@ -117,7 +117,7 @@
                         <template x-if="$store.cart.total >= {{ $freeFrom }}">
                             <p class="mb-4 text-[.78rem] font-medium text-primary-deep"><i class="fa-light fa-truck-fast mr-1.5"></i>Je bestelling wordt gratis verzonden!</p>
                         </template>
-                        <a href="#" class="flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">
+                        <a href="{{ route('afrekenen') }}" class="flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">
                             Afrekenen <i class="fa-light fa-arrow-right"></i>
                         </a>
                     </div>

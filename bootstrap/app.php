@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->redirectGuestsTo('/login');
 
+        // Mollie post zonder CSRF-token op de webhook.
+        $middleware->validateCsrfTokens(except: ['webhooks/mollie']);
+
         // Ingelogde gebruikers die op gastpagina's (login/registreren) komen,
         // gaan door naar hun eigen portaal (admin of klant).
         $middleware->redirectUsersTo(fn (Request $request) => $request->user()->portalUrl());

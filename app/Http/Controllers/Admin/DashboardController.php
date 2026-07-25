@@ -11,7 +11,9 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $telbareStatussen = ['open', 'betaald', 'verzonden', 'afgerond'];
+        // Alleen betaalde bestellingen tellen mee; 'open' betekent sinds de
+        // Mollie-koppeling dat er (nog) niet is afgerekend.
+        $telbareStatussen = ['betaald', 'verzonden', 'afgerond'];
 
         $omzet30 = (float) Order::whereIn('status', $telbareStatussen)
             ->where('created_at', '>=', now()->subDays(30))
@@ -26,10 +28,12 @@ class DashboardController extends Controller
                 ->where('created_at', '>=', now()->startOfMonth()))
             ->sum('qty');
 
-        $openBestellingen = Order::where('status', 'open')->count();
+        // Betaald maar nog niet verzonden: deze wachten op actie
+        $openBestellingen = Order::where('status', 'betaald')->count();
 
         // Bestellingen per dag, afgelopen 7 dagen (incl. dagen zonder bestellingen)
-        $perDag = Order::where('created_at', '>=', now()->subDays(6)->startOfDay())
+        $perDag = Order::whereIn('status', $telbareStatussen)
+            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
             ->get()
             ->countBy(fn ($order) => $order->created_at->format('Y-m-d'));
 

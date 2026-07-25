@@ -27,6 +27,12 @@
     </a>
 </div>
 
+@if (session('status'))
+    <p class="load-reveal mt-6 rounded-2xl border border-primary/20 bg-accent-soft/60 px-5 py-3.5 text-[.9rem] text-dark">
+        <i class="fa-light fa-circle-check mr-1.5 text-primary-deep"></i>{{ session('status') }}
+    </p>
+@endif
+
 <div class="load-reveal mt-8"
      x-data="{
         merk: @js(old('merk', $product->brand ?? 'DNKa')),

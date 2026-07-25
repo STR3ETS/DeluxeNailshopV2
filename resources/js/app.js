@@ -75,6 +75,9 @@ Alpine.store('cart', {
     remove(id) {
         this.items = this.items.filter((i) => i.id !== id);
     },
+    clear() {
+        this.items = [];
+    },
     format(value) {
         return value.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
     },

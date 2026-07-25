@@ -60,6 +60,22 @@ class ProductController extends Controller
         return redirect()->route('admin.producten')->with('status', '"'.$product->name.'" is bijgewerkt.');
     }
 
+    /**
+     * Maakt een kopie van het product. De kopie start inactief zodat er
+     * niet direct een dubbel product in de shop staat.
+     */
+    public function duplicate(Product $product): RedirectResponse
+    {
+        $kopie = $product->replicate();
+        $kopie->name = $product->name.' (kopie)';
+        $kopie->slug = $this->uniekeSlug($kopie->brand, $kopie->name);
+        $kopie->actief = false;
+        $kopie->save();
+
+        return redirect()->route('admin.producten.bewerken', $kopie)
+            ->with('status', '"'.$product->name.'" is gedupliceerd. Pas de kopie aan en vink "Actief" aan zodra hij klaar is.');
+    }
+
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();

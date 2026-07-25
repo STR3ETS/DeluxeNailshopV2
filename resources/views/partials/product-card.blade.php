@@ -21,6 +21,13 @@
         $badgeGold = true;
     }
 
+    // Uitverkocht gaat boven alles: eigen badge + gedimde foto
+    $uitverkocht = ($product['voorraad'] ?? 1) < 1;
+    if ($uitverkocht) {
+        $badge = 'Uitverkocht';
+        $badgeGold = false;
+    }
+
     // Slug voor de detailpagina; ook gebruikt als winkelwagen-id
     $productSlug = $product['slug'] ?? \Illuminate\Support\Str::slug($product['brand'].' '.$product['name']);
     $productUrl  = route('product.show', $productSlug);
@@ -59,7 +66,7 @@
         @if (!empty($product['image']))
             {{-- Foto is strak bijgesneden: max-hoogte houdt ±36px witruimte boven en onder --}}
             <img src="{{ asset($product['image']) }}" alt="{{ $product['brand'] }} {{ $product['name'] }}" loading="lazy"
-                 class="relative z-[1] max-h-[158px] w-auto object-contain drop-shadow-[0_14px_18px_color-mix(in_srgb,var(--color-dark)_22%,transparent)] transition-transform duration-500 ease-spring group-hover:-translate-y-1.5 group-hover:-rotate-[7deg] group-hover:scale-105">
+                 class="relative z-[1] max-h-[158px] w-auto object-contain drop-shadow-[0_14px_18px_color-mix(in_srgb,var(--color-dark)_22%,transparent)] transition-transform duration-500 ease-spring group-hover:-translate-y-1.5 group-hover:-rotate-[7deg] group-hover:scale-105 {{ $uitverkocht ? 'opacity-50 saturate-50' : '' }}">
         @elseif (!empty($product['bottle']))
         @php $bottle = $product['bottle']; $colors = config('theme.colors'); @endphp
         <svg class="relative z-[1] transition-transform duration-500 ease-spring group-hover:-translate-y-1.5 group-hover:-rotate-[7deg] group-hover:scale-105" width="86" height="150" viewBox="0 0 86 150">
@@ -91,16 +98,22 @@
             <span class="font-serif text-[1.25rem] font-semibold">
                 @if (!empty($product['old_price']))<s class="mr-1.5 text-[.85rem] font-normal text-dark-soft">€{{ number_format($product['old_price'], 2, ',', '.') }}</s>@endif€{{ number_format($product['price'], 2, ',', '.') }}
             </span>
-            <button type="button"
-                    data-cart-item="{{ json_encode($cartItem) }}"
-                    @click="added = true; pop = true; setTimeout(() => pop = false, 180); $store.cart.add(JSON.parse($el.dataset.cartItem)); setTimeout(() => added = false, 1600)"
-                    :class="[added ? 'bg-primary' : 'bg-dark hover:bg-primary', pop ? 'scale-90' : '']"
-                    class="relative grid h-11 w-11 place-items-center rounded-full bg-dark text-white transition-all duration-300 hover:scale-105"
-                    aria-label="In winkelwagen">
-                <i x-show="!added" class="fa-light fa-bag-shopping-plus text-[1rem]"></i>
-                <i x-show="added" x-cloak class="fa-solid fa-check text-[1rem]"></i>
-                <template x-if="added"><span class="cart-ring"></span></template>
-            </button>
+            @if ($uitverkocht)
+                <span class="inline-flex items-center gap-2 rounded-full bg-dark/8 px-4 py-2.5 text-[.72rem] font-semibold tracking-[.1em] text-dark-soft uppercase">
+                    <i class="fa-light fa-clock-rotate-left text-[.8rem]"></i>Uitverkocht
+                </span>
+            @else
+                <button type="button"
+                        data-cart-item="{{ json_encode($cartItem) }}"
+                        @click="added = true; pop = true; setTimeout(() => pop = false, 180); $store.cart.add(JSON.parse($el.dataset.cartItem)); setTimeout(() => added = false, 1600)"
+                        :class="[added ? 'bg-primary' : 'bg-dark hover:bg-primary', pop ? 'scale-90' : '']"
+                        class="relative grid h-11 w-11 place-items-center rounded-full bg-dark text-white transition-all duration-300 hover:scale-105"
+                        aria-label="In winkelwagen">
+                    <i x-show="!added" class="fa-light fa-bag-shopping-plus text-[1rem]"></i>
+                    <i x-show="added" x-cloak class="fa-solid fa-check text-[1rem]"></i>
+                    <template x-if="added"><span class="cart-ring"></span></template>
+                </button>
+            @endif
         </div>
     </div>
 </article>

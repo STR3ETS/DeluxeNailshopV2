@@ -31,6 +31,22 @@ Route::get('/producten', function () {
 
 Route::view('/faq', 'faq')->name('faq');
 
+Route::get('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'show'])->name('afrekenen');
+Route::post('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'store'])->name('afrekenen.plaatsen');
+Route::get('/afrekenen/retour/{order}', [App\Http\Controllers\CheckoutController::class, 'retour'])->name('afrekenen.retour');
+Route::post('/webhooks/mollie', [App\Http\Controllers\CheckoutController::class, 'webhook'])->name('mollie.webhook');
+Route::get('/bedankt/{order}', [App\Http\Controllers\CheckoutController::class, 'bedankt'])->name('bedankt');
+
+// Alleen lokaal: bekijk de bedankt-pagina van een bestelling zonder echt te
+// betalen (zet de sessie die de pagina normaal via de betaalflow krijgt).
+if (app()->environment('local')) {
+    Route::get('/test/bedankt/{order}', function (App\Models\Order $order) {
+        session(['laatste_bestelling' => $order->id]);
+
+        return redirect()->route('bedankt', $order);
+    });
+}
+
 /*
 |--------------------------------------------------------------------------
 | Klantenportaal - gasten
@@ -65,6 +81,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/producten/nieuw', [AdminProductController::class, 'create'])->name('producten.nieuw');
     Route::post('/producten', [AdminProductController::class, 'store'])->name('producten.opslaan');
     Route::get('/producten/{product}/bewerken', [AdminProductController::class, 'edit'])->name('producten.bewerken');
+    Route::post('/producten/{product}/dupliceren', [AdminProductController::class, 'duplicate'])->name('producten.dupliceren');
     Route::put('/producten/{product}', [AdminProductController::class, 'update'])->name('producten.bijwerken');
     Route::delete('/producten/{product}', [AdminProductController::class, 'destroy'])->name('producten.verwijderen');
 

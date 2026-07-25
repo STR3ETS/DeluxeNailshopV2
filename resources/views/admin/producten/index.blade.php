@@ -73,6 +73,12 @@
                     <a href="{{ route('admin.producten.bewerken', $p) }}" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Bewerken" title="Bewerken">
                         <i class="fa-light fa-pen text-[.9rem]"></i>
                     </a>
+                    <form method="POST" action="{{ route('admin.producten.dupliceren', $p) }}">
+                        @csrf
+                        <button type="submit" class="grid h-10 w-10 place-items-center rounded-full text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark" aria-label="Dupliceren" title="Dupliceren">
+                            <i class="fa-light fa-copy text-[.9rem]"></i>
+                        </button>
+                    </form>
                     <form method="POST" action="{{ route('admin.producten.verwijderen', $p) }}" x-data="{ bevestig: false }" @click.outside="bevestig = false">
                         @csrf
                         @method('DELETE')

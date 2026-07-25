@@ -33,7 +33,7 @@ class Product extends Model
     public static function bestsellerIds(): array
     {
         $meestVerkocht = OrderItem::whereHas('order', fn ($q) => $q
-                ->whereIn('status', ['open', 'betaald', 'verzonden', 'afgerond'])
+                ->whereIn('status', ['betaald', 'verzonden', 'afgerond'])
                 ->where('created_at', '>=', now()->subDays(30)))
             ->selectRaw('product_slug, SUM(qty) as totaal')
             ->groupBy('product_slug')
@@ -41,11 +41,26 @@ class Product extends Model
             ->take(4)
             ->pluck('product_slug');
 
-        if ($meestVerkocht->isEmpty()) {
-            return static::where('actief', true)->orderByDesc('reviews')->take(4)->pluck('id')->all();
+        $ids = static::whereIn('slug', $meestVerkocht)
+            ->get()
+            ->sortBy(fn ($p) => array_search($p->slug, $meestVerkocht->all()))
+            ->pluck('id')
+            ->values()
+            ->all();
+
+        // Minder dan vier verkocht? Vul aan met de best beoordeelde producten
+        if (count($ids) < 4) {
+            $aanvulling = static::where('actief', true)
+                ->whereNotIn('id', $ids)
+                ->orderByDesc('reviews')
+                ->take(4 - count($ids))
+                ->pluck('id')
+                ->all();
+
+            $ids = array_merge($ids, $aanvulling);
         }
 
-        return static::whereIn('slug', $meestVerkocht)->pluck('id')->all();
+        return $ids;
     }
 
     /**
