@@ -12,7 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
+
+        $middleware->redirectGuestsTo('/login');
+
+        // Ingelogde gebruikers die op gastpagina's (login/registreren) komen,
+        // gaan door naar hun eigen portaal (admin of klant).
+        $middleware->redirectUsersTo(fn (Request $request) => $request->user()->portalUrl());
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

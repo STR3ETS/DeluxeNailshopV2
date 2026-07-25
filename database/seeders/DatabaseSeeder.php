@@ -15,11 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::updateOrCreate(
+            ['email' => 'admin@deluxenailshop.nl'],
+            [
+                'name'     => 'Beheerder',
+                'password' => 'wachtwoord123',
+                'role'     => 'admin',
+            ],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'klant@deluxenailshop.nl'],
+            [
+                'name'     => 'Test Klant',
+                'password' => 'wachtwoord123',
+                'role'     => 'klant',
+            ],
+        );
+
+        $this->call(ProductSeeder::class);
     }
 }
