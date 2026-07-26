@@ -13,7 +13,7 @@
 
     $tagline = 'Professionele nagelproducten';
 
-    $heroText = 'Van Builder in a Bottle tot de perfecte nude gelpolish: alles wat jij als nagelstyliste of thuis-artist nodig hebt. Salonkwaliteit van DNKa & Valeri, morgen al op je werktafel.';
+    $heroText = 'Van Builder in a Bottle tot de perfecte nude gelpolish: alles wat jij als nagelstyliste of thuis-artist nodig hebt. Salonkwaliteit van DNKa\' & Valeri, morgen al op je werktafel.';
 
     $stats = [
         ['count' => 12000, 'label' => 'Tevreden klanten'],
@@ -37,7 +37,7 @@
     // Slanke strip met kernbeloftes, direct onder de hero (Font Awesome-iconen)
     $uspStrip = [
         ['icon' => 'fa-truck-fast',  'text' => 'Voor 16:00 besteld, morgen in huis'],
-        ['icon' => 'fa-sparkles',    'text' => 'Salonkwaliteit van DNKa & Valeri'],
+        ['icon' => 'fa-sparkles',    'text' => 'Salonkwaliteit van DNKa\' & Valeri'],
         ['icon' => 'fa-rotate-left', 'text' => '30 dagen gratis retour'],
     ];
 
@@ -149,7 +149,7 @@
         </div>
         <div class="grid gap-6 lg:grid-cols-2">
             @foreach ([
-                ['key' => 'dnka', 'name' => 'DNKa', 'text' => 'Professionele gelsystemen waar salons op bouwen. Sterke hechting, prachtige viscositeit en tinten die iedere huidtint flatteren.', 'cta' => 'Ontdek DNKa'],
+                ['key' => 'dnka', 'name' => 'DNKa\'', 'text' => 'Professionele gelsystemen waar salons op bouwen. Sterke hechting, prachtige viscositeit en tinten die iedere huidtint flatteren.', 'cta' => 'Ontdek DNKa\''],
                 ['key' => 'valeri', 'name' => 'Valeri', 'text' => 'Kleuren met karakter. Van zachte nudes tot statement-tinten: gelpolish die strak dekt in één tot twee lagen en wekenlang blijft glanzen.', 'cta' => 'Ontdek Valeri'],
             ] as $panel)
                 @php $isDnka = $panel['key'] === 'dnka'; @endphp

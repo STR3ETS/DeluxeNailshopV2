@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'brand', 'name', 'slug', 'category', 'subcategory', 'price', 'old_price',
-    'badge', 'badge_gold', 'bg_from', 'bg_to', 'image', 'description',
+    'badge', 'badge_gold', 'bg_from', 'bg_to', 'image', 'image_2', 'description',
     'kenmerken', 'gebruiksaanwijzing', 'inhoud', 'voorzorg', 'bewaren',
     'reviews', 'voorraad', 'actief',
 ])]
@@ -84,6 +84,7 @@ class Product extends Model
             'subcategory'        => $this->subcategory ?? '',
             'bg'                 => [$this->bg_from ?? '#f6e3de', $this->bg_to ?? '#ecc9bf'],
             'image'              => $this->image,
+            'image_2'            => $this->image_2,
             'voorraad'           => (int) $this->voorraad,
             'description'        => $this->description,
             'kenmerken'          => $this->kenmerken,

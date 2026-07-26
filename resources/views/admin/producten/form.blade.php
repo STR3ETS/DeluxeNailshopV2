@@ -35,7 +35,7 @@
 
 <div class="load-reveal mt-8"
      x-data="{
-        merk: @js(old('merk', $product->brand ?? 'DNKa')),
+        merk: @js(old('merk', $product->brand ?? config('shop.brands')[0])),
         naam: @js(old('naam', $product->name ?? '')),
         categorie: @js(old('categorie', $product->category ?? '')),
         subcategorie: @js(old('subcategorie', $product->subcategory ?? '')),
@@ -43,6 +43,8 @@
         oudePrijs: @js((string) old('oude_prijs', $product->old_price ?? '')),
         tint: @js(old('tint', ($product->bg_from ?? '#f6e3de') . '|' . ($product->bg_to ?? '#ecc9bf'))),
         afbeelding: @js($product?->image ? asset($product->image) : null),
+        afbeelding2: @js($product?->image_2 ? asset($product->image_2) : null),
+        afbeelding2Verwijderen: false,
         kenmerken: @js((function () use ($product) {
             $rijen = old('kenmerken', collect($product?->kenmerken ?? [])->map(fn ($k) => ['titel' => $k[0] ?? '', 'tekst' => $k[1] ?? ''])->values()->all());
             return count($rijen) ? array_values($rijen) : [['titel' => '', 'tekst' => '']];
@@ -71,6 +73,13 @@
             if (!bestand) return;
             const lezer = new FileReader();
             lezer.onload = () => this.afbeelding = lezer.result;
+            lezer.readAsDataURL(bestand);
+        },
+        kiesAfbeelding2(e) {
+            const bestand = e.target.files[0];
+            if (!bestand) return;
+            const lezer = new FileReader();
+            lezer.onload = () => { this.afbeelding2 = lezer.result; this.afbeelding2Verwijderen = false; };
             lezer.readAsDataURL(bestand);
         },
      }">
@@ -171,11 +180,31 @@
                 @error('afbeelding')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
             </div>
 
+            <div>
+                <span class="{{ $labelKlassen }}">Extra foto <span class="font-normal normal-case">(optioneel)</span></span>
+                <label class="flex cursor-pointer items-center gap-4 rounded-2xl border border-dashed border-primary/30 bg-cream/60 px-5 py-4 transition-colors hover:border-primary">
+                    <span x-show="!afbeelding2" class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-images text-[1rem]"></i></span>
+                    <img x-cloak x-show="afbeelding2" :src="afbeelding2" alt="" class="h-11 w-11 shrink-0 rounded-xl bg-cream-deep object-contain p-1">
+                    <span class="min-w-0">
+                        <span class="block text-[.9rem] font-medium" x-text="afbeelding2 ? 'Extra foto gekozen' : 'Kies een tweede afbeelding'"></span>
+                        <span class="block text-[.78rem] font-light text-dark-soft">Bijv. een swatch of sfeerfoto · verschijnt op de productpagina</span>
+                    </span>
+                    <input type="file" name="afbeelding_2" accept="image/*" @change="kiesAfbeelding2" class="sr-only">
+                </label>
+                @if ($bewerken && $product->image_2)
+                    <label class="mt-2.5 flex cursor-pointer items-center gap-2.5 pl-1 text-[.82rem] text-dark-soft">
+                        <input type="checkbox" name="afbeelding_2_verwijderen" value="1" x-model="afbeelding2Verwijderen" @change="if (afbeelding2Verwijderen) afbeelding2 = null" class="h-4 w-4 accent-primary">
+                        Extra foto verwijderen bij opslaan
+                    </label>
+                @endif
+                @error('afbeelding_2')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
+            </div>
+
             {{-- Detailpagina: beschrijving --}}
             <div class="border-t border-primary/15 pt-6">
                 <h2 class="font-serif text-[1.15rem] font-medium">Beschrijving</h2>
                 <p class="mt-1 text-[.8rem] font-light text-dark-soft">De introtekst bovenaan de detailpagina. Leeg laten = standaardtekst.</p>
-                <textarea name="beschrijving" rows="4" placeholder="Bijv. De DNKa Fiber Base is een transparante, flexibele en sterke base gel…" class="mt-4 w-full rounded-2xl border border-primary/20 bg-offwhite px-5 py-3.5 text-[.92rem] leading-[1.7] outline-none transition-colors placeholder:text-dark-soft/50 focus:border-primary">{{ old('beschrijving', $product->description ?? '') }}</textarea>
+                <textarea name="beschrijving" rows="4" placeholder="Bijv. De DNKa' Fiber Base is een transparante, flexibele en sterke base gel…" class="mt-4 w-full rounded-2xl border border-primary/20 bg-offwhite px-5 py-3.5 text-[.92rem] leading-[1.7] outline-none transition-colors placeholder:text-dark-soft/50 focus:border-primary">{{ old('beschrijving', $product->description ?? '') }}</textarea>
                 @error('beschrijving')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
             </div>
 

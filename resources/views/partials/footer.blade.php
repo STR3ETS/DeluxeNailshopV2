@@ -5,7 +5,7 @@
             ['title' => 'Shoppen', 'links' => collect(config('shop.categories'))->map(fn ($c) => ['label' => $c['name'], 'url' => url('/producten').'?categorie='.$c['slug']])->all()],
         ],
         [
-            ['title' => 'Merken',   'links' => [['label' => 'DNKa', 'url' => '#'], ['label' => 'Valeri', 'url' => '#'], ['label' => 'Alle merken', 'url' => '#']]],
+            ['title' => 'Merken',   'links' => collect(config('shop.brands'))->map(fn ($merk) => ['label' => $merk, 'url' => url('/producten')])->push(['label' => 'Alle merken', 'url' => url('/producten')])->all()],
             ['title' => 'Over ons', 'links' => [['label' => 'Ons verhaal', 'url' => '#'], ['label' => 'Reviews', 'url' => '#'], ['label' => 'Blog', 'url' => '#']]],
         ],
         [

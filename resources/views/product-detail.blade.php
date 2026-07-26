@@ -44,16 +44,19 @@
 
     $gebruiksaanwijzing = $product['gebruiksaanwijzing'] ?? [
         'Bereid de nagel voor: reinig en vijl de nagelplaat.',
-        'Reinig met Valeri / DNKa Nail Prep & Cleanser 3in1.',
-        'Breng Valeri / DNKa Dehydrator en Ultrabond aan voor optimale hechting.',
+        'Reinig met Valeri / DNKa\' Nail Prep & Cleanser 3in1.',
+        'Breng Valeri / DNKa\' Dehydrator en Ultrabond aan voor optimale hechting.',
         'Breng het product in een dunne laag aan (uitharden: 60 sec in LED/Hybrid of 90 sec in UV).',
-        'Werk af met een Valeri / DNKa Top Coat en hard uit (120 sec in LED/hybridelamp of 180 sec in UV-lamp).',
+        'Werk af met een Valeri / DNKa\' Top Coat en hard uit (120 sec in LED/hybridelamp of 180 sec in UV-lamp).',
     ];
 
     // Inhoud: expliciet veld, anders uit de productnaam afleiden (bijv. "15ml")
     $inhoud = $product['inhoud'] ?? (preg_match('/(\d+\s?ml)/i', $product['name'], $m) ? trim($m[1]) : null);
     $voorzorg = $product['voorzorg'] ?? 'Vermijd contact met huid en ogen. Buiten bereik van kinderen bewaren.';
     $bewaren  = $product['bewaren'] ?? 'Bewaren tussen +15°C en +25°C, uit direct zonlicht.';
+
+    // Productfoto's: hoofdfoto + optionele extra foto
+    $fotos = array_values(array_filter([$product['image'] ?? null, $product['image_2'] ?? null]));
 
     // Payload voor de winkelwagen-store ($related komt uit de route)
     $cartItem = [
@@ -84,15 +87,32 @@
         <div class="grid items-start gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
 
             {{-- Productbeeld --}}
-            <div x-data="{ wished: false }" class="load-reveal relative grid min-h-[420px] place-items-center overflow-hidden rounded-[calc(var(--radius)+10px)] lg:sticky lg:top-24 lg:min-h-[520px]" style="background:linear-gradient(160deg,{{ $product['bg'][0] }},{{ $product['bg'][1] }})">
+            <div x-data="{ wished: false, foto: 0 }" class="load-reveal relative grid min-h-[420px] place-items-center overflow-hidden rounded-[calc(var(--radius)+10px)] lg:sticky lg:top-24 lg:min-h-[520px]" style="background:linear-gradient(160deg,{{ $product['bg'][0] }},{{ $product['bg'][1] }})">
                 @if ($badge)
                     <span class="absolute top-5 left-5 z-[2] rounded-full px-3.5 py-1.5 text-[.7rem] font-semibold tracking-[.14em] text-cream uppercase {{ $badgeGold ? 'bg-primary' : 'bg-dark' }}">{{ $badge }}</span>
                 @endif
                 <button type="button" @click="wished = !wished" class="absolute top-4 right-4 z-[2] grid h-11 w-11 place-items-center rounded-full bg-white/85 transition-all duration-300 hover:scale-[1.12] hover:bg-white" aria-label="Bewaar als favoriet">
                     <i class="fa-heart text-[1.05rem]" :class="wished ? 'fa-solid text-primary' : 'fa-light text-dark'"></i>
                 </button>
-                <img src="{{ asset($product['image']) }}" alt="{{ $product['brand'] }} {{ $product['name'] }}"
-                     class="relative z-[1] max-h-[340px] w-auto object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] lg:max-h-[400px] {{ $opVoorraad ? '' : 'opacity-50 saturate-50' }}">
+                @foreach ($fotos as $fotoIndex => $foto)
+                    <img @if ($fotoIndex > 0) x-cloak @endif x-show="foto === {{ $fotoIndex }}"
+                         src="{{ asset($foto) }}" alt="{{ $product['brand'] }} {{ $product['name'] }}{{ $fotoIndex > 0 ? ' - extra foto' : '' }}"
+                         class="relative z-[1] max-h-[340px] w-auto object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] lg:max-h-[400px] {{ $opVoorraad ? '' : 'opacity-50 saturate-50' }}">
+                @endforeach
+
+                {{-- Miniaturen om te wisselen (alleen bij meerdere foto's) --}}
+                @if (count($fotos) > 1)
+                    <div class="absolute bottom-5 left-1/2 z-[2] flex -translate-x-1/2 gap-2.5">
+                        @foreach ($fotos as $fotoIndex => $foto)
+                            <button type="button" @click="foto = {{ $fotoIndex }}"
+                                    class="grid h-14 w-14 place-items-center overflow-hidden rounded-xl bg-white/70 p-1.5 transition-all duration-300 hover:bg-white"
+                                    :class="foto === {{ $fotoIndex }} ? 'bg-white ring-2 ring-primary' : ''"
+                                    aria-label="Bekijk foto {{ $fotoIndex + 1 }}">
+                                <img src="{{ asset($foto) }}" alt="" class="max-h-10 w-auto object-contain">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             {{-- Productinfo --}}

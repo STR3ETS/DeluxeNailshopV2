@@ -96,7 +96,7 @@ return [
         ],
     ],
 
-    'brands' => ['DNKa', 'Valeri'],
+    'brands' => ['DNKa\'', 'Valeri', 'Deluxe Nail Shop', 'Staleks'],
 
     // Drempel voor gratis verzending binnen Nederland (in euro's) - gebruikt
     // in de announcement-balk en de winkelwagen-dropdown.

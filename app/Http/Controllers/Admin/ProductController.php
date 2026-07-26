@@ -34,6 +34,10 @@ class ProductController extends Controller
             $product->image = 'storage/'.$request->file('afbeelding')->store('producten', 'public');
         }
 
+        if ($request->hasFile('afbeelding_2')) {
+            $product->image_2 = 'storage/'.$request->file('afbeelding_2')->store('producten', 'public');
+        }
+
         $product->save();
 
         return redirect()->route('admin.producten')->with('status', '"'.$product->name.'" is toegevoegd.');
@@ -53,6 +57,12 @@ class ProductController extends Controller
 
         if ($request->hasFile('afbeelding')) {
             $product->image = 'storage/'.$request->file('afbeelding')->store('producten', 'public');
+        }
+
+        if ($request->hasFile('afbeelding_2')) {
+            $product->image_2 = 'storage/'.$request->file('afbeelding_2')->store('producten', 'public');
+        } elseif ($request->boolean('afbeelding_2_verwijderen')) {
+            $product->image_2 = null;
         }
 
         $product->save();
@@ -96,6 +106,7 @@ class ProductController extends Controller
             'oude_prijs'   => ['nullable', 'numeric', 'gt:prijs'],
             'tint'         => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}\|#[0-9a-fA-F]{6}$/'],
             'afbeelding'   => ['nullable', 'image', 'max:4096'],
+            'afbeelding_2' => ['nullable', 'image', 'max:4096'],
             'voorraad'     => ['required', 'integer', 'min:0'],
             'beschrijving' => ['nullable', 'string', 'max:5000'],
             'kenmerken'    => ['nullable', 'array'],
@@ -119,6 +130,8 @@ class ProductController extends Controller
             'tint.regex'         => 'Kies een geldige achtergrondtint.',
             'afbeelding.image'   => 'De afbeelding moet een geldig afbeeldingsbestand zijn.',
             'afbeelding.max'     => 'De afbeelding mag maximaal 4 MB zijn.',
+            'afbeelding_2.image' => 'De extra foto moet een geldig afbeeldingsbestand zijn.',
+            'afbeelding_2.max'   => 'De extra foto mag maximaal 4 MB zijn.',
             'voorraad.required'  => 'Vul de voorraad in.',
             'voorraad.integer'   => 'De voorraad moet een heel getal zijn.',
             'voorraad.min'       => 'De voorraad kan niet negatief zijn.',
