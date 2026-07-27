@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BestellingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\VoorraadController;
@@ -88,7 +89,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/voorraad', [VoorraadController::class, 'index'])->name('voorraad');
     Route::patch('/voorraad/{product}', [VoorraadController::class, 'update'])->name('voorraad.bijwerken');
 
-    Route::view('/bestellingen', 'admin.placeholder', ['titel' => 'Bestellingen'])->name('bestellingen');
+    Route::get('/bestellingen', [BestellingController::class, 'index'])->name('bestellingen');
+    Route::get('/bestellingen/{order}', [BestellingController::class, 'show'])->name('bestellingen.detail');
+    Route::patch('/bestellingen/{order}/status', [BestellingController::class, 'updateStatus'])->name('bestellingen.status');
     Route::view('/facturen', 'admin.placeholder', ['titel' => 'Facturen'])->name('facturen');
     Route::view('/instellingen', 'admin.placeholder', ['titel' => 'Instellingen'])->name('instellingen');
 });
