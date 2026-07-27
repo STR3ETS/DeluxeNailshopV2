@@ -48,6 +48,12 @@
     display: none !important;
 }
 
+/* Slanke, subtiele scrollbalk voor scrollende panelen (o.a. filter-sidebar) */
+.scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-primary) 35%, transparent) transparent;
+}
+
 /* Ring-puls rond de toevoegen-knop na een klik */
 .cart-ring {
     position: absolute;

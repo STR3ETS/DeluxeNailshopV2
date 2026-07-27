@@ -107,8 +107,10 @@
 
         <div class="grid items-start gap-10 lg:grid-cols-[260px_1fr]">
 
-            {{-- Filters (desktop) --}}
-            <aside class="load-reveal sticky top-24 hidden lg:block">
+            {{-- Filters (desktop): eigen scrollgebied zodat de lijst op lage
+                 schermen niet buiten beeld valt (sticky zonder max-hoogte
+                 maakte de onderste filters onbereikbaar) --}}
+            <aside class="load-reveal scroll-slim sticky top-24 hidden max-h-[calc(100svh-8rem)] overflow-y-auto overscroll-contain pr-2 pb-2 lg:block">
                 @include('partials.product-filters')
             </aside>
 
