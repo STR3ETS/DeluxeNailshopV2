@@ -39,7 +39,7 @@ class BestellingController extends Controller
 
     public function show(Order $order): View
     {
-        $order->load('items');
+        $order->load(['items', 'factuur']);
 
         return view('admin.bestellingen.show', [
             'order'      => $order,
@@ -81,6 +81,12 @@ class BestellingController extends Controller
         }
 
         $order->update(['status' => $nieuw]);
+
+        // Zodra een bestelling (ook handmatig) op betaald of verder staat,
+        // hoort er een factuur te bestaan.
+        if (in_array($nieuw, ['betaald', 'verzonden', 'afgerond'])) {
+            $order->maakFactuur();
+        }
 
         return back()->with('status', 'Status van '.$order->nummer().' bijgewerkt naar "'.self::STATUSSEN[$nieuw].'".');
     }

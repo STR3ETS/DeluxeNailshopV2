@@ -172,6 +172,7 @@ class CheckoutController extends Controller
 
         if ($betaling->isPaid()) {
             $order->update(['status' => 'betaald']);
+            $order->maakFactuur();
             $request->session()->put('laatste_bestelling', $order->id);
 
             return redirect()->route('bedankt', $order);
@@ -204,6 +205,7 @@ class CheckoutController extends Controller
 
                 if ($betaling->isPaid() && $order->status === 'open') {
                     $order->update(['status' => 'betaald']);
+                    $order->maakFactuur();
                 } elseif (($betaling->isCanceled() || $betaling->isExpired() || $betaling->isFailed()) && $order->status === 'open') {
                     $this->annuleer($order);
                 }

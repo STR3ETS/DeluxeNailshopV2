@@ -98,6 +98,16 @@ return [
 
     'brands' => ['DNKa\'', 'Valeri', 'Deluxe Nail Shop', 'Staleks'],
 
+    // Bedrijfsgegevens voor op de factuur. Vul kvk/btw in zodra bekend;
+    // lege velden worden niet afgedrukt.
+    'bedrijf' => [
+        'naam'  => 'Deluxe Nail Shop',
+        'email' => 'info@deluxenailshop.nl',
+        'site'  => 'deluxenailshop.nl',
+        'kvk'   => null,
+        'btw'   => null,
+    ],
+
     // Drempel voor gratis verzending binnen Nederland (in euro's) - gebruikt
     // in de announcement-balk en de winkelwagen-dropdown.
     'free_shipping_from' => 75,

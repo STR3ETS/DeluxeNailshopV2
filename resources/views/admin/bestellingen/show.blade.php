@@ -108,7 +108,7 @@
         @endif
 
         <div class="rounded-card border border-primary/15 bg-offwhite p-6">
-            <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-credit-card text-[.95rem] text-primary-deep"></i> Betaling</h2>
+            <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-credit-card text-[.95rem] text-primary-deep"></i> Betaling &amp; factuur</h2>
             <div class="mt-3 flex flex-col gap-1.5 text-[.9rem] leading-[1.7] font-light text-dark-soft">
                 @if ($order->mollie_payment_id)
                     <p>Betaald via <b class="font-medium text-dark">Mollie</b></p>
@@ -117,6 +117,14 @@
                     <p>Geen online betaling gekoppeld.</p>
                 @endif
             </div>
+            @if ($order->factuur)
+                <a href="{{ route('admin.facturen.download', $order->factuur) }}"
+                   class="mt-4 inline-flex items-center gap-2.5 rounded-full bg-primary px-5 py-2.5 text-[.85rem] font-semibold text-white transition-colors hover:bg-primary-deep">
+                    <i class="fa-light fa-arrow-down-to-line"></i> Factuur {{ $order->factuur->number }} downloaden
+                </a>
+            @else
+                <p class="mt-4 rounded-2xl bg-cream-deep/60 px-4 py-3 text-[.8rem] leading-[1.6] font-light text-dark-soft"><i class="fa-light fa-file-invoice mr-1.5"></i>De factuur wordt automatisch aangemaakt zodra deze bestelling betaald is.</p>
+            @endif
         </div>
 
         <form method="POST" action="{{ route('admin.bestellingen.status', $order) }}" class="rounded-card border border-primary/15 bg-offwhite p-6">

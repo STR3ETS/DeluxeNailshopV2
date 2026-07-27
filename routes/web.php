@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BestellingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FactuurController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\VoorraadController;
 use App\Http\Controllers\AuthController;
@@ -92,7 +93,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/bestellingen', [BestellingController::class, 'index'])->name('bestellingen');
     Route::get('/bestellingen/{order}', [BestellingController::class, 'show'])->name('bestellingen.detail');
     Route::patch('/bestellingen/{order}/status', [BestellingController::class, 'updateStatus'])->name('bestellingen.status');
-    Route::view('/facturen', 'admin.placeholder', ['titel' => 'Facturen'])->name('facturen');
+    Route::get('/facturen', [FactuurController::class, 'index'])->name('facturen');
+    Route::get('/facturen/{invoice}/download', [FactuurController::class, 'download'])->name('facturen.download');
     Route::view('/instellingen', 'admin.placeholder', ['titel' => 'Instellingen'])->name('instellingen');
 });
 
