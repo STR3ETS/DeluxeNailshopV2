@@ -1,6 +1,12 @@
 @extends('layouts.shop')
 
-@section('title', $product['brand'] . ' ' . $product['name'] . ' - ' . config('app.name'))
+@section('title', $product['brand'] . ' ' . $product['name'] . ' kopen - ' . config('app.name'))
+@section('meta_description', \Illuminate\Support\Str::limit($product['description'] ?? 'De '.$product['brand'].' '.$product['name'].' is een professioneel nagelproduct van salonkwaliteit. Voor 16:00 besteld, morgen in huis. Gratis verzending vanaf €75.', 155))
+@section('meta_keywords', $product['brand'].', '.$product['name'].', '.$product['brand'].' '.$product['name'].' kopen, nagelproducten, salonkwaliteit')
+@section('og_type', 'product')
+@if (!empty($product['image']))
+    @section('og_image', asset($product['image']))
+@endif
 
 @php
     /*

@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
 @section('title', 'Privacybeleid - ' . config('app.name'))
+@section('meta_description', 'Lees hoe Deluxe Nail Shop met je persoonsgegevens omgaat: welke gegevens we verzamelen, waarvoor we ze gebruiken en wat je rechten zijn.')
+@section('meta_keywords', 'privacybeleid, persoonsgegevens, AVG, privacy, Deluxe Nail Shop')
 
 @php
     /*

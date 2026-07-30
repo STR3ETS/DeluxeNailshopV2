@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
 @section('title', 'Algemene voorwaarden - ' . config('app.name'))
+@section('meta_description', 'De algemene voorwaarden van Deluxe Nail Shop: alles over bestellen, betalen, levering, retourneren en garantie.')
+@section('meta_keywords', 'algemene voorwaarden, bestellen, levering, retourneren, garantie, Deluxe Nail Shop')
 
 @php
     /*

@@ -16,7 +16,7 @@
     $footerContact = [
         ['icon' => 'fa-light fa-envelope',   'label' => 'E-mail',     'value' => 'info@deluxenailshop.nl'],
         ['icon' => 'fa-brands fa-whatsapp',  'label' => 'WhatsApp',   'value' => '+31 6 12 34 56 78'],
-        ['icon' => 'fa-light fa-clock',      'label' => 'Bereikbaar', 'value' => 'ma t/m vr · 09:00–17:00'],
+        ['icon' => 'fa-light fa-clock',      'label' => 'Bereikbaar', 'value' => 'ma t/m vr · 09:00 - 17:00'],
     ];
 
     $socials = [

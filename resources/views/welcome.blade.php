@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
-@section('title', config('app.name') . ' - Professionele nagelproducten')
+@section('title', config('app.name') . ' - Professionele nagelproducten voor salon en thuis')
+@section('meta_description', 'Dé webshop voor professionele nagelproducten. Shop rubber base, gellak, builder gel, acrygel en nail art van DNKa\' en Valeri. Voor 16:00 besteld, morgen in huis. Gratis verzending vanaf €75.')
+@section('meta_keywords', 'nagelproducten, nagelproducten kopen, gellak, gelpolish, rubber base, cover base, builder gel, acrygel, polygel, nail art, DNKa, Valeri, nagelstyliste, salonkwaliteit')
 
 @php
     /*

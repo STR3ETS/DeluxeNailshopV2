@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
 @section('title', 'Cookiebeleid - ' . config('app.name'))
+@section('meta_description', 'Welke cookies gebruikt Deluxe Nail Shop en waarvoor? Lees ons cookiebeleid en pas je voorkeuren aan wanneer je maar wilt.')
+@section('meta_keywords', 'cookies, cookiebeleid, cookievoorkeuren, privacy, Deluxe Nail Shop')
 
 @php
     /*

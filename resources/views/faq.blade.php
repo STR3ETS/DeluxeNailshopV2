@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
 @section('title', 'Veelgestelde vragen - ' . config('app.name'))
+@section('meta_description', 'Antwoorden op veelgestelde vragen over bestellen, verzenden, retourneren en betalen bij Deluxe Nail Shop. Staat je vraag er niet tussen? Neem gerust contact op.')
+@section('meta_keywords', 'veelgestelde vragen, faq, verzending, retourneren, betalen, bezorging, klantenservice, Deluxe Nail Shop')
 
 @php
     /*
@@ -28,7 +30,7 @@
             'slug'  => 'verzending',
             'icon'  => 'fa-truck-fast',
             'items' => [
-                ['q' => 'Hoe snel wordt mijn bestelling geleverd?', 'a' => 'Bestellingen die vóór 15:00 uur zijn geplaatst, worden dezelfde dag verzonden. Meestal heb je ze binnen 1–2 werkdagen in huis (NL & BE).'],
+                ['q' => 'Hoe snel wordt mijn bestelling geleverd?', 'a' => 'Bestellingen die vóór 15:00 uur zijn geplaatst, worden dezelfde dag verzonden. Meestal heb je ze binnen 1 tot 2 werkdagen in huis (NL & BE).'],
                 ['q' => 'Wat zijn de verzendkosten?', 'a' => 'Binnen Nederland: €7,45 (gratis vanaf €75). België: €12,35 (gratis vanaf €100). We versturen met PostNL.'],
             ],
         ],
@@ -38,8 +40,8 @@
             'icon'  => 'fa-clock',
             'items' => [
                 ['q' => 'Wat zijn de openingstijden?', 'a' => 'Je bent welkom op de volgende tijden:', 'list' => [
-                    'Ma–Do: 09:00–14:00 (woensdag tot 17:00)',
-                    'Vrijdag: 09:00–17:00',
+                    'Ma t/m do: 09:00 - 14:00 (woensdag tot 17:00)',
+                    'Vrijdag: 09:00 - 17:00',
                     'Zaterdag & zondag: gesloten',
                 ]],
             ],
@@ -67,7 +69,7 @@
             'slug'  => 'contact',
             'icon'  => 'fa-comments',
             'items' => [
-                ['q' => 'Hoe kan ik contact opnemen?', 'a' => 'Via e-mail, WhatsApp of Instagram DM. We reageren meestal binnen enkele uren (ma–vrij 09:00–18:00).'],
+                ['q' => 'Hoe kan ik contact opnemen?', 'a' => 'Via e-mail, WhatsApp of Instagram DM. We reageren meestal binnen enkele uren (ma t/m vrij 09:00 - 18:00).'],
                 ['q' => 'Kan ik advies krijgen over de producten?', 'a' => 'Zeker! We helpen je graag persoonlijk bij het kiezen van de juiste producten of kleuren. Stuur ons gerust een bericht via e-mail, WhatsApp of Instagram DM, we denken met je mee!'],
             ],
         ],

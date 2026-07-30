@@ -1,6 +1,8 @@
 @extends('layouts.shop')
 
-@section('title', 'Producten - ' . config('app.name'))
+@section('title', 'Alle producten - ' . config('app.name'))
+@section('meta_description', 'Bekijk het complete assortiment professionele nagelproducten: base & top coats, gellak, gel & acrygel, nail art, liquids en benodigdheden. Filter op categorie, merk en aanbiedingen.')
+@section('meta_keywords', 'nagelproducten assortiment, gellak kopen, rubber base kopen, builder gel kopen, acrygel kopen, nail art producten, cat eye gellak, top coat, cover base, DNKa, Valeri, Staleks')
 
 @php
     /*
