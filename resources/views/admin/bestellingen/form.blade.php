@@ -22,7 +22,7 @@
 </div>
 
 <form method="POST" action="{{ route('admin.bestellingen.opslaan') }}"
-      class="load-reveal mt-7 max-w-[760px] rounded-card border border-primary/15 bg-offwhite p-6 sm:p-8"
+      class="load-reveal mt-7 rounded-card border border-primary/15 bg-offwhite p-6 sm:p-8"
       x-data="{
         producten: @js($producten->map(fn ($p) => [
             'slug' => $p->slug,
