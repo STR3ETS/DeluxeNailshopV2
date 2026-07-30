@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DiscountCode;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,10 +33,12 @@ class CheckoutController extends Controller
             'achternaam' => ['required', 'string', 'max:100'],
             'email'      => ['required', 'email', 'max:255'],
             'telefoon'   => ['nullable', 'string', 'max:30'],
-            'straat'     => ['required', 'string', 'max:255'],
-            'postcode'   => ['required', 'string', 'max:10'],
-            'plaats'     => ['required', 'string', 'max:100'],
-            'land'       => ['required', 'in:NL,BE'],
+            'levering'   => ['required', 'in:bezorgen,afhalen'],
+            'straat'     => ['required_if:levering,bezorgen', 'nullable', 'string', 'max:255'],
+            'postcode'   => ['required_if:levering,bezorgen', 'nullable', 'string', 'max:10'],
+            'plaats'     => ['required_if:levering,bezorgen', 'nullable', 'string', 'max:100'],
+            'land'       => ['required_if:levering,bezorgen', 'nullable', 'in:NL,BE'],
+            'kortingscode' => ['nullable', 'string', 'max:50'],
             'opmerking'  => ['nullable', 'string', 'max:1000'],
             'winkelwagen' => ['required', 'json'],
         ], [
@@ -42,10 +46,12 @@ class CheckoutController extends Controller
             'achternaam.required' => 'Vul je achternaam in.',
             'email.required'      => 'Vul je e-mailadres in.',
             'email.email'         => 'Dit is geen geldig e-mailadres.',
-            'straat.required'     => 'Vul je straat en huisnummer in.',
-            'postcode.required'   => 'Vul je postcode in.',
-            'plaats.required'     => 'Vul je woonplaats in.',
-            'land.required'       => 'Kies een land.',
+            'levering.required'   => 'Kies bezorgen of afhalen.',
+            'levering.in'         => 'Kies bezorgen of afhalen.',
+            'straat.required_if'  => 'Vul je straat en huisnummer in.',
+            'postcode.required_if' => 'Vul je postcode in.',
+            'plaats.required_if'  => 'Vul je woonplaats in.',
+            'land.required_if'    => 'Kies een land.',
             'land.in'             => 'We bezorgen momenteel in Nederland en België.',
             'winkelwagen.required' => 'Je winkelwagen is leeg.',
         ]);
@@ -95,21 +101,48 @@ class CheckoutController extends Controller
                     ];
                 }
 
-                $tarief = config('shop.verzending.'.$gegevens['land']);
-                $verzendkosten = $subtotaal >= $tarief['gratis_vanaf'] ? 0 : $tarief['kosten'];
+                // Kortingscode server-side controleren en verzilveren
+                $korting = 0.0;
+                $kortingCode = null;
+
+                if (! empty($gegevens['kortingscode'])) {
+                    $code = DiscountCode::whereRaw('UPPER(code) = ?', [mb_strtoupper(trim($gegevens['kortingscode']))])
+                        ->lockForUpdate()
+                        ->first();
+
+                    $fout = $code ? $code->valideer($subtotaal) : 'Deze kortingscode bestaat niet.';
+                    if ($fout) {
+                        throw new \RuntimeException($fout);
+                    }
+
+                    $korting = $code->kortingVoor($subtotaal);
+                    $kortingCode = $code->code;
+                    $code->increment('gebruikt');
+                }
+
+                $afhalen = $gegevens['levering'] === 'afhalen';
+                if ($afhalen) {
+                    $verzendkosten = 0;
+                } else {
+                    $tarief = config('shop.verzending.'.$gegevens['land']);
+                    $verzendkosten = $subtotaal >= $tarief['gratis_vanaf'] ? 0 : $tarief['kosten'];
+                }
 
                 $order = Order::create([
                     'user_id'  => $request->user()?->id,
                     'name'     => trim($gegevens['voornaam'].' '.$gegevens['achternaam']),
                     'email'    => $gegevens['email'],
                     'phone'    => $gegevens['telefoon'] ?? null,
-                    'address'  => $gegevens['straat'],
-                    'postcode' => $gegevens['postcode'],
-                    'city'     => $gegevens['plaats'],
-                    'country'  => $gegevens['land'],
+                    'address'  => $afhalen ? null : $gegevens['straat'],
+                    'postcode' => $afhalen ? null : $gegevens['postcode'],
+                    'city'     => $afhalen ? null : $gegevens['plaats'],
+                    'country'  => $afhalen ? 'NL' : $gegevens['land'],
+                    'levering' => $gegevens['levering'],
                     'note'     => $gegevens['opmerking'] ?? null,
                     'shipping' => $verzendkosten,
-                    'total'    => $subtotaal + $verzendkosten,
+                    'discount_code' => $kortingCode,
+                    'discount' => $korting,
+                    'total'    => max(0, $subtotaal - $korting) + $verzendkosten,
                     'status'   => 'open',
                 ]);
 
@@ -119,6 +152,15 @@ class CheckoutController extends Controller
             });
         } catch (\RuntimeException $fout) {
             return back()->withInput()->withErrors(['winkelwagen' => $fout->getMessage()]);
+        }
+
+        // Volledig gratis (bijv. 100% korting): geen betaling nodig
+        if ((float) $order->total <= 0) {
+            $order->update(['status' => 'betaald']);
+            $order->maakFactuur();
+            $request->session()->put('laatste_bestelling', $order->id);
+
+            return redirect()->route('bedankt', $order);
         }
 
         // Betaling aanmaken bij Mollie en de klant doorsturen
@@ -150,6 +192,43 @@ class CheckoutController extends Controller
                 'winkelwagen' => 'De betaling kon niet worden gestart: '.$fout->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Controleert een kortingscode voor de checkout (live-voorbeeld).
+     */
+    public function kortingscode(Request $request): JsonResponse
+    {
+        $gegevens = $request->validate([
+            'code' => ['required', 'string', 'max:50'],
+            'winkelwagen' => ['required', 'json'],
+        ]);
+
+        $subtotaal = collect(json_decode($gegevens['winkelwagen'], true))
+            ->map(fn ($regel) => [
+                'slug' => (string) ($regel['id'] ?? ''),
+                'qty'  => max(1, (int) ($regel['qty'] ?? 1)),
+            ])
+            ->filter(fn ($regel) => $regel['slug'] !== '')
+            ->reduce(function ($som, $regel) {
+                $product = Product::where('slug', $regel['slug'])->where('actief', true)->first();
+
+                return $som + ($product ? (float) $product->price * $regel['qty'] : 0);
+            }, 0.0);
+
+        $code = DiscountCode::whereRaw('UPPER(code) = ?', [mb_strtoupper(trim($gegevens['code']))])->first();
+        $fout = $code ? $code->valideer($subtotaal) : 'Deze kortingscode bestaat niet.';
+
+        if ($fout) {
+            return response()->json(['geldig' => false, 'melding' => $fout]);
+        }
+
+        return response()->json([
+            'geldig' => true,
+            'code'   => $code->code,
+            'bedrag' => $code->kortingVoor($subtotaal),
+            'label'  => $code->omschrijving(),
+        ]);
     }
 
     /**
@@ -246,6 +325,13 @@ class CheckoutController extends Controller
 
         foreach ($order->items as $regel) {
             Product::where('slug', $regel->product_slug)->increment('voorraad', $regel->qty);
+        }
+
+        // Gebruikte kortingscode weer vrijgeven
+        if ($order->discount_code) {
+            DiscountCode::where('code', $order->discount_code)
+                ->where('gebruikt', '>', 0)
+                ->decrement('gebruikt');
         }
 
         $order->update(['status' => 'geannuleerd']);

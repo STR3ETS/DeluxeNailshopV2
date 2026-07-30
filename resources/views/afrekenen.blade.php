@@ -16,14 +16,41 @@
 
 <section class="px-6 pt-10 pb-16"
          x-data="{
+            levering: @js(old('levering', 'bezorgen')),
             land: @js(old('land', 'NL')),
             tarieven: @js(config('shop.verzending')),
+            csrf: @js(csrf_token()),
+            kortingUrl: @js(route('afrekenen.kortingscode')),
+            kortingInput: @js(old('kortingscode', '')),
+            korting: null,
+            kortingFout: '',
+            kortingBezig: false,
             get tarief() { return this.tarieven[this.land] ?? this.tarieven.NL; },
             get verzend() {
-                if (this.$store.cart.items.length === 0) return 0;
+                if (this.levering === 'afhalen' || this.$store.cart.items.length === 0) return 0;
                 return this.$store.cart.total >= this.tarief.gratis_vanaf ? 0 : this.tarief.kosten;
             },
-            get totaal() { return this.$store.cart.total + this.verzend; },
+            get kortingBedrag() { return this.korting ? Math.min(this.korting.bedrag, this.$store.cart.total) : 0; },
+            get totaal() { return Math.max(0, this.$store.cart.total - this.kortingBedrag) + this.verzend; },
+            init() { if (this.kortingInput.trim() !== '') this.pasKortingToe(); },
+            async pasKortingToe() {
+                const code = this.kortingInput.trim();
+                if (code === '' || this.kortingBezig) return;
+                this.kortingBezig = true;
+                this.kortingFout = '';
+                try {
+                    const res = await fetch(this.kortingUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrf, 'Accept': 'application/json' },
+                        body: JSON.stringify({ code, winkelwagen: JSON.stringify(this.$store.cart.items.map(i => ({ id: i.id, qty: i.qty }))) }),
+                    });
+                    const data = await res.json();
+                    if (data.geldig) { this.korting = data; this.kortingInput = data.code; }
+                    else { this.korting = null; this.kortingFout = data.melding ?? 'Deze code is niet geldig.'; }
+                } catch { this.kortingFout = 'Code controleren lukte niet, probeer het opnieuw.'; }
+                this.kortingBezig = false;
+            },
+            verwijderKorting() { this.korting = null; this.kortingInput = ''; this.kortingFout = ''; },
          }">
     <div class="mx-auto max-w-[1100px]">
 
@@ -52,6 +79,7 @@
                   class="flex flex-col gap-6 rounded-card border border-primary/15 bg-offwhite p-7 sm:p-8">
                 @csrf
                 <input type="hidden" name="winkelwagen" x-ref="winkelwagen">
+                <input type="hidden" name="kortingscode" :value="korting ? korting.code : ''">
 
                 @error('winkelwagen')
                     <p class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3.5 text-[.88rem] leading-[1.6] text-red-700">
@@ -92,33 +120,59 @@
                     </label>
                 </div>
 
-                <h2 class="mt-2 font-serif text-[1.25rem] font-medium">Bezorgadres</h2>
+                <h2 class="mt-2 font-serif text-[1.25rem] font-medium">Levering</h2>
 
-                <label class="block">
-                    <span class="{{ $labelKlassen }}">Straat en huisnummer</span>
-                    <input type="text" name="straat" value="{{ old('straat') }}" required autocomplete="street-address" placeholder="Thorbeckestraat 3" class="{{ $inputKlassen }}">
-                    @error('straat')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
-                </label>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <label class="flex cursor-pointer items-start gap-3.5 rounded-2xl border p-4.5 transition-colors"
+                           :class="levering === 'bezorgen' ? 'border-primary bg-white' : 'border-primary/20 bg-white/60 hover:border-primary/50'">
+                        <input type="radio" name="levering" value="bezorgen" x-model="levering" class="sr-only">
+                        <span class="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-truck-fast text-[.95rem]"></i></span>
+                        <span>
+                            <span class="block text-[.92rem] font-semibold">Bezorgen</span>
+                            <span class="mt-0.5 block text-[.8rem] leading-[1.55] font-light text-dark-soft">Via PostNL, morgen in huis. Gratis vanaf €{{ number_format(config('shop.verzending.NL.gratis_vanaf'), 0) }} (NL).</span>
+                        </span>
+                    </label>
+                    <label class="flex cursor-pointer items-start gap-3.5 rounded-2xl border p-4.5 transition-colors"
+                           :class="levering === 'afhalen' ? 'border-primary bg-white' : 'border-primary/20 bg-white/60 hover:border-primary/50'">
+                        <input type="radio" name="levering" value="afhalen" x-model="levering" class="sr-only">
+                        <span class="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-shop text-[.95rem]"></i></span>
+                        <span>
+                            <span class="block text-[.92rem] font-semibold">Afhalen</span>
+                            <span class="mt-0.5 block text-[.8rem] leading-[1.55] font-light text-dark-soft">Altijd gratis. Je krijgt een mailtje zodra je bestelling klaarligt.</span>
+                        </span>
+                    </label>
+                </div>
+                @error('levering')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
 
-                <div class="grid gap-6 sm:grid-cols-[140px_1fr_150px]">
+                <div x-show="levering === 'bezorgen'" class="flex flex-col gap-6">
+                    <h2 class="mt-2 font-serif text-[1.25rem] font-medium">Bezorgadres</h2>
+
                     <label class="block">
-                        <span class="{{ $labelKlassen }}">Postcode</span>
-                        <input type="text" name="postcode" value="{{ old('postcode') }}" required autocomplete="postal-code" placeholder="6904 BS" class="{{ $inputKlassen }}">
-                        @error('postcode')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
+                        <span class="{{ $labelKlassen }}">Straat en huisnummer</span>
+                        <input type="text" name="straat" value="{{ old('straat') }}" :required="levering === 'bezorgen'" autocomplete="street-address" placeholder="Thorbeckestraat 3" class="{{ $inputKlassen }}">
+                        @error('straat')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
                     </label>
-                    <label class="block">
-                        <span class="{{ $labelKlassen }}">Plaats</span>
-                        <input type="text" name="plaats" value="{{ old('plaats') }}" required autocomplete="address-level2" placeholder="Zevenaar" class="{{ $inputKlassen }}">
-                        @error('plaats')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
-                    </label>
-                    <label class="block">
-                        <span class="{{ $labelKlassen }}">Land</span>
-                        <select name="land" x-model="land" class="{{ $inputKlassen }} cursor-pointer">
-                            <option value="NL">Nederland</option>
-                            <option value="BE">België</option>
-                        </select>
-                        @error('land')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
-                    </label>
+
+                    <div class="grid gap-6 sm:grid-cols-[140px_1fr_150px]">
+                        <label class="block">
+                            <span class="{{ $labelKlassen }}">Postcode</span>
+                            <input type="text" name="postcode" value="{{ old('postcode') }}" :required="levering === 'bezorgen'" autocomplete="postal-code" placeholder="6904 BS" class="{{ $inputKlassen }}">
+                            @error('postcode')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
+                        </label>
+                        <label class="block">
+                            <span class="{{ $labelKlassen }}">Plaats</span>
+                            <input type="text" name="plaats" value="{{ old('plaats') }}" :required="levering === 'bezorgen'" autocomplete="address-level2" placeholder="Zevenaar" class="{{ $inputKlassen }}">
+                            @error('plaats')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
+                        </label>
+                        <label class="block">
+                            <span class="{{ $labelKlassen }}">Land</span>
+                            <select name="land" x-model="land" class="{{ $inputKlassen }} cursor-pointer">
+                                <option value="NL">Nederland</option>
+                                <option value="BE">België</option>
+                            </select>
+                            @error('land')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
+                        </label>
+                    </div>
                 </div>
 
                 <label class="block">
@@ -155,16 +209,50 @@
                         </template>
                     </div>
 
+                    {{-- Kortingscode --}}
                     <div class="border-t border-primary/15 pt-4">
+                        <template x-if="!korting">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <input type="text" x-model="kortingInput" @keydown.enter.prevent="pasKortingToe()" placeholder="Kortingscode"
+                                           class="w-full rounded-full border border-primary/20 bg-white px-4.5 py-2.5 text-[.85rem] tracking-[.04em] uppercase outline-none transition-colors placeholder:normal-case placeholder:tracking-normal placeholder:text-dark-soft/50 focus:border-primary">
+                                    <button type="button" @click="pasKortingToe()" :disabled="kortingBezig"
+                                            class="shrink-0 rounded-full border border-dark/20 px-4.5 py-2.5 text-[.8rem] font-semibold transition-colors hover:border-dark disabled:opacity-50"
+                                            x-text="kortingBezig ? 'Even geduld…' : 'Toepassen'"></button>
+                                </div>
+                                <p x-cloak x-show="kortingFout !== ''" class="mt-2 pl-4 text-[.78rem] font-medium text-red-600" x-text="kortingFout"></p>
+                            </div>
+                        </template>
+                        <template x-if="korting">
+                            <div class="flex items-center justify-between gap-3 rounded-2xl bg-accent-soft/60 px-4 py-3">
+                                <span class="flex items-center gap-2.5 text-[.85rem]">
+                                    <i class="fa-light fa-tag text-primary-deep"></i>
+                                    <b class="font-semibold tracking-[.04em]" x-text="korting.code"></b>
+                                    <span class="font-light text-dark-soft" x-text="korting.label"></span>
+                                </span>
+                                <button type="button" @click="verwijderKorting()" class="grid h-8 w-8 shrink-0 place-items-center rounded-full text-dark-soft transition-colors hover:bg-white hover:text-dark" aria-label="Kortingscode verwijderen">
+                                    <i class="fa-light fa-xmark text-[.85rem]"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-4 border-t border-primary/15 pt-4">
                         <div class="flex items-center justify-between text-[.9rem]">
                             <span class="text-dark-soft">Subtotaal</span>
                             <span class="font-medium" x-text="$store.cart.format($store.cart.total)"></span>
                         </div>
+                        <template x-if="korting">
+                            <div class="mt-2 flex items-center justify-between text-[.9rem] text-primary-deep">
+                                <span>Korting (<span x-text="korting.code"></span>)</span>
+                                <span class="font-medium" x-text="'- ' + $store.cart.format(kortingBedrag)"></span>
+                            </div>
+                        </template>
                         <div class="mt-2 flex items-center justify-between text-[.9rem]">
-                            <span class="text-dark-soft">Verzendkosten</span>
+                            <span class="text-dark-soft" x-text="levering === 'afhalen' ? 'Afhalen' : 'Verzendkosten'"></span>
                             <span class="font-medium" x-text="verzend === 0 ? 'Gratis' : $store.cart.format(verzend)"></span>
                         </div>
-                        <template x-if="verzend > 0">
+                        <template x-if="levering === 'bezorgen' && verzend > 0">
                             <p class="mt-2 text-[.78rem] font-light text-dark-soft">Nog <b class="font-semibold" x-text="$store.cart.format(tarief.gratis_vanaf - $store.cart.total)"></b> tot gratis verzending <span x-text="land === 'BE' ? 'naar België' : 'binnen Nederland'"></span>.</p>
                         </template>
                         <div class="mt-4 flex items-center justify-between border-t border-primary/15 pt-4">

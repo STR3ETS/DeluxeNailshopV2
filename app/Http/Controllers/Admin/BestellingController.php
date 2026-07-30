@@ -19,6 +19,7 @@ class BestellingController extends Controller
         'verzonden'   => 'Verzonden',
         'afgerond'    => 'Afgerond',
         'geannuleerd' => 'Geannuleerd',
+        'intern'      => 'Intern',
     ];
 
     public function index(): View
@@ -35,6 +36,85 @@ class BestellingController extends Controller
                 ->where('created_at', '>=', now()->subDays(30))
                 ->sum('total'),
         ]);
+    }
+
+    /**
+     * Formulier voor een handmatige (interne) bestelling, bijvoorbeeld als
+     * een medewerker producten uit de voorraad meeneemt. De voorraad wordt
+     * afgeboekt, maar de bestelling telt niet mee in de omzet.
+     */
+    public function create(): View
+    {
+        return view('admin.bestellingen.form', [
+            'producten' => Product::orderBy('name')->get(['id', 'slug', 'name', 'brand', 'price', 'voorraad']),
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $gegevens = $request->validate([
+            'naam'      => ['required', 'string', 'max:100'],
+            'opmerking' => ['nullable', 'string', 'max:1000'],
+            'regels'    => ['required', 'array', 'min:1'],
+            'regels.*.slug' => ['required', 'string'],
+            'regels.*.qty'  => ['required', 'integer', 'min:1'],
+        ], [
+            'naam.required'   => 'Vul in voor wie of wat dit is (bijv. de naam van de medewerker).',
+            'regels.required' => 'Voeg minimaal één product toe.',
+            'regels.min'      => 'Voeg minimaal één product toe.',
+            'regels.*.slug.required' => 'Kies bij elke regel een product.',
+            'regels.*.qty.min' => 'Het aantal moet minimaal 1 zijn.',
+        ]);
+
+        try {
+            $order = DB::transaction(function () use ($gegevens, $request) {
+                $subtotaal = 0;
+                $orderRegels = [];
+
+                foreach ($gegevens['regels'] as $regel) {
+                    $product = Product::where('slug', $regel['slug'])->lockForUpdate()->first();
+
+                    if (! $product) {
+                        throw new \RuntimeException('Een gekozen product bestaat niet meer.');
+                    }
+
+                    if ($product->voorraad < $regel['qty']) {
+                        throw new \RuntimeException('Van "'.$product->name.'" '.($product->voorraad === 1 ? 'is' : 'zijn').' er nog maar '.$product->voorraad.' op voorraad.');
+                    }
+
+                    $product->decrement('voorraad', $regel['qty']);
+
+                    $subtotaal += (float) $product->price * $regel['qty'];
+                    $orderRegels[] = [
+                        'product_slug' => $product->slug,
+                        'name'         => $product->name,
+                        'price'        => $product->price,
+                        'qty'          => (int) $regel['qty'],
+                    ];
+                }
+
+                $order = Order::create([
+                    'user_id'  => $request->user()->id,
+                    'name'     => $gegevens['naam'],
+                    'email'    => $request->user()->email,
+                    'country'  => 'NL',
+                    'levering' => 'afhalen',
+                    'note'     => $gegevens['opmerking'] ?? null,
+                    'shipping' => 0,
+                    'total'    => $subtotaal,
+                    'status'   => 'intern',
+                ]);
+
+                $order->items()->createMany($orderRegels);
+
+                return $order;
+            });
+        } catch (\RuntimeException $fout) {
+            return back()->withInput()->withErrors(['regels' => $fout->getMessage()]);
+        }
+
+        return redirect()->route('admin.bestellingen.detail', $order)
+            ->with('status', 'Interne bestelling '.$order->nummer().' is aangemaakt en de voorraad is bijgewerkt.');
     }
 
     public function show(Order $order): View

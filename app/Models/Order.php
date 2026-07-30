@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'user_id', 'name', 'email', 'phone', 'address', 'postcode', 'city',
-    'country', 'note', 'total', 'shipping', 'status', 'mollie_payment_id',
+    'country', 'levering', 'note', 'total', 'shipping', 'discount_code',
+    'discount', 'status', 'mollie_payment_id',
 ])]
 class Order extends Model
 {
@@ -19,6 +20,7 @@ class Order extends Model
         return [
             'total' => 'decimal:2',
             'shipping' => 'decimal:2',
+            'discount' => 'decimal:2',
         ];
     }
 

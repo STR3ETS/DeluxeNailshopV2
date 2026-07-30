@@ -61,11 +61,11 @@
         <tr>
             <td>
                 <div class="blok-label">Factuur aan</div>
-                <p><b>{{ $order->name }}</b><br>{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}<br>{{ $order->email }}</p>
+                <p><b>{{ $order->name }}</b>@if ($order->address)<br>{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}@endif<br>{{ $order->email }}</p>
             </td>
             <td>
                 <div class="blok-label">Bestelling</div>
-                <p>Bestelnummer: <b>{{ $order->nummer() }}</b><br>Besteldatum: {{ $order->created_at->translatedFormat('j F Y') }}<br>Betaalwijze: {{ $order->mollie_payment_id ? 'Mollie (online)' : 'Handmatig' }}</p>
+                <p>Bestelnummer: <b>{{ $order->nummer() }}</b><br>Besteldatum: {{ $order->created_at->translatedFormat('j F Y') }}<br>Levering: {{ $order->levering === 'afhalen' ? 'Afhalen' : 'Bezorgen' }}<br>Betaalwijze: {{ $order->mollie_payment_id ? 'Mollie (online)' : 'Handmatig' }}</p>
             </td>
             <td>
                 <div class="blok-label">{{ $bedrijf['naam'] }}</div>
@@ -100,8 +100,14 @@
             <td>Subtotaal</td>
             <td class="recht">€ {{ number_format($subtotaal, 2, ',', '.') }}</td>
         </tr>
+        @if ((float) $order->discount > 0)
+            <tr class="subtiel">
+                <td>Korting ({{ $order->discount_code }})</td>
+                <td class="recht">- € {{ number_format($order->discount, 2, ',', '.') }}</td>
+            </tr>
+        @endif
         <tr class="subtiel">
-            <td>Verzendkosten</td>
+            <td>{{ $order->levering === 'afhalen' ? 'Afhalen' : 'Verzendkosten' }}</td>
             <td class="recht">{{ (float) $order->shipping === 0.0 ? 'Gratis' : '€ '.number_format($order->shipping, 2, ',', '.') }}</td>
         </tr>
         <tr class="totaal">

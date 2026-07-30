@@ -3,8 +3,10 @@
 @section('title', 'Bestelling ' . $order->nummer() . ' - Beheer ' . config('app.name'))
 
 @php
-    $subtotaal = (float) $order->total - (float) $order->shipping;
+    $subtotaal = (float) $order->total - (float) $order->shipping + (float) $order->discount;
     $landen = ['NL' => 'Nederland', 'BE' => 'België'];
+    $afhalen = $order->levering === 'afhalen';
+    $intern = $order->status === 'intern';
 @endphp
 
 @section('content')
@@ -65,12 +67,18 @@
                 <span class="text-dark-soft">Subtotaal</span>
                 <span class="font-medium">€{{ number_format($subtotaal, 2, ',', '.') }}</span>
             </div>
+            @if ((float) $order->discount > 0)
+                <div class="mt-2 flex items-center justify-between text-primary-deep">
+                    <span>Korting ({{ $order->discount_code }})</span>
+                    <span class="font-medium">- €{{ number_format($order->discount, 2, ',', '.') }}</span>
+                </div>
+            @endif
             <div class="mt-2 flex items-center justify-between">
-                <span class="text-dark-soft">Verzendkosten</span>
+                <span class="text-dark-soft">{{ $afhalen ? 'Afhalen' : 'Verzendkosten' }}</span>
                 <span class="font-medium">{{ (float) $order->shipping === 0.0 ? 'Gratis' : '€'.number_format($order->shipping, 2, ',', '.') }}</span>
             </div>
             <div class="mt-4 flex items-center justify-between border-t border-primary/15 pt-4">
-                <span class="font-medium">Totaal</span>
+                <span class="font-medium">{{ $intern ? 'Waarde (telt niet mee in omzet)' : 'Totaal' }}</span>
                 <b class="font-serif text-[1.3rem]">€{{ number_format($order->total, 2, ',', '.') }}</b>
             </div>
         </div>
@@ -96,8 +104,19 @@
         </div>
 
         <div class="rounded-card border border-primary/15 bg-offwhite p-6">
-            <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-truck-fast text-[.95rem] text-primary-deep"></i> Bezorgadres</h2>
-            <p class="mt-3 text-[.9rem] leading-[1.7] font-light text-dark-soft">{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}</p>
+            @if ($afhalen)
+                <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-shop text-[.95rem] text-primary-deep"></i> Afhalen</h2>
+                <p class="mt-3 text-[.9rem] leading-[1.7] font-light text-dark-soft">
+                    @if ($intern)
+                        Interne opname uit de voorraad - er hoeft niets verzonden te worden.
+                    @else
+                        De klant haalt deze bestelling af. Laat via e-mail weten wanneer alles klaarligt.
+                    @endif
+                </p>
+            @else
+                <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-truck-fast text-[.95rem] text-primary-deep"></i> Bezorgadres</h2>
+                <p class="mt-3 text-[.9rem] leading-[1.7] font-light text-dark-soft">{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}</p>
+            @endif
         </div>
 
         @if ($order->note)
@@ -110,7 +129,9 @@
         <div class="rounded-card border border-primary/15 bg-offwhite p-6">
             <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-credit-card text-[.95rem] text-primary-deep"></i> Betaling &amp; factuur</h2>
             <div class="mt-3 flex flex-col gap-1.5 text-[.9rem] leading-[1.7] font-light text-dark-soft">
-                @if ($order->mollie_payment_id)
+                @if ($intern)
+                    <p>Interne opname: telt niet mee in de omzet en krijgt geen factuur.</p>
+                @elseif ($order->mollie_payment_id)
                     <p>Betaald via <b class="font-medium text-dark">Mollie</b></p>
                     <p class="text-[.8rem]">Betalings-ID: <code class="rounded bg-cream-deep px-1.5 py-0.5 text-[.75rem]">{{ $order->mollie_payment_id }}</code></p>
                 @else
@@ -122,7 +143,7 @@
                    class="mt-4 inline-flex items-center gap-2.5 rounded-full bg-primary px-5 py-2.5 text-[.85rem] font-semibold text-white transition-colors hover:bg-primary-deep">
                     <i class="fa-light fa-arrow-down-to-line"></i> Factuur {{ $order->factuur->number }} downloaden
                 </a>
-            @else
+            @elseif (! $intern)
                 <p class="mt-4 rounded-2xl bg-cream-deep/60 px-4 py-3 text-[.8rem] leading-[1.6] font-light text-dark-soft"><i class="fa-light fa-file-invoice mr-1.5"></i>De factuur wordt automatisch aangemaakt zodra deze bestelling betaald is.</p>
             @endif
         </div>

@@ -3,8 +3,9 @@
 @section('title', 'Bedankt voor je bestelling - ' . config('app.name'))
 
 @php
-    $subtotaal = (float) $order->total - (float) $order->shipping;
+    $subtotaal = (float) $order->total - (float) $order->shipping + (float) $order->discount;
     $landen = ['NL' => 'Nederland', 'BE' => 'België'];
+    $afhalen = $order->levering === 'afhalen';
 @endphp
 
 @section('content')
@@ -45,8 +46,14 @@
                     <span class="text-dark-soft">Subtotaal</span>
                     <span class="font-medium">€{{ number_format($subtotaal, 2, ',', '.') }}</span>
                 </div>
+                @if ((float) $order->discount > 0)
+                    <div class="mt-2 flex items-center justify-between text-primary-deep">
+                        <span>Korting ({{ $order->discount_code }})</span>
+                        <span class="font-medium">- €{{ number_format($order->discount, 2, ',', '.') }}</span>
+                    </div>
+                @endif
                 <div class="mt-2 flex items-center justify-between">
-                    <span class="text-dark-soft">Verzendkosten</span>
+                    <span class="text-dark-soft">{{ $afhalen ? 'Afhalen' : 'Verzendkosten' }}</span>
                     <span class="font-medium">{{ (float) $order->shipping === 0.0 ? 'Gratis' : '€'.number_format($order->shipping, 2, ',', '.') }}</span>
                 </div>
                 <div class="mt-4 flex items-center justify-between border-t border-primary/15 pt-4">
@@ -56,12 +63,17 @@
             </div>
         </div>
 
-        {{-- Bezorging --}}
+        {{-- Bezorging of afhalen --}}
         <div class="load-reveal mt-5 flex items-start gap-4 rounded-card border border-primary/15 bg-offwhite p-6">
-            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-truck-fast text-[1rem]"></i></span>
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light {{ $afhalen ? 'fa-shop' : 'fa-truck-fast' }} text-[1rem]"></i></span>
             <div>
-                <p class="text-[.95rem] font-medium">Bezorgadres</p>
-                <p class="mt-1 text-[.9rem] leading-[1.7] font-light text-dark-soft">{{ $order->name }}<br>{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}, {{ $landen[$order->country] ?? $order->country }}</p>
+                @if ($afhalen)
+                    <p class="text-[.95rem] font-medium">Afhalen</p>
+                    <p class="mt-1 text-[.9rem] leading-[1.7] font-light text-dark-soft">Je ontvangt een e-mail op <b class="font-medium text-dark">{{ $order->email }}</b> zodra je bestelling klaarligt om af te halen.</p>
+                @else
+                    <p class="text-[.95rem] font-medium">Bezorgadres</p>
+                    <p class="mt-1 text-[.9rem] leading-[1.7] font-light text-dark-soft">{{ $order->name }}<br>{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}, {{ $landen[$order->country] ?? $order->country }}</p>
+                @endif
             </div>
         </div>
 

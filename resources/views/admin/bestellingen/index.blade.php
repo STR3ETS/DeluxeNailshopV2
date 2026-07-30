@@ -4,9 +4,14 @@
 
 @section('content')
 
-<div class="load-reveal">
-    <span class="text-[.72rem] font-semibold tracking-[.22em] text-primary-deep uppercase">Beheerpaneel</span>
-    <h1 class="mt-2 font-serif text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.15] font-normal">Bestellingen</h1>
+<div class="load-reveal flex flex-wrap items-end justify-between gap-5">
+    <div>
+        <span class="text-[.72rem] font-semibold tracking-[.22em] text-primary-deep uppercase">Beheerpaneel</span>
+        <h1 class="mt-2 font-serif text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.15] font-normal">Bestellingen</h1>
+    </div>
+    <a href="{{ route('admin.bestellingen.nieuw') }}" class="inline-flex items-center gap-2.5 rounded-full bg-primary px-6 py-3 text-[.9rem] font-semibold text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-colors hover:bg-primary-deep">
+        <i class="fa-light fa-plus"></i> Handmatige bestelling
+    </a>
 </div>
 
 @if (session('status'))

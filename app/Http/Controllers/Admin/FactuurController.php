@@ -31,7 +31,7 @@ class FactuurController extends Controller
         $pdf = Pdf::loadView('admin.facturen.pdf', [
             'factuur'   => $invoice,
             'order'     => $invoice->order,
-            'subtotaal' => (float) $invoice->order->total - (float) $invoice->order->shipping,
+            'subtotaal' => (float) $invoice->order->total - (float) $invoice->order->shipping + (float) $invoice->order->discount,
             // Prijzen zijn inclusief 21% BTW; op de factuur splitsen we dat uit
             'btw'       => (float) $invoice->order->total * 21 / 121,
             'bedrijf'   => config('shop.bedrijf'),

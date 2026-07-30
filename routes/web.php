@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BestellingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FactuurController;
+use App\Http\Controllers\Admin\InstellingController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\VoorraadController;
 use App\Http\Controllers\AuthController;
@@ -35,6 +36,9 @@ Route::view('/faq', 'faq')->name('faq');
 
 Route::get('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'show'])->name('afrekenen');
 Route::post('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'store'])->name('afrekenen.plaatsen');
+Route::post('/afrekenen/kortingscode', [App\Http\Controllers\CheckoutController::class, 'kortingscode'])
+    ->middleware('throttle:30,1')
+    ->name('afrekenen.kortingscode');
 Route::get('/afrekenen/retour/{order}', [App\Http\Controllers\CheckoutController::class, 'retour'])->name('afrekenen.retour');
 Route::post('/webhooks/mollie', [App\Http\Controllers\CheckoutController::class, 'webhook'])->name('mollie.webhook');
 Route::get('/bedankt/{order}', [App\Http\Controllers\CheckoutController::class, 'bedankt'])->name('bedankt');
@@ -91,11 +95,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/voorraad/{product}', [VoorraadController::class, 'update'])->name('voorraad.bijwerken');
 
     Route::get('/bestellingen', [BestellingController::class, 'index'])->name('bestellingen');
+    Route::get('/bestellingen/nieuw', [BestellingController::class, 'create'])->name('bestellingen.nieuw');
+    Route::post('/bestellingen', [BestellingController::class, 'store'])->name('bestellingen.opslaan');
     Route::get('/bestellingen/{order}', [BestellingController::class, 'show'])->name('bestellingen.detail');
     Route::patch('/bestellingen/{order}/status', [BestellingController::class, 'updateStatus'])->name('bestellingen.status');
     Route::get('/facturen', [FactuurController::class, 'index'])->name('facturen');
     Route::get('/facturen/{invoice}/download', [FactuurController::class, 'download'])->name('facturen.download');
-    Route::view('/instellingen', 'admin.placeholder', ['titel' => 'Instellingen'])->name('instellingen');
+    Route::get('/instellingen', [InstellingController::class, 'index'])->name('instellingen');
+    Route::post('/instellingen/kortingscodes', [InstellingController::class, 'storeKortingscode'])->name('instellingen.kortingscodes.opslaan');
+    Route::patch('/instellingen/kortingscodes/{discountCode}', [InstellingController::class, 'toggleKortingscode'])->name('instellingen.kortingscodes.toggle');
+    Route::delete('/instellingen/kortingscodes/{discountCode}', [InstellingController::class, 'destroyKortingscode'])->name('instellingen.kortingscodes.verwijderen');
 });
 
 Route::view('/privacybeleid', 'privacybeleid')->name('privacybeleid');
