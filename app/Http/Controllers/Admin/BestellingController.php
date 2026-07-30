@@ -46,7 +46,7 @@ class BestellingController extends Controller
     public function create(): View
     {
         return view('admin.bestellingen.form', [
-            'producten' => Product::orderBy('name')->get(['id', 'slug', 'name', 'brand', 'price', 'voorraad']),
+            'producten' => Product::orderBy('name')->get(['id', 'slug', 'name', 'brand', 'price', 'voorraad', 'image', 'bg_from', 'bg_to']),
         ]);
     }
 
