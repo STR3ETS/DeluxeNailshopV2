@@ -9,7 +9,7 @@
     | altijd uit de zoekresultaten gehouden.
     */
     $seoTitel = trim($__env->yieldContent('title', config('app.name').' - Professionele nagelproducten'));
-    $seoOmschrijving = trim($__env->yieldContent('meta_description', 'Dé webshop voor professionele nagelproducten. Rubber base, gellak, builder gel, acrygel en nail art van DNKa\' en Valeri. Voor 16:00 besteld, morgen in huis. Gratis verzending vanaf €75.'));
+    $seoOmschrijving = trim($__env->yieldContent('meta_description', 'Dé webshop voor professionele nagelproducten. Rubber base, gellak, builder gel, acrygel en nail art van DNKa\', Valeri en Touch. Gratis verzending vanaf €75 (NL) en €100 (BE).'));
     $seoKeywords = trim($__env->yieldContent('meta_keywords', 'nagelproducten, gellak, gelpolish, rubber base, builder gel, acrygel, polygel, nail art, DNKa, Valeri, nagelstyliste, professionele nagelproducten kopen'));
     $seoRobots = request()->is('admin*', 'account', 'afrekenen*', 'bedankt/*', 'login', 'registreren', 'wachtwoord-vergeten')
         ? 'noindex, nofollow'

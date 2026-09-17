@@ -22,7 +22,7 @@
             'items' => [
                 ['q' => 'Hoe plaats ik een bestelling?', 'a' => 'Kies je favoriete producten, voeg ze toe aan je winkelmandje en reken veilig af via iDEAL, creditcard, PayPal, Bancontact of KBC/CBC.'],
                 ['q' => 'Kan ik mijn bestelling nog wijzigen of annuleren?', 'a' => 'Dat kan zolang je bestelling nog niet is verzonden. Stuur ons binnen 2 uur na je bestelling een berichtje via de e-mail, dan passen we het direct aan.'],
-                ['q' => 'Welke betaalmethodes accepteren jullie?', 'a' => 'We accepteren iDEAL, creditcard, PayPal, Bancontact of KBC/CBC. Zo kies je wat voor jou het makkelijkst is.'],
+                ['id' => 'betaalmethoden', 'q' => 'Welke betaalmethodes accepteren jullie?', 'a' => 'We accepteren iDEAL, creditcard, PayPal, Bancontact of KBC/CBC. Zo kies je wat voor jou het makkelijkst is.'],
             ],
         ],
         [
@@ -39,11 +39,7 @@
             'slug'  => 'openingstijden',
             'icon'  => 'fa-clock',
             'items' => [
-                ['q' => 'Wat zijn de openingstijden?', 'a' => 'Je bent welkom op de volgende tijden:', 'list' => [
-                    'Ma t/m do: 09:00 - 14:00 (woensdag tot 17:00)',
-                    'Vrijdag: 09:00 - 17:00',
-                    'Zaterdag & zondag: gesloten',
-                ]],
+                ['q' => 'Wat zijn de openingstijden?', 'a' => 'Je bent welkom op de volgende tijden:', 'list' => config('shop.contact.openingstijden')],
             ],
         ],
         [
@@ -99,7 +95,13 @@
     get hits() {
         return this.faqs.filter(f => this.match(f.text)).length;
     },
-}">
+    // Links als /faq#verzending of /faq#betaalmethoden klappen de juiste vraag open
+    openVanuitHash() {
+        const doel = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+        if (doel?.dataset.faqOpen) this.open = doel.dataset.faqOpen;
+    },
+    init() { this.openVanuitHash(); },
+}" @hashchange.window="openVanuitHash()">
     <div class="mx-auto max-w-[860px]">
 
         {{-- Breadcrumb --}}
@@ -125,15 +127,15 @@
         {{-- Vraaggroepen --}}
         <div class="flex flex-col gap-10">
             @foreach ($faqGroups as $group)
-                <div x-show="groupVisible('{{ $group['slug'] }}')" class="load-reveal">
+                <div id="{{ $group['slug'] }}" data-faq-open="{{ $group['items'][0]['id'] ?? $group['slug'].'-0' }}" x-show="groupVisible('{{ $group['slug'] }}')" class="load-reveal scroll-mt-28">
                     <div class="mb-4 flex items-center gap-3">
                         <span class="grid h-10 w-10 place-items-center rounded-xl bg-accent-soft text-primary-deep"><i class="fa-light {{ $group['icon'] }} text-[1rem]"></i></span>
                         <h2 class="font-serif text-[1.45rem] font-medium">{{ $group['title'] }}</h2>
                     </div>
                     <div class="overflow-hidden rounded-card border border-primary/15 bg-offwhite">
                         @foreach ($group['items'] as $i => $item)
-                            @php $itemId = $group['slug'].'-'.$i; @endphp
-                            <div x-show="match(@js(mb_strtolower($item['q'].' '.$item['a'].' '.implode(' ', $item['list'] ?? []))))" class="border-b border-primary/10 last:border-b-0">
+                            @php $itemId = $item['id'] ?? $group['slug'].'-'.$i; @endphp
+                            <div id="{{ $itemId }}" data-faq-open="{{ $itemId }}" x-show="match(@js(mb_strtolower($item['q'].' '.$item['a'].' '.implode(' ', $item['list'] ?? []))))" class="scroll-mt-28 border-b border-primary/10 last:border-b-0">
                                 <button type="button" @click="open = open === '{{ $itemId }}' ? '' : '{{ $itemId }}'"
                                         class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-cream-deep/50"
                                         :aria-expanded="open === '{{ $itemId }}'">
@@ -173,7 +175,7 @@
                 <a href="mailto:info@deluxenailshop.nl" class="inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]">
                     <i class="fa-light fa-envelope"></i> Stuur een e-mail
                 </a>
-                <a href="https://wa.me/31612345678" target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 rounded-full bg-white/95 px-7 py-3.5 text-[.9rem] font-semibold text-dark transition-colors hover:bg-white">
+                <a href="https://wa.me/{{ config('shop.contact.whatsapp') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 rounded-full bg-white/95 px-7 py-3.5 text-[.9rem] font-semibold text-dark transition-colors hover:bg-white">
                     <i class="fa-brands fa-whatsapp text-[1.05rem]"></i> WhatsApp
                 </a>
             </div>

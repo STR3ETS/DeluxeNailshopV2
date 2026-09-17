@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['code', 'type', 'waarde', 'min_bedrag', 'verloopt_op', 'actief'])]
+#[Fillable(['code', 'type', 'waarde', 'min_bedrag', 'verloopt_op', 'actief', 'max_gebruik'])]
 class DiscountCode extends Model
 {
+    public function isOpgebruikt(): bool
+    {
+        return $this->max_gebruik !== null && $this->gebruikt >= $this->max_gebruik;
+    }
+
     protected function casts(): array
     {
         return [
@@ -30,6 +35,10 @@ class DiscountCode extends Model
 
         if ($this->verloopt_op && $this->verloopt_op->endOfDay()->isPast()) {
             return 'Deze kortingscode is verlopen.';
+        }
+
+        if ($this->isOpgebruikt()) {
+            return 'Deze kortingscode is al gebruikt.';
         }
 
         if ($this->min_bedrag && $subtotaal < (float) $this->min_bedrag) {

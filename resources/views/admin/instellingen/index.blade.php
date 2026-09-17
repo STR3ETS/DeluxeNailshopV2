@@ -76,6 +76,9 @@
         <div class="border-b border-primary/10 px-6 py-5">
             <h2 class="font-serif text-[1.2rem] font-medium">Kortingscodes</h2>
             <p class="mt-1 text-[.82rem] font-light text-dark-soft">Klanten vullen de code in bij het afrekenen. Zet een code uit om hem tijdelijk te blokkeren.</p>
+            @if ($nieuwsbrief['uitgegeven'] > 0)
+                <p class="mt-2 text-[.82rem] font-light text-dark-soft"><i class="fa-light fa-envelope mr-1.5 text-primary-deep"></i>Daarnaast {{ $nieuwsbrief['uitgegeven'] }} persoonlijke nieuwsbriefcode{{ $nieuwsbrief['uitgegeven'] === 1 ? '' : 's' }} uitgegeven, waarvan {{ $nieuwsbrief['gebruikt'] }} gebruikt.</p>
+            @endif
         </div>
         <div class="divide-y divide-primary/10">
             @forelse ($codes as $code)

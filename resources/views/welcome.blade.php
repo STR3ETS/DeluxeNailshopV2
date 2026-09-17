@@ -1,8 +1,8 @@
 @extends('layouts.shop')
 
 @section('title', config('app.name') . ' - Professionele nagelproducten voor salon en thuis')
-@section('meta_description', 'Dé webshop voor professionele nagelproducten. Shop rubber base, gellak, builder gel, acrygel en nail art van DNKa\' en Valeri. Voor 16:00 besteld, morgen in huis. Gratis verzending vanaf €75.')
-@section('meta_keywords', 'nagelproducten, nagelproducten kopen, gellak, gelpolish, rubber base, cover base, builder gel, acrygel, polygel, nail art, DNKa, Valeri, nagelstyliste, salonkwaliteit')
+@section('meta_description', 'Dé webshop voor professionele nagelproducten. Shop rubber base, gellak, builder gel, acrygel en nail art van DNKa\', Valeri en Touch. Gratis verzending vanaf €75 (NL) en €100 (BE).')
+@section('meta_keywords', 'nagelproducten, nagelproducten kopen, gellak, gelpolish, rubber base, cover base, builder gel, acrygel, polygel, nail art, DNKa, Valeri, Touch, nagelstyliste, salonkwaliteit')
 
 @php
     /*
@@ -15,7 +15,7 @@
 
     $tagline = 'Professionele nagelproducten';
 
-    $heroText = 'Van Builder in a Bottle tot de perfecte nude gelpolish: alles wat jij als nagelstyliste of thuis-artist nodig hebt. Salonkwaliteit van DNKa\' & Valeri, morgen al op je werktafel.';
+    $heroText = 'Van een sterke basis tot de perfecte kleur: ontdek zorgvuldig geselecteerde producten van Valeri, DNKa\' en Touch. Voor nagelstylisten die geen genoegen nemen met "goed genoeg".';
 
     $stats = [
         ['count' => 12000, 'label' => 'Tevreden klanten'],
@@ -34,14 +34,23 @@
         ['#f6e6e1', '#e3c6bf'],
     ];
     $angles = [-54, -36, -18, 0, 18, 36, 54];
-    $fanCaption = 'Onze kleurencollectie · 48 tinten';
+    $fanCaption = ['Onze kleurencollectie.', 'Kleurrijk en eindeloos creatief.'];
 
     // Slanke strip met kernbeloftes, direct onder de hero (Font Awesome-iconen)
     $uspStrip = [
-        ['icon' => 'fa-truck-fast',  'text' => 'Voor 16:00 besteld, morgen in huis'],
-        ['icon' => 'fa-sparkles',    'text' => 'Salonkwaliteit van DNKa\' & Valeri'],
-        ['icon' => 'fa-rotate-left', 'text' => '30 dagen gratis retour'],
+        ['icon' => 'fa-sparkles',     'text' => 'Salonkwaliteit van DNKa\', Valeri & Touch'],
+        ['icon' => 'fa-comments',     'text' => 'Persoonlijk productadvies'],
+        ['icon' => 'fa-shield-check', 'text' => 'Veilig betalen met iDEAL & Bancontact'],
     ];
+
+    // Merkpanelen: naam, slogan en tekst (aangeleverd door Lena)
+    $brandPanels = [
+        ['name' => 'DNKa\'', 'style' => 'dark',  'tagline' => 'The code of your beauty', 'text' => 'Een premium Oekraïens nail brand waarin schoonheid, esthetiek en professionaliteit samenkomen. Ontwikkeld voor nail artists die comfortabel willen werken met producten die kwaliteit en trend combineren.'],
+        ['name' => 'Valeri', 'style' => 'blush', 'tagline' => 'Color. Create. Inspire.', 'text' => 'Een Oekraïens nail brand met een passie voor kleur, kwaliteit en professionele nagelstyling. Ontdek de collectie van Valeri: van dagelijkse essentials tot producten voor jouw meest creatieve designs.'],
+        ['name' => 'Touch',  'style' => 'gold',  'tagline' => 'From master to master', 'text' => 'Een professioneel Oekraïens nail brand, ontwikkeld vanuit de praktijk door een nail artist voor nail artists. Innovatieve producten die jouw werk makkelijker maken en ruimte geven aan creativiteit.'],
+    ];
+
+    $nieuwsbriefKorting = config('shop.nieuwsbrief.korting_procent');
 
     // $bestsellers komt uit de route: de vier best beoordeelde actieve producten
 @endphp
@@ -92,7 +101,7 @@
                 </div>
             @endforeach
             <div class="absolute bottom-2 left-1/2 z-[9] grid h-[38px] w-[38px] -translate-x-1/2 place-items-center rounded-full bg-dark shadow-[0_8px_20px_-6px_color-mix(in_srgb,var(--color-dark)_50%,transparent)] after:h-2.5 after:w-2.5 after:rounded-full after:bg-gold after:content-['']"></div>
-            <span class="fan-caption absolute -bottom-8 md:-bottom-0 -top-0 sm:-top-8 left-1/2 -translate-x-1/2 text-[.74rem] tracking-[.2em] whitespace-nowrap text-dark-soft uppercase">{{ $fanCaption }}</span>
+            <span class="fan-caption absolute -bottom-8 md:-bottom-0 -top-0 sm:-top-8 left-1/2 w-max max-w-[calc(100vw-3rem)] -translate-x-1/2 text-center text-[.74rem] leading-[1.7] tracking-[.16em] text-dark-soft uppercase">{{ $fanCaption[0] }}<br class="sm:hidden"> {{ $fanCaption[1] }}</span>
         </div>
     </div>
 </section>
@@ -149,18 +158,24 @@
         <div class="reveal mb-12 flex flex-wrap items-end justify-between gap-8">
             <h2 class="font-serif text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[1.15] font-normal">Onze <em class="text-primary italic">merken</em></h2>
         </div>
-        <div class="grid gap-6 lg:grid-cols-2">
-            @foreach ([
-                ['key' => 'dnka', 'name' => 'DNKa\'', 'text' => 'Professionele gelsystemen waar salons op bouwen. Sterke hechting, prachtige viscositeit en tinten die iedere huidtint flatteren.', 'cta' => 'Ontdek DNKa\''],
-                ['key' => 'valeri', 'name' => 'Valeri', 'text' => 'Kleuren met karakter. Van zachte nudes tot statement-tinten: gelpolish die strak dekt in één tot twee lagen en wekenlang blijft glanzen.', 'cta' => 'Ontdek Valeri'],
-            ] as $panel)
-                @php $isDnka = $panel['key'] === 'dnka'; @endphp
-                <div class="reveal relative flex min-h-[340px] flex-col justify-end overflow-hidden rounded-[calc(var(--radius)+8px)] px-8 py-[3.2rem] sm:px-11 {{ $isDnka ? 'bg-dark text-cream' : 'bg-linear-[140deg] from-accent-soft to-accent text-dark' }}">
-                    <span class="pointer-events-none absolute top-6 right-7 font-serif text-[clamp(4rem,8vw,7rem)] leading-none whitespace-nowrap italic opacity-[.14] {{ $isDnka ? 'text-gold' : 'text-white' }}">{{ $panel['name'] }}</span>
-                    <h3 class="mb-3 font-serif text-[2rem] font-medium">{{ $panel['name'] }}</h3>
-                    <p class="mb-6 max-w-[40ch] leading-[1.65] font-light opacity-85">{{ $panel['text'] }}</p>
-                    <a href="#" class="inline-flex items-center gap-2.5 self-start rounded-full px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-all duration-300 ease-spring hover:-translate-y-[3px] {{ $isDnka ? 'bg-gold text-dark hover:bg-[color-mix(in_srgb,var(--color-gold)_70%,white)]' : 'bg-dark text-cream hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]' }}">
-                        {{ $panel['cta'] }} <i class="fa-light fa-arrow-right"></i>
+        <div class="grid gap-6 lg:grid-cols-3">
+            @foreach ($brandPanels as $panel)
+                @php
+                    $isDark = $panel['style'] === 'dark';
+                    $panelBg = match ($panel['style']) {
+                        'dark'  => 'bg-dark text-cream',
+                        'blush' => 'bg-linear-[140deg] from-accent-soft to-accent text-dark',
+                        default => 'bg-linear-[140deg] from-cream-deep to-gold text-dark',
+                    };
+                @endphp
+                {{-- Ruime bovenpadding houdt de grote merknaam vrij van de titel; knoppen lijnen onderaan uit --}}
+                <div class="reveal relative flex flex-col overflow-hidden rounded-[calc(var(--radius)+8px)] px-8 pt-[7.5rem] pb-[3.2rem] sm:px-10 lg:pt-[8.5rem] {{ $panelBg }}">
+                    <span class="pointer-events-none absolute top-6 right-7 font-serif text-[clamp(4rem,7vw,6rem)] leading-none whitespace-nowrap italic opacity-[.14] {{ $isDark ? 'text-gold' : 'text-white' }}">{{ $panel['name'] }}</span>
+                    <h3 class="font-serif text-[2rem] leading-tight font-medium">{{ $panel['name'] }}</h3>
+                    <p class="mt-1 mb-4 font-serif text-[1.1rem] italic {{ $isDark ? 'text-gold' : 'text-primary-deep' }}">{{ $panel['tagline'] }}</p>
+                    <p class="mb-8 max-w-[44ch] leading-[1.7] font-light opacity-85">{{ $panel['text'] }}</p>
+                    <a href="{{ url('/producten') }}?merk={{ urlencode($panel['name']) }}" class="mt-auto inline-flex items-center gap-2.5 self-start rounded-full px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-all duration-300 ease-spring hover:-translate-y-[3px] {{ $isDark ? 'bg-gold text-dark hover:bg-[color-mix(in_srgb,var(--color-gold)_70%,white)]' : 'bg-dark text-cream hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]' }}">
+                        Ontdek {{ $panel['name'] }} <i class="fa-light fa-arrow-right"></i>
                     </a>
                 </div>
             @endforeach
@@ -169,16 +184,61 @@
 </section>
 
 {{-- Nieuwsbrief --}}
-<section class="px-6 pt-4 pb-[5.5rem]">
+<section id="nieuwsbrief" class="scroll-mt-28 px-6 pt-4 pb-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
-        <div x-data="{ sent: false }" class="reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-16 text-center text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[110px] after:h-[220px] after:w-[220px] after:rounded-full after:bg-white/10 after:content-['']">
+        <div x-data="{
+                email: '',
+                status: @js(session('nieuwsbrief') ? 'klaar' : 'open'),
+                eigenAccount: @js(session('nieuwsbrief') === 'account'),
+                fout: '',
+                async inschrijven() {
+                    if (this.status === 'bezig') return;
+                    this.status = 'bezig';
+                    this.fout = '';
+                    try {
+                        const res = await fetch(@js(route('nieuwsbrief.inschrijven')), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': @js(csrf_token()), 'Accept': 'application/json' },
+                            body: JSON.stringify({ email: this.email }),
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (res.ok) { this.eigenAccount = data.eigen_account; this.status = 'klaar'; return; }
+                        this.fout = data.errors?.email?.[0] ?? (res.status === 429 ? 'Te veel pogingen, probeer het over een minuut opnieuw.' : 'Inschrijven lukte niet, probeer het opnieuw.');
+                    } catch { this.fout = 'Inschrijven lukte niet, probeer het opnieuw.'; }
+                    this.status = 'open';
+                },
+             }" class="reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-16 text-center text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[110px] after:h-[220px] after:w-[220px] after:rounded-full after:bg-white/10 after:content-['']">
             <h2 class="relative z-[1] mb-3 font-serif text-[clamp(1.8rem,3.4vw,2.6rem)] font-normal">Als eerste de <em class="italic">nieuwe tinten</em> zien?</h2>
-            <p class="relative z-[1] mb-8 font-light opacity-90">Schrijf je in en ontvang 10% korting op je eerste bestelling.</p>
-            <form x-show="!sent" @submit.prevent="sent = true" class="relative z-[1] mx-auto flex max-w-[460px] flex-wrap justify-center gap-3">
-                <input type="email" required placeholder="jouw@email.nl" aria-label="E-mailadres" class="min-w-[230px] flex-1 rounded-full bg-white/95 px-6 py-4 text-[.92rem] text-dark outline-none">
-                <button type="submit" class="inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]">Inschrijven</button>
+            <p class="relative z-[1] mb-8 font-light opacity-90">Schrijf je in en ontvang {{ $nieuwsbriefKorting }}% korting op je eerste bestelling.</p>
+            <form method="POST" action="{{ route('nieuwsbrief.inschrijven') }}" x-show="status !== 'klaar'" @submit.prevent="inschrijven()" class="relative z-[1] mx-auto flex max-w-[460px] flex-wrap justify-center gap-3">
+                @csrf
+                <input type="email" name="email" x-model="email" required placeholder="jouw@email.nl" aria-label="E-mailadres" class="min-w-[230px] flex-1 rounded-full bg-white/95 px-6 py-4 text-[.92rem] text-dark outline-none">
+                <button type="submit" :disabled="status === 'bezig'" class="inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)] disabled:opacity-70">
+                    <span x-text="status === 'bezig' ? 'Even geduld…' : 'Inschrijven'">Inschrijven</span>
+                </button>
+                <p x-cloak x-show="fout !== ''" x-text="fout" class="w-full text-[.85rem] font-medium"></p>
             </form>
-            <p x-cloak x-show="sent" x-transition.opacity.duration.400ms class="relative z-[1] text-[1.05rem] font-medium"><i class="fa-solid fa-circle-check mr-2"></i>Gelukt - je hoort als eerste over nieuwe tinten!</p>
+            <div x-cloak x-show="status === 'klaar'" x-transition.opacity.duration.400ms class="relative z-[1]">
+                <p class="text-[1.05rem] font-medium"><i class="fa-solid fa-circle-check mr-2"></i>Gelukt! Je persoonlijke kortingscode staat klaar in je account.</p>
+                <template x-if="eigenAccount">
+                    <a href="{{ route('account') }}" class="mt-6 inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]">
+                        Bekijk je kortingscode <i class="fa-light fa-arrow-right"></i>
+                    </a>
+                </template>
+                <template x-if="!eigenAccount">
+                    <div>
+                        <p class="mt-2 font-light opacity-90">Log in of maak een account aan met dit e-mailadres om je code te bekijken.</p>
+                        <div class="mt-6 flex flex-wrap justify-center gap-3">
+                            <a :href="@js(route('registreren')) + (email ? '?email=' + encodeURIComponent(email) : '')" class="inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)]">
+                                Account aanmaken <i class="fa-light fa-arrow-right"></i>
+                            </a>
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2.5 rounded-full bg-white/95 px-7 py-4 text-[.92rem] font-semibold text-dark transition-colors duration-300 hover:bg-white">
+                                Inloggen
+                            </a>
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 </section>

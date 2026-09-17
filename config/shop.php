@@ -96,7 +96,7 @@ return [
         ],
     ],
 
-    'brands' => ['DNKa\'', 'Valeri', 'Deluxe Nail Shop', 'Staleks'],
+    'brands' => ['DNKa\'', 'Valeri', 'Deluxe Nail Shop', 'Touch'],
 
     // Bedrijfsgegevens voor op de factuur. Vul kvk/btw in zodra bekend;
     // lege velden worden niet afgedrukt.
@@ -106,6 +106,24 @@ return [
         'site'  => 'deluxenailshop.nl',
         'kvk'   => null,
         'btw'   => null,
+    ],
+
+    // Contactgegevens voor footer, FAQ en de Over ons-pagina.
+    'contact' => [
+        'telefoon'       => '+31 6 42939291',
+        'whatsapp'       => '31642939291', // voor wa.me-links, zonder + en spaties
+        'instagram'      => 'https://www.instagram.com/deluxebeauty.bar/', // TODO: echte Instagram-URL invullen
+        'adres'          => 'Thorbeckestraat 3, 6904 BS Zevenaar',
+        'openingstijden' => [
+            'Maandag t/m vrijdag: 09:00 - 18:00',
+            'Zaterdag & zondag: gesloten',
+        ],
+    ],
+
+    // Nieuwsbrief: iedere inschrijver krijgt een persoonlijke, eenmalig
+    // bruikbare kortingscode (in procenten) die in het klantaccount staat.
+    'nieuwsbrief' => [
+        'korting_procent' => 10,
     ],
 
     // Drempel voor gratis verzending binnen Nederland (in euro's) - gebruikt

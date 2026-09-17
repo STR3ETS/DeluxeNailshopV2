@@ -49,7 +49,7 @@
                         <span class="mb-2 block text-[.72rem] font-semibold tracking-[.16em] text-dark-soft uppercase">E-mailadres</span>
                         <div class="relative">
                             <i class="fa-light fa-envelope pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-[.9rem] text-dark-soft"></i>
-                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="jouw@email.nl" autocomplete="email"
+                            <input type="email" name="email" value="{{ old('email', request('email')) }}" required placeholder="jouw@email.nl" autocomplete="email"
                                    class="w-full rounded-full border {{ $errors->has('email') ? 'border-red-400' : 'border-primary/20' }} bg-white py-3.5 pr-6 pl-12 text-[.92rem] outline-none transition-colors placeholder:text-dark-soft/50 focus:border-primary">
                         </div>
                         @error('email')<p class="mt-2 pl-5 text-[.8rem] font-medium text-red-600">{{ $message }}</p>@enderror

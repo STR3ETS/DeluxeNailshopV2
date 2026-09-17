@@ -5,25 +5,23 @@
             ['title' => 'Shoppen', 'links' => collect(config('shop.categories'))->map(fn ($c) => ['label' => $c['name'], 'url' => url('/producten').'?categorie='.$c['slug']])->all()],
         ],
         [
-            ['title' => 'Merken',   'links' => collect(config('shop.brands'))->map(fn ($merk) => ['label' => $merk, 'url' => url('/producten')])->push(['label' => 'Alle merken', 'url' => url('/producten')])->all()],
-            ['title' => 'Over ons', 'links' => [['label' => 'Ons verhaal', 'url' => '#'], ['label' => 'Reviews', 'url' => '#'], ['label' => 'Blog', 'url' => '#']]],
+            ['title' => 'Merken',   'links' => collect(config('shop.brands'))->map(fn ($merk) => ['label' => $merk, 'url' => url('/producten').'?merk='.urlencode($merk)])->push(['label' => 'Alle merken', 'url' => url('/producten')])->all()],
+            ['title' => 'Over ons', 'links' => [['label' => 'Ons verhaal', 'url' => route('over-ons')]]],
         ],
         [
-            ['title' => 'Klantenservice', 'links' => [['label' => 'Contact', 'url' => '#'], ['label' => 'Verzenden & retour', 'url' => '#'], ['label' => 'Veelgestelde vragen', 'url' => url('/faq')], ['label' => 'Betaalmethoden', 'url' => '#'], ['label' => 'Cadeaubonnen', 'url' => '#']]],
+            ['title' => 'Klantenservice', 'links' => [['label' => 'Contact', 'url' => '#'], ['label' => 'Verzenden & retour', 'url' => url('/faq').'#verzending'], ['label' => 'Veelgestelde vragen', 'url' => url('/faq')], ['label' => 'Betaalmethoden', 'url' => url('/faq').'#betaalmethoden']]],
         ],
     ];
 
+    $contactGegevens = config('shop.contact');
     $footerContact = [
-        ['icon' => 'fa-light fa-envelope',   'label' => 'E-mail',     'value' => 'info@deluxenailshop.nl'],
-        ['icon' => 'fa-brands fa-whatsapp',  'label' => 'WhatsApp',   'value' => '+31 6 12 34 56 78'],
-        ['icon' => 'fa-light fa-clock',      'label' => 'Bereikbaar', 'value' => 'ma t/m vr · 09:00 - 17:00'],
+        ['icon' => 'fa-light fa-envelope',  'label' => 'E-mail',     'value' => 'info@deluxenailshop.nl', 'url' => 'mailto:info@deluxenailshop.nl'],
+        ['icon' => 'fa-brands fa-whatsapp', 'label' => 'WhatsApp',   'value' => $contactGegevens['telefoon'], 'url' => 'https://wa.me/'.$contactGegevens['whatsapp']],
+        ['icon' => 'fa-light fa-clock',     'label' => 'Bereikbaar', 'value' => 'ma t/m vr · 09:00 - 18:00'],
     ];
 
     $socials = [
-        ['icon' => 'fa-instagram',   'label' => 'Instagram'],
-        ['icon' => 'fa-tiktok',      'label' => 'TikTok'],
-        ['icon' => 'fa-facebook-f',  'label' => 'Facebook'],
-        ['icon' => 'fa-pinterest-p', 'label' => 'Pinterest'],
+        ['icon' => 'fa-instagram', 'label' => 'Instagram', 'url' => $contactGegevens['instagram']],
     ];
 
     // Betaalmethoden: FA-brand-icoon waar beschikbaar, anders een tekstbadge
@@ -61,7 +59,7 @@
             </div>
             <div class="mt-6 flex gap-2.5">
                 @foreach ($socials as $social)
-                    <a href="#" aria-label="{{ $social['label'] }}" class="grid h-10 w-10 place-items-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:bg-gold hover:text-dark">
+                    <a href="{{ $social['url'] }}" @if ($social['url'] !== '#') target="_blank" rel="noopener" @endif aria-label="{{ $social['label'] }}" class="grid h-10 w-10 place-items-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:bg-gold hover:text-dark">
                         <i class="fa-brands {{ $social['icon'] }} text-[1rem]"></i>
                     </a>
                 @endforeach
@@ -94,7 +92,11 @@
                         <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold/15 text-gold"><i class="{{ $contact['icon'] }} text-[.9rem]"></i></span>
                         <span class="flex flex-col">
                             <small class="text-[.68rem] tracking-[.12em] uppercase opacity-60">{{ $contact['label'] }}</small>
-                            <span class="text-[.88rem] font-medium">{{ $contact['value'] }}</span>
+                            @isset($contact['url'])
+                                <a href="{{ $contact['url'] }}" @if (str_starts_with($contact['url'], 'http')) target="_blank" rel="noopener" @endif class="text-[.88rem] font-medium transition-colors hover:text-gold">{{ $contact['value'] }}</a>
+                            @else
+                                <span class="text-[.88rem] font-medium">{{ $contact['value'] }}</span>
+                            @endisset
                         </span>
                     </li>
                 @endforeach

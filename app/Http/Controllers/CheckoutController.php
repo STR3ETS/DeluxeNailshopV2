@@ -41,6 +41,7 @@ class CheckoutController extends Controller
             'kortingscode' => ['nullable', 'string', 'max:50'],
             'opmerking'  => ['nullable', 'string', 'max:1000'],
             'winkelwagen' => ['required', 'json'],
+            'voorwaarden' => ['accepted'],
         ], [
             'voornaam.required'   => 'Vul je voornaam in.',
             'achternaam.required' => 'Vul je achternaam in.',
@@ -54,6 +55,7 @@ class CheckoutController extends Controller
             'land.required_if'    => 'Kies een land.',
             'land.in'             => 'We bezorgen momenteel in Nederland en België.',
             'winkelwagen.required' => 'Je winkelwagen is leeg.',
+            'voorwaarden.accepted' => 'Ga akkoord met de algemene voorwaarden en het privacybeleid om je bestelling te plaatsen.',
         ]);
 
         $regels = collect(json_decode($gegevens['winkelwagen'], true))

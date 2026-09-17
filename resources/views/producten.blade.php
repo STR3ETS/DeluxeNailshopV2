@@ -2,7 +2,7 @@
 
 @section('title', 'Alle producten - ' . config('app.name'))
 @section('meta_description', 'Bekijk het complete assortiment professionele nagelproducten: base & top coats, gellak, gel & acrygel, nail art, liquids en benodigdheden. Filter op categorie, merk en aanbiedingen.')
-@section('meta_keywords', 'nagelproducten assortiment, gellak kopen, rubber base kopen, builder gel kopen, acrygel kopen, nail art producten, cat eye gellak, top coat, cover base, DNKa, Valeri, Staleks')
+@section('meta_keywords', 'nagelproducten assortiment, gellak kopen, rubber base kopen, builder gel kopen, acrygel kopen, nail art producten, cat eye gellak, top coat, cover base, DNKa, Valeri, Touch')
 
 @php
     /*
@@ -35,7 +35,9 @@
 
     $initialCat  = (string) request('categorie', '');
     $initialSale = request()->boolean('sale');
-    $initialTitle = $initialSale && ! $initialCat ? 'Sale' : ($catNames[$initialCat] ?? 'Alle producten');
+    // ?merk=Touch (vanuit merkpanelen en footer) zet het merkfilter aan
+    $initialBrand = in_array(request('merk'), config('shop.brands'), true) ? request('merk') : null;
+    $initialTitle = $initialSale && ! $initialCat ? 'Sale' : ($catNames[$initialCat] ?? ($initialBrand ?? 'Alle producten'));
 @endphp
 
 @section('content')
@@ -43,7 +45,7 @@
 <section class="px-6 pt-10 pb-16" x-data="{
     cat: @js($initialCat),
     subs: [],
-    brands: [],
+    brands: @js($initialBrand ? [$initialBrand] : []),
     saleOnly: @js($initialSale),
     sort: 'aanbevolen',
     mobileFilters: false,
@@ -65,6 +67,7 @@
     get activeCount() { return (this.cat ? 1 : 0) + this.subs.length + this.brands.length + (this.saleOnly ? 1 : 0); },
     get title() {
         if (this.saleOnly && !this.cat) return 'Sale';
+        if (!this.cat && this.brands.length === 1) return this.brands[0];
         return this.cat ? this.catNames[this.cat] : 'Alle producten';
     },
     selectCat(slug) { this.cat = this.cat === slug ? '' : slug; this.subs = []; this.sync(); },
@@ -98,7 +101,7 @@
                 <label class="inline-flex items-center gap-2.5">
                     <span class="hidden text-[.85rem] text-dark-soft sm:inline">Sorteren:</span>
                     <select x-model="sort" class="cursor-pointer rounded-full border border-dark/20 bg-offwhite px-4 py-2.5 text-[.88rem] font-medium outline-none transition-colors hover:border-dark">
-                        <option value="aanbevolen">Aanbevolen</option>
+                        <option value="aanbevolen">Alfabetisch</option>
                         <option value="prijs-asc">Prijs oplopend</option>
                         <option value="prijs-desc">Prijs aflopend</option>
                         <option value="beoordeeld">Best beoordeeld</option>

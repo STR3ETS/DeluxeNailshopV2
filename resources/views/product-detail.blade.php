@@ -1,7 +1,7 @@
 @extends('layouts.shop')
 
 @section('title', $product['brand'] . ' ' . $product['name'] . ' kopen - ' . config('app.name'))
-@section('meta_description', \Illuminate\Support\Str::limit($product['description'] ?? 'De '.$product['brand'].' '.$product['name'].' is een professioneel nagelproduct van salonkwaliteit. Voor 16:00 besteld, morgen in huis. Gratis verzending vanaf €75.', 155))
+@section('meta_description', \Illuminate\Support\Str::limit($product['description'] ?? 'De '.$product['brand'].' '.$product['name'].' is een professioneel nagelproduct van salonkwaliteit. Gratis verzending vanaf €75 (NL) en €100 (BE).', 155))
 @section('meta_keywords', $product['brand'].', '.$product['name'].', '.$product['brand'].' '.$product['name'].' kopen, nagelproducten, salonkwaliteit')
 @section('og_type', 'product')
 @if (!empty($product['image']))
@@ -179,8 +179,8 @@
 
                 {{-- Mini-USP's --}}
                 <div class="load-reveal mt-7 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-primary/15 pt-6">
-                    <span class="inline-flex items-center gap-2 text-[.82rem] text-dark-soft"><i class="fa-light fa-truck-fast text-primary-deep"></i>Voor 16:00 besteld, morgen in huis</span>
-                    <span class="inline-flex items-center gap-2 text-[.82rem] text-dark-soft"><i class="fa-light fa-rotate-left text-primary-deep"></i>30 dagen gratis retour</span>
+                    <span class="inline-flex items-center gap-2 text-[.82rem] text-dark-soft"><i class="fa-light fa-truck-fast text-primary-deep"></i>Gratis verzending vanaf €{{ config('shop.verzending.NL.gratis_vanaf') }} NL / €{{ config('shop.verzending.BE.gratis_vanaf') }} BE</span>
+                    <span class="inline-flex items-center gap-2 text-[.82rem] text-dark-soft"><i class="fa-light fa-rotate-left text-primary-deep"></i>14 dagen retourneren</span>
                     <span class="inline-flex items-center gap-2 text-[.82rem] text-dark-soft"><i class="fa-light fa-sparkles text-primary-deep"></i>Salonkwaliteit</span>
                 </div>
 

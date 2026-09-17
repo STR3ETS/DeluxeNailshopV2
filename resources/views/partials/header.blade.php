@@ -6,8 +6,8 @@
     */
     $freeFrom = config('shop.free_shipping_from');
     $announcement = [
-        'text' => 'Gratis verzending vanaf €'.$freeFrom,
-        'em'   => 'Voor 16:00 besteld, morgen in huis',
+        'text' => 'Gratis verzending',
+        'em'   => 'Vanaf €'.config('shop.verzending.NL.gratis_vanaf').' NL / Vanaf €'.config('shop.verzending.BE.gratis_vanaf').' BE',
     ];
 
     $headerCategories = config('shop.categories');

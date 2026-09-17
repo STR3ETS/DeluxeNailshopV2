@@ -26,13 +26,21 @@ Route::get('/producten', function () {
     $bestsellerIds = Product::bestsellerIds();
 
     return view('producten', [
-        'products' => Product::where('actief', true)->orderBy('id')->get()
+        // Alfabetisch op naam; natuurlijke volgorde zodat #0002 na #0001 (en #2 vóór #10) komt
+        'products' => Product::where('actief', true)->get()
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
             ->map(fn ($p) => $p->toCardArray(in_array($p->id, $bestsellerIds)))
+            ->values()
             ->all(),
     ]);
 })->name('producten');
 
 Route::view('/faq', 'faq')->name('faq');
+Route::view('/over-ons', 'over-ons')->name('over-ons');
+
+Route::post('/nieuwsbrief', [App\Http\Controllers\NieuwsbriefController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('nieuwsbrief.inschrijven');
 
 Route::get('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'show'])->name('afrekenen');
 Route::post('/afrekenen', [App\Http\Controllers\CheckoutController::class, 'store'])->name('afrekenen.plaatsen');

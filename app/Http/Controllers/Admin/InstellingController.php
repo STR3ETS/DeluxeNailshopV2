@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\DiscountCode;
+use App\Models\NewsletterSubscriber;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,8 +13,15 @@ class InstellingController extends Controller
 {
     public function index(): View
     {
+        // Persoonlijke nieuwsbriefcodes niet los tonen, alleen als telling
+        $nieuwsbriefCodes = NewsletterSubscriber::whereNotNull('discount_code_id')->select('discount_code_id');
+
         return view('admin.instellingen.index', [
-            'codes' => DiscountCode::orderByDesc('id')->get(),
+            'codes' => DiscountCode::whereNotIn('id', $nieuwsbriefCodes)->orderByDesc('id')->get(),
+            'nieuwsbrief' => [
+                'uitgegeven' => DiscountCode::whereIn('id', $nieuwsbriefCodes)->count(),
+                'gebruikt'   => DiscountCode::whereIn('id', $nieuwsbriefCodes)->where('gebruikt', '>', 0)->count(),
+            ],
         ]);
     }
 

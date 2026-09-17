@@ -129,7 +129,7 @@
                         <span class="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-truck-fast text-[.95rem]"></i></span>
                         <span>
                             <span class="block text-[.92rem] font-semibold">Bezorgen</span>
-                            <span class="mt-0.5 block text-[.8rem] leading-[1.55] font-light text-dark-soft">Via PostNL, morgen in huis. Gratis vanaf €{{ number_format(config('shop.verzending.NL.gratis_vanaf'), 0) }} (NL).</span>
+                            <span class="mt-0.5 block text-[.8rem] leading-[1.55] font-light text-dark-soft">Via PostNL, binnen 1 tot 2 werkdagen in huis. Gratis vanaf €{{ number_format(config('shop.verzending.NL.gratis_vanaf'), 0) }} (NL).</span>
                         </span>
                     </label>
                     <label class="flex cursor-pointer items-start gap-3.5 rounded-2xl border p-4.5 transition-colors"
@@ -180,6 +180,14 @@
                     <textarea name="opmerking" rows="2" placeholder="Bijv. bezorgen bij de buren" class="w-full rounded-2xl border border-primary/20 bg-white px-5 py-3.5 text-[.92rem] leading-[1.7] outline-none transition-colors placeholder:text-dark-soft/50 focus:border-primary">{{ old('opmerking') }}</textarea>
                     @error('opmerking')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
                 </label>
+
+                <div>
+                    <label class="flex cursor-pointer items-start gap-3 text-[.85rem] leading-[1.6] text-dark-soft">
+                        <input type="checkbox" name="voorwaarden" value="1" required @checked(old('voorwaarden')) class="mt-0.5 h-4 w-4 shrink-0 accent-primary">
+                        <span>Ik ga akkoord met de <a href="{{ route('algemene-voorwaarden') }}" target="_blank" class="font-medium text-primary-deep transition-colors hover:text-primary">algemene voorwaarden</a> &amp; <a href="{{ route('privacybeleid') }}" target="_blank" class="font-medium text-primary-deep transition-colors hover:text-primary">privacybeleid</a></span>
+                    </label>
+                    @error('voorwaarden')<p class="mt-2 pl-7 text-[.8rem] font-medium text-red-600">{{ $message }}</p>@enderror
+                </div>
 
                 <button type="submit" class="mt-1 flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-7 py-4 text-[.95rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-colors hover:bg-primary-deep">
                     Bestellen en betalen <i class="fa-light fa-arrow-right"></i>
@@ -263,8 +271,8 @@
                 </div>
 
                 <div class="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[.78rem] text-dark-soft">
-                    <span class="inline-flex items-center gap-2"><i class="fa-light fa-truck-fast text-primary-deep"></i>Voor 16:00 besteld, morgen in huis</span>
-                    <span class="inline-flex items-center gap-2"><i class="fa-light fa-rotate-left text-primary-deep"></i>30 dagen gratis retour</span>
+                    <span class="inline-flex items-center gap-2"><i class="fa-light fa-shield-check text-primary-deep"></i>Veilig betalen via Mollie</span>
+                    <span class="inline-flex items-center gap-2"><i class="fa-light fa-rotate-left text-primary-deep"></i>14 dagen retourneren</span>
                 </div>
             </div>
         </div>
