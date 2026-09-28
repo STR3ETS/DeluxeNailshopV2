@@ -15,9 +15,9 @@
 
 @section('content')
 
-<section class="w-full px-6 py-16">
+<section class="w-full px-4 pt-16 pb-10 sm:px-6 sm:py-16">
     <div class="mx-auto max-w-[520px]">
-        <div class="load-reveal rounded-[calc(var(--radius)+10px)] bg-offwhite p-9 text-center shadow-card sm:p-12" x-data="{ sent: false }">
+        <div class="load-reveal rounded-[calc(var(--radius)+10px)] bg-offwhite p-7 text-center shadow-card sm:p-12" x-data="{ sent: false }">
 
             <span class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent-soft text-primary-deep"><i class="fa-light fa-key text-[1.3rem]"></i></span>
 

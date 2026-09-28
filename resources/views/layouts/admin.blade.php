@@ -69,12 +69,12 @@
 </div>
 
 <div class="flex min-h-svh flex-col lg:pl-[104px]">
-    <main class="mx-auto w-full max-w-[1140px] flex-1 px-6 py-10 pb-32 lg:pb-12">
+    <main class="mx-auto w-full max-w-[1140px] flex-1 px-4 py-8 pb-32 sm:px-6 sm:py-10 lg:pb-12">
         @yield('content')
     </main>
 
     <footer class="border-t border-primary/15">
-        <div class="mx-auto flex max-w-[1140px] flex-wrap items-center justify-between gap-3 px-6 py-5 pb-24 text-[.78rem] text-dark-soft lg:pb-5">
+        <div class="mx-auto flex max-w-[1140px] flex-wrap items-center justify-between gap-3 px-4 py-5 pb-24 sm:px-6 text-[.78rem] text-dark-soft lg:pb-5">
             <span>© {{ date('Y') }} {{ config('app.name') }} - Alle rechten voorbehouden</span>
             <span>Gemaakt door <a href="https://halfmanmedia.nl" target="_blank" rel="noopener" class="font-medium transition-colors hover:text-primary-deep">HalfmanMedia</a></span>
         </div>

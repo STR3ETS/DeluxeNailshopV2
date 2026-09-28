@@ -50,7 +50,8 @@
 
     <div class="mt-6 divide-y divide-primary/10 overflow-hidden rounded-card border border-primary/15 bg-offwhite">
         @foreach ($producten as $p)
-            <div class="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-x-6 px-6 py-5 lg:grid-cols-[56px_minmax(0,1fr)_180px_auto]"
+            {{-- Op mobiel staat de voorraadteller op een eigen regel onder de naam, anders blijft er voor de naam geen ruimte over --}}
+            <div class="grid grid-cols-[48px_minmax(0,1fr)] items-center gap-x-4 gap-y-3 px-4 py-4 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:gap-x-6 sm:px-6 sm:py-5 lg:grid-cols-[56px_minmax(0,1fr)_180px_auto]"
                  x-show="zoek.trim() === '' || $el.dataset.zoek.includes(zoek.toLowerCase())"
                  data-zoek="{{ mb_strtolower($p->brand.' '.$p->name) }}">
 
@@ -61,8 +62,13 @@
                 </span>
 
                 <div class="min-w-0">
-                    <p class="truncate text-[.92rem] font-medium">{{ $p->name }}</p>
-                    <p class="mt-0.5 text-[.66rem] font-bold tracking-[.16em] text-primary-deep uppercase">{{ $p->brand }}</p>
+                    <p class="line-clamp-2 text-[.92rem] leading-snug font-medium sm:line-clamp-1">{{ $p->name }}</p>
+                    <p class="mt-0.5 flex flex-wrap items-center gap-x-2 text-[.66rem] font-bold tracking-[.16em] text-primary-deep uppercase">
+                        {{ $p->brand }}
+                        @if ($p->voorraad < 10)
+                            <span class="tracking-[.06em] normal-case lg:hidden {{ $p->voorraad === 0 ? 'text-red-700' : 'text-orange-700' }}">· {{ $p->voorraad === 0 ? 'uitverkocht' : 'bijna op' }}</span>
+                        @endif
+                    </p>
                 </div>
 
                 <span class="hidden lg:block">
@@ -73,7 +79,7 @@
                     @endif
                 </span>
 
-                <form method="POST" action="{{ route('admin.voorraad.bijwerken', $p) }}" x-data="{ v: {{ $p->voorraad }} }" class="flex items-center justify-end gap-2">
+                <form method="POST" action="{{ route('admin.voorraad.bijwerken', $p) }}" x-data="{ v: {{ $p->voorraad }} }" class="col-start-2 flex items-center gap-2 sm:col-start-auto sm:justify-end">
                     @csrf
                     @method('PATCH')
                     <div class="inline-flex items-center gap-1 rounded-full border border-dark/15">

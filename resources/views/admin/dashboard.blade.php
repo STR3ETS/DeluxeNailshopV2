@@ -6,22 +6,30 @@
     /*
     | Lijngrafiek "Bestellingen afgelopen 7 dagen" als inline SVG.
     | Eén serie: lijn 2px in de primaire kleur, punten met surface-ring,
-    | terughoudende gridlijnen en labels in tekstkleuren.
+    | terughoudende gridlijnen en labels in tekstkleuren. Er zijn twee
+    | varianten: een brede voor tablet/desktop en een smallere voor mobiel,
+    | zodat de labels daar niet tot een paar pixels krimpen.
     */
-    $w = 720; $h = 230;
-    $padL = 30; $padR = 14; $padT = 14; $padB = 34;
-    $plotW = $w - $padL - $padR;
-    $plotH = $h - $padT - $padB;
     $maxY = max(1, $chart->max('count'));
     $n = $chart->count();
 
-    $pts = $chart->values()->map(function ($d, $i) use ($padL, $padT, $plotW, $plotH, $maxY, $n) {
-        return $d + [
-            'x' => round($padL + ($n > 1 ? $i * $plotW / ($n - 1) : $plotW / 2), 1),
-            'y' => round($padT + $plotH - ($d['count'] / $maxY) * $plotH, 1),
-        ];
+    // Op mobiel staan de datumlabels allemaal gecentreerd (met extra ruimte rechts), anders overlappen de buitenste
+    $grafieken = collect([
+        ['w' => 720, 'h' => 230, 'font' => 11, 'klasse' => 'hidden sm:block'],
+        ['w' => 380, 'h' => 250, 'font' => 12, 'padR' => 26, 'gecentreerd' => true, 'klasse' => 'sm:hidden'],
+    ])->map(function ($g) use ($chart, $maxY, $n) {
+        $g += ['padL' => 30, 'padR' => 14, 'padT' => 14, 'padB' => 34];
+        $g['plotW'] = $g['w'] - $g['padL'] - $g['padR'];
+        $g['plotH'] = $g['h'] - $g['padT'] - $g['padB'];
+
+        $g['pts'] = $chart->values()->map(fn ($d, $i) => $d + [
+            'x' => round($g['padL'] + ($n > 1 ? $i * $g['plotW'] / ($n - 1) : $g['plotW'] / 2), 1),
+            'y' => round($g['padT'] + $g['plotH'] - ($d['count'] / $maxY) * $g['plotH'], 1),
+        ]);
+        $g['polyline'] = $g['pts']->map(fn ($p) => $p['x'] . ',' . $p['y'])->implode(' ');
+
+        return $g;
     });
-    $polyline = $pts->map(fn ($p) => $p['x'] . ',' . $p['y'])->implode(' ');
 
     $voornaam = \Illuminate\Support\Str::before(auth()->user()->name, ' ');
 @endphp
@@ -29,7 +37,7 @@
 @section('content')
 
 {{-- Welkomstpaneel --}}
-<div class="load-reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-dark p-8 text-cream sm:p-11">
+<div class="load-reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-dark p-6 text-cream sm:p-11">
     <div class="pointer-events-none absolute -bottom-28 -left-16 h-[260px] w-[260px] rounded-full bg-primary/15"></div>
 
     <span class="relative text-[.7rem] font-semibold tracking-[.22em] text-gold uppercase">Beheerpaneel</span>
@@ -67,45 +75,47 @@
 </div>
 
 {{-- Grafiek --}}
-<div class="load-reveal mt-6 rounded-card border border-primary/15 bg-offwhite p-6 sm:p-7">
+<div class="load-reveal mt-6 rounded-card border border-primary/15 bg-offwhite p-5 sm:p-7">
     <div class="mb-5 flex items-center gap-3.5">
         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-primary-deep"><i class="fa-light fa-chart-line text-[.95rem]"></i></span>
         <h2 class="font-serif text-[1.3rem] leading-[1.2] font-medium">Bestellingen <em class="text-primary italic">afgelopen 7 dagen</em></h2>
     </div>
 
-    <svg viewBox="0 0 {{ $w }} {{ $h }}" class="h-auto w-full" role="img" aria-label="Lijngrafiek van het aantal bestellingen per dag in de afgelopen 7 dagen">
-        @foreach ($pts as $p)
-            <line x1="{{ $p['x'] }}" y1="{{ $padT }}" x2="{{ $p['x'] }}" y2="{{ $padT + $plotH }}" style="stroke: var(--color-cream-deep)" stroke-width="1"/>
-        @endforeach
+    @foreach ($grafieken as $g)
+        <svg viewBox="0 0 {{ $g['w'] }} {{ $g['h'] }}" class="h-auto w-full {{ $g['klasse'] }}" role="img" aria-label="Lijngrafiek van het aantal bestellingen per dag in de afgelopen 7 dagen">
+            @foreach ($g['pts'] as $p)
+                <line x1="{{ $p['x'] }}" y1="{{ $g['padT'] }}" x2="{{ $p['x'] }}" y2="{{ $g['padT'] + $g['plotH'] }}" style="stroke: var(--color-cream-deep)" stroke-width="1"/>
+            @endforeach
 
-        <line x1="{{ $padL }}" y1="{{ $padT + $plotH }}" x2="{{ $padL + $plotW }}" y2="{{ $padT + $plotH }}" style="stroke: color-mix(in srgb, var(--color-dark) 22%, transparent)" stroke-width="1"/>
-        <text x="{{ $padL - 9 }}" y="{{ $padT + 4 }}" text-anchor="end" font-size="11" style="fill: var(--color-dark-soft)">{{ $maxY }}</text>
-        <text x="{{ $padL - 9 }}" y="{{ $padT + $plotH + 4 }}" text-anchor="end" font-size="11" style="fill: var(--color-dark-soft)">0</text>
+            <line x1="{{ $g['padL'] }}" y1="{{ $g['padT'] + $g['plotH'] }}" x2="{{ $g['padL'] + $g['plotW'] }}" y2="{{ $g['padT'] + $g['plotH'] }}" style="stroke: color-mix(in srgb, var(--color-dark) 22%, transparent)" stroke-width="1"/>
+            <text x="{{ $g['padL'] - 9 }}" y="{{ $g['padT'] + 4 }}" text-anchor="end" font-size="{{ $g['font'] }}" style="fill: var(--color-dark-soft)">{{ $maxY }}</text>
+            <text x="{{ $g['padL'] - 9 }}" y="{{ $g['padT'] + $g['plotH'] + 4 }}" text-anchor="end" font-size="{{ $g['font'] }}" style="fill: var(--color-dark-soft)">0</text>
 
-        <polyline points="{{ $polyline }}" fill="none" style="stroke: var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="{{ $g['polyline'] }}" fill="none" style="stroke: var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 
-        @foreach ($pts as $p)
-            <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4.5" style="fill: var(--color-primary); stroke: var(--color-offwhite)" stroke-width="2"/>
-            <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="13" fill="transparent">
-                <title>{{ $p['label'] }}: {{ $p['count'] }} {{ $p['count'] === 1 ? 'bestelling' : 'bestellingen' }}</title>
-            </circle>
-        @endforeach
+            @foreach ($g['pts'] as $p)
+                <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4.5" style="fill: var(--color-primary); stroke: var(--color-offwhite)" stroke-width="2"/>
+                <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="13" fill="transparent">
+                    <title>{{ $p['label'] }}: {{ $p['count'] }} {{ $p['count'] === 1 ? 'bestelling' : 'bestellingen' }}</title>
+                </circle>
+            @endforeach
 
-        @foreach ($pts as $i => $p)
-            <text x="{{ $p['x'] }}" y="{{ $h - 8 }}" text-anchor="{{ $i === 0 ? 'start' : ($i === $n - 1 ? 'end' : 'middle') }}" font-size="11" style="fill: var(--color-dark-soft)">{{ $p['label'] }}</text>
-        @endforeach
-    </svg>
+            @foreach ($g['pts'] as $i => $p)
+                <text x="{{ $p['x'] }}" y="{{ $g['h'] - 8 }}" text-anchor="{{ ! empty($g['gecentreerd']) ? 'middle' : ($i === 0 ? 'start' : ($i === $n - 1 ? 'end' : 'middle')) }}" font-size="{{ $g['font'] }}" style="fill: var(--color-dark-soft)">{{ $p['label'] }}</text>
+            @endforeach
+        </svg>
+    @endforeach
 </div>
 
 {{-- Module-tegels --}}
 <h2 class="load-reveal mt-11 font-serif text-[1.5rem] leading-[1.2] font-normal">Snel naar <em class="text-primary italic">een module</em></h2>
-<div class="load-reveal mt-5 grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-5">
+<div class="load-reveal mt-5 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] sm:gap-5">
     @foreach (config('admin.modules') as $module)
-        <a href="{{ route($module['route']) }}" class="group relative flex min-h-[150px] flex-col gap-3 overflow-hidden rounded-card border border-primary/15 bg-offwhite p-6 transition-[translate,box-shadow,border-color] duration-[350ms] ease-spring hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card">
-            <span class="grid h-12 w-12 place-items-center rounded-[58%_42%_55%_45%/50%_60%_40%_50%] bg-accent-soft text-primary-deep transition-transform duration-500 ease-spring group-hover:scale-110 group-hover:rotate-[14deg]"><i class="fa-light {{ $module['icon'] }} text-[1.05rem]"></i></span>
-            <span class="absolute top-5 right-5 grid h-8 w-8 place-items-center rounded-full border border-dark/20 text-[.85rem] transition-all duration-300 group-hover:-rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-white"><i class="fa-light fa-arrow-right"></i></span>
-            <h3 class="mt-auto font-serif text-[1.15rem] font-medium">{{ $module['label'] }}</h3>
-            <small class="text-[.78rem] tracking-[.02em] text-dark-soft">{{ $module['sub'] }}</small>
+        <a href="{{ route($module['route']) }}" class="group relative flex min-h-[130px] flex-col gap-2.5 overflow-hidden rounded-card border border-primary/15 bg-offwhite p-4 transition-[translate,box-shadow,border-color] duration-[350ms] ease-spring hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card sm:min-h-[150px] sm:gap-3 sm:p-6">
+            <span class="grid h-10 w-10 place-items-center rounded-[58%_42%_55%_45%/50%_60%_40%_50%] bg-accent-soft text-primary-deep transition-transform duration-500 ease-spring group-hover:scale-110 group-hover:rotate-[14deg] sm:h-12 sm:w-12"><i class="fa-light {{ $module['icon'] }} text-[1.05rem]"></i></span>
+            <span class="absolute top-4 right-4 grid h-7 w-7 place-items-center rounded-full border border-dark/20 text-[.75rem] transition-all duration-300 group-hover:-rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-white sm:top-5 sm:right-5 sm:h-8 sm:w-8 sm:text-[.85rem]"><i class="fa-light fa-arrow-right"></i></span>
+            <h3 class="mt-auto font-serif text-[1rem] font-medium sm:text-[1.15rem]">{{ $module['label'] }}</h3>
+            <small class="text-[.74rem] leading-[1.45] tracking-[.02em] text-dark-soft sm:text-[.78rem]">{{ $module['sub'] }}</small>
         </a>
     @endforeach
 </div>

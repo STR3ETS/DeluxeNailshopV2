@@ -22,10 +22,10 @@
 @endif
 
 {{-- Kortingscodes --}}
-<div class="load-reveal mt-7 grid items-start gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
+<div class="load-reveal mt-7 grid grid-cols-1 items-start gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
 
     {{-- Nieuwe code --}}
-    <form method="POST" action="{{ route('admin.instellingen.kortingscodes.opslaan') }}" class="rounded-card border border-primary/15 bg-offwhite p-6 sm:p-7">
+    <form method="POST" action="{{ route('admin.instellingen.kortingscodes.opslaan') }}" class="rounded-card border border-primary/15 bg-offwhite p-5 sm:p-7">
         @csrf
         <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-tag text-[.95rem] text-primary-deep"></i> Nieuwe kortingscode</h2>
 
@@ -36,7 +36,7 @@
                 @error('code')<p class="{{ $foutKlassen }}">{{ $message }}</p>@enderror
             </label>
 
-            <div class="grid grid-cols-2 gap-4" x-data="{ type: @js(old('type', 'procent')) }">
+            <div class="grid grid-cols-1 gap-4 min-[400px]:grid-cols-2" x-data="{ type: @js(old('type', 'procent')) }">
                 <label class="block">
                     <span class="{{ $labelKlassen }}">Soort</span>
                     <select name="type" x-model="type" class="{{ $inputKlassen }} cursor-pointer">
@@ -52,7 +52,7 @@
                 </label>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4 min-[400px]:grid-cols-2">
                 <label class="block">
                     <span class="{{ $labelKlassen }}">Min. bedrag <span class="font-normal normal-case">(optioneel)</span></span>
                     <input type="text" name="min_bedrag" value="{{ old('min_bedrag') }}" placeholder="50.00" class="{{ $inputKlassen }}">
@@ -73,7 +73,7 @@
 
     {{-- Bestaande codes --}}
     <div class="rounded-card border border-primary/15 bg-offwhite">
-        <div class="border-b border-primary/10 px-6 py-5">
+        <div class="border-b border-primary/10 px-5 py-5 sm:px-6">
             <h2 class="font-serif text-[1.2rem] font-medium">Kortingscodes</h2>
             <p class="mt-1 text-[.82rem] font-light text-dark-soft">Klanten vullen de code in bij het afrekenen. Zet een code uit om hem tijdelijk te blokkeren.</p>
             @if ($nieuwsbrief['uitgegeven'] > 0)
@@ -82,7 +82,7 @@
         </div>
         <div class="divide-y divide-primary/10">
             @forelse ($codes as $code)
-                <div class="flex flex-wrap items-center gap-x-5 gap-y-3 px-6 py-4.5">
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-3 px-5 py-4.5 sm:px-6">
                     <span class="rounded-lg bg-cream-deep px-3 py-1.5 font-mono text-[.82rem] font-semibold tracking-[.06em] {{ $code->actief ? '' : 'opacity-50 line-through' }}">{{ $code->code }}</span>
 
                     <span class="min-w-0 flex-1 text-[.85rem] font-light text-dark-soft">

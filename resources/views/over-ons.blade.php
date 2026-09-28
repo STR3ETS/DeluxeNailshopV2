@@ -4,6 +4,13 @@
 @section('meta_description', 'Deluxe Nail Shop is ontstaan vanuit liefde voor het nagelvak. Zorgvuldig geselecteerde merken voor professionals die van hun vak hun passie maken.')
 @section('meta_keywords', 'over ons, ons verhaal, Deluxe Nail Shop, nagelproducten Zevenaar, nail artist, nagelstyliste, DNKa, Valeri, Touch, Staleks')
 
+@push('structured-data')
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::kruimelpad([
+        ['Home', url('/')],
+        ['Over ons', route('over-ons')],
+    ])])
+@endpush
+
 @php
     /*
     |--------------------------------------------------------------------------
@@ -53,18 +60,19 @@
                 <span class="mb-4 inline-block text-[.74rem] font-semibold tracking-[.22em] text-primary-deep uppercase">Ons verhaal</span>
                 <h1 class="font-serif text-[clamp(2.2rem,4.4vw,3.6rem)] leading-[1.08] font-normal">{{ $titel[0] }}<em class="text-primary italic">{{ $titel[1] }}</em>{{ $titel[2] }}</h1>
                 <p class="mt-6 max-w-[52ch] text-[1.08rem] leading-[1.8] font-light text-dark-soft">{{ $intro }}</p>
-                <div class="mt-8 flex flex-wrap items-center gap-4">
-                    <a href="{{ route('producten') }}" class="inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-[translate,background-color] duration-300 ease-spring hover:-translate-y-[3px] hover:bg-primary-deep">
+                <div class="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+                    <a href="{{ route('producten') }}" class="inline-flex items-center justify-center gap-2.5 rounded-full max-sm:w-full bg-primary px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-[translate,background-color] duration-300 ease-spring hover:-translate-y-[3px] hover:bg-primary-deep">
                         Bekijk ons assortiment <i class="fa-light fa-arrow-right"></i>
                     </a>
-                    <a href="#winkel" class="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-dark/25 px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-[translate,border-color] duration-300 ease-spring hover:-translate-y-[3px] hover:border-dark">
+                    <a href="#winkel" class="inline-flex items-center justify-center gap-2.5 rounded-full max-sm:w-full border-[1.5px] border-dark/25 px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-[translate,border-color] duration-300 ease-spring hover:-translate-y-[3px] hover:border-dark">
                         Kom langs
                     </a>
                 </div>
             </div>
 
-            <div class="load-reveal relative flex min-h-[380px] flex-col overflow-hidden rounded-[calc(var(--radius)+8px)] bg-dark px-8 py-10 text-cream sm:px-11">
-                <span class="pointer-events-none absolute top-6 right-7 font-serif text-[clamp(4rem,8vw,6.5rem)] leading-none whitespace-nowrap text-gold italic opacity-[.14]">Deluxe</span>
+            <div class="load-reveal relative flex min-h-[340px] flex-col overflow-hidden rounded-[calc(var(--radius)+8px)] bg-dark px-7 py-9 text-cream sm:min-h-[380px] sm:px-11 sm:py-10">
+                {{-- Kleiner op mobiel zodat het watermerk naast het logo blijft in plaats van erover --}}
+                <span class="pointer-events-none absolute top-6 right-6 font-serif text-[clamp(3rem,8vw,6.5rem)] leading-none whitespace-nowrap text-gold italic opacity-[.14] sm:right-7">Deluxe</span>
                 <img src="{{ asset('logo/deluxenailshop_transp_goud_v1.png') }}" alt="" class="mb-auto h-14 w-auto self-start">
                 <span class="mt-10 h-px w-14 bg-gold"></span>
                 <p class="mt-5 font-serif text-[clamp(1.7rem,2.8vw,2.3rem)] leading-[1.25] font-normal">{{ $slogan[0] }}<br><em class="text-gold italic">{{ $slogan[1] }}</em></p>
@@ -75,7 +83,7 @@
 </section>
 
 {{-- Verhaal --}}
-<section class="px-6 pb-[5.5rem]">
+<section class="px-6 pb-16 sm:pb-[5.5rem]">
     <div class="reveal mx-auto flex max-w-[760px] flex-col gap-6">
         @foreach ($verhaal as $alinea)
             <p class="text-[1.05rem] leading-[1.9] font-light text-dark-soft">{!! $opmaak($alinea) !!}</p>
@@ -84,11 +92,11 @@
 </section>
 
 {{-- Meer dan producten --}}
-<section class="bg-linear-to-b from-cream to-cream-deep px-6 py-[5.5rem]">
+<section class="bg-linear-to-b from-cream to-cream-deep px-6 py-16 sm:py-[5.5rem]">
     <div class="mx-auto max-w-[1000px] text-center">
         <h2 class="reveal mx-auto max-w-[30ch] font-serif text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[1.15] font-normal">{{ $meerDan[0] }}<em class="text-primary italic">{{ $meerDan[1] }}</em>{{ $meerDan[2] }}</h2>
         <p class="reveal mx-auto mt-5 max-w-[58ch] text-[1.05rem] leading-[1.85] font-light text-dark-soft">{!! $opmaak($passie) !!}</p>
-        <div class="mt-12 grid gap-5 sm:grid-cols-3">
+        <div class="mt-10 grid gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-5">
             @foreach ($pijlers as $pijler)
                 <div class="reveal flex flex-col items-center gap-4 rounded-card border border-primary/15 bg-offwhite px-6 py-8">
                     <span class="grid h-12 w-12 place-items-center rounded-xl bg-accent-soft text-primary-deep"><i class="fa-light {{ $pijler['icon'] }} text-[1.15rem]"></i></span>
@@ -100,9 +108,9 @@
 </section>
 
 {{-- Winkel & contact --}}
-<section id="winkel" class="scroll-mt-28 px-6 pt-[5.5rem]">
+<section id="winkel" class="scroll-mt-28 px-6 pt-16 sm:pt-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
-        <div class="reveal relative grid gap-10 overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-12 text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] sm:px-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+        <div class="reveal relative grid gap-10 overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-12 text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] max-sm:px-6 max-sm:py-10 sm:px-12 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div class="relative z-[1]">
                 <h2 class="font-serif text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.15] font-normal">Kom langs in <em class="italic">Zevenaar</em></h2>
                 <p class="mt-3 max-w-[44ch] font-light opacity-90">Liever eerst zien en voelen? Je bent welkom in onze winkel. Of neem contact op, we helpen je graag persoonlijk verder.</p>

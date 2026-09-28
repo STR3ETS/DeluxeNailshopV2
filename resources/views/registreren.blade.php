@@ -15,7 +15,7 @@
 
 @section('content')
 
-<section class="w-full px-6 py-16">
+<section class="w-full px-4 pt-16 pb-10 sm:px-6 sm:py-16">
     <div class="mx-auto max-w-[980px]">
         <div class="load-reveal grid overflow-hidden rounded-[calc(var(--radius)+10px)] shadow-card lg:grid-cols-[.92fr_1.08fr]">
 
@@ -23,7 +23,7 @@
             @include('partials.auth-panel')
 
             {{-- Formulier --}}
-            <div class="bg-offwhite p-9 sm:p-12" x-data="{ show: false }">
+            <div class="bg-offwhite p-7 sm:p-12" x-data="{ show: false }">
                 <h1 class="font-serif text-[clamp(1.7rem,3vw,2.2rem)] leading-[1.15] font-normal">Maak een <em class="text-primary italic">account</em></h1>
                 <p class="mt-2.5 text-[.92rem] leading-[1.65] font-light text-dark-soft">Binnen een minuutje geregeld - en helemaal gratis.</p>
 

@@ -71,12 +71,13 @@
             <a href="{{ route('producten') }}" class="inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">Bekijk producten <i class="fa-light fa-arrow-right"></i></a>
         </div>
 
-        <div x-show="$store.cart.items.length > 0" class="load-reveal mt-8 grid items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
+        {{-- grid-cols-1 (minmax(0,1fr)) is nodig: anders rekt een lange, afgekapte productnaam de kolom op mobiel breder dan het scherm --}}
+        <div x-show="$store.cart.items.length > 0" class="load-reveal mt-8 grid grid-cols-1 items-start gap-8 sm:gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
 
             {{-- Gegevens --}}
             <form method="POST" action="{{ route('afrekenen.plaatsen') }}"
                   @submit="$refs.winkelwagen.value = JSON.stringify($store.cart.items.map(i => ({ id: i.id, qty: i.qty })))"
-                  class="flex flex-col gap-6 rounded-card border border-primary/15 bg-offwhite p-7 sm:p-8">
+                  class="flex flex-col gap-6 rounded-card border border-primary/15 bg-offwhite p-5 sm:p-8">
                 @csrf
                 <input type="hidden" name="winkelwagen" x-ref="winkelwagen">
                 <input type="hidden" name="kortingscode" :value="korting ? korting.code : ''">
@@ -189,6 +190,15 @@
                     @error('voorwaarden')<p class="mt-2 pl-7 text-[.8rem] font-medium text-red-600">{{ $message }}</p>@enderror
                 </div>
 
+                {{-- Op mobiel staat het besteloverzicht pas onder het formulier: toon het totaal daarom ook hier --}}
+                <div class="flex items-center justify-between rounded-2xl bg-cream-deep/60 px-5 py-3.5 lg:hidden">
+                    <span class="flex flex-col">
+                        <span class="text-[.9rem] font-medium">Totaal</span>
+                        <span class="text-[.75rem] font-light text-dark-soft" x-text="levering === 'afhalen' ? 'Afhalen, geen verzendkosten' : (verzend === 0 ? 'Gratis verzending' : 'Incl. ' + $store.cart.format(verzend) + ' verzending')"></span>
+                    </span>
+                    <b class="font-serif text-[1.2rem]" x-text="$store.cart.format(totaal)"></b>
+                </div>
+
                 <button type="submit" class="mt-1 flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-7 py-4 text-[.95rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-colors hover:bg-primary-deep">
                     Bestellen en betalen <i class="fa-light fa-arrow-right"></i>
                 </button>
@@ -197,7 +207,7 @@
 
             {{-- Besteloverzicht --}}
             <div class="lg:sticky lg:top-24">
-                <div class="rounded-card border border-primary/15 bg-offwhite p-6 sm:p-7">
+                <div class="rounded-card border border-primary/15 bg-offwhite p-5 sm:p-7">
                     <h2 class="font-serif text-[1.25rem] font-medium">Jouw <em class="text-primary italic">bestelling</em></h2>
 
                     <div class="mt-2 max-h-[320px] divide-y divide-primary/10 overflow-y-auto">
@@ -233,7 +243,7 @@
                         </template>
                         <template x-if="korting">
                             <div class="flex items-center justify-between gap-3 rounded-2xl bg-accent-soft/60 px-4 py-3">
-                                <span class="flex items-center gap-2.5 text-[.85rem]">
+                                <span class="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[.85rem]">
                                     <i class="fa-light fa-tag text-primary-deep"></i>
                                     <b class="font-semibold tracking-[.04em]" x-text="korting.code"></b>
                                     <span class="font-light text-dark-soft" x-text="korting.label"></span>

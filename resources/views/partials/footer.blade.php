@@ -9,7 +9,7 @@
             ['title' => 'Over ons', 'links' => [['label' => 'Ons verhaal', 'url' => route('over-ons')]]],
         ],
         [
-            ['title' => 'Klantenservice', 'links' => [['label' => 'Contact', 'url' => '#'], ['label' => 'Verzenden & retour', 'url' => url('/faq').'#verzending'], ['label' => 'Veelgestelde vragen', 'url' => url('/faq')], ['label' => 'Betaalmethoden', 'url' => url('/faq').'#betaalmethoden']]],
+            ['title' => 'Klantenservice', 'links' => [['label' => 'Contact', 'url' => route('over-ons').'#winkel'], ['label' => 'Verzenden & retour', 'url' => url('/faq').'#verzending'], ['label' => 'Veelgestelde vragen', 'url' => url('/faq')], ['label' => 'Betaalmethoden', 'url' => url('/faq').'#betaalmethoden']]],
         ],
     ];
 
@@ -44,11 +44,12 @@
 @endphp
 
 {{-- Footer --}}
-<footer class="mt-[5.5rem] bg-dark px-6 pt-16 pb-8 text-cream">
-    <div class="mx-auto grid max-w-[1240px] grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.35fr]">
+<footer class="mt-16 bg-dark px-6 pt-14 pb-8 text-cream sm:mt-[5.5rem] sm:pt-16">
+    {{-- Op mobiel staan de linkkolommen twee aan twee; merk en hulpblok over de volle breedte --}}
+    <div class="mx-auto grid max-w-[1240px] grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-12 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.35fr]">
 
         {{-- Merk, reviews & socials --}}
-        <div>
+        <div class="col-span-2 sm:col-span-1">
             <a href="{{ url('/') }}" class="mb-5 inline-block">
                 <img src="{{ asset('logo/deluxenailshop_transp_goud_v1.png') }}" alt="{{ config('app.name') }}" class="h-14 w-auto">
             </a>
@@ -72,9 +73,9 @@
                 @foreach ($column as $group)
                     <div>
                         <h4 class="mb-4 text-[.78rem] tracking-[.18em] text-gold uppercase">{{ $group['title'] }}</h4>
-                        <ul class="flex flex-col gap-2.5">
+                        <ul class="flex flex-col gap-1">
                             @foreach ($group['links'] as $link)
-                                <li><a href="{{ $link['url'] }}" class="text-[.9rem] font-light opacity-85 transition-colors hover:text-gold hover:opacity-100">{{ $link['label'] }}</a></li>
+                                <li><a href="{{ $link['url'] }}" class="inline-block py-1 text-[.9rem] font-light opacity-85 transition-colors hover:text-gold hover:opacity-100">{{ $link['label'] }}</a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -83,7 +84,7 @@
         @endforeach
 
         {{-- Hulp nodig? --}}
-        <div class="self-start rounded-card border border-cream/10 bg-white/5 p-6 sm:col-span-2 lg:col-span-1">
+        <div class="col-span-2 self-start rounded-card border border-cream/10 bg-white/5 p-6 lg:col-span-1">
             <h4 class="mb-2 font-serif text-[1.35rem] font-medium">Hulp <em class="text-gold italic">nodig</em>?</h4>
             <p class="mb-5 text-[.85rem] leading-[1.6] font-light opacity-75">Ons team van nagelstylistes denkt graag met je mee.</p>
             <ul class="flex flex-col gap-3.5">
@@ -105,11 +106,11 @@
     </div>
 
     {{-- Onderbalk --}}
-    <div class="mx-auto mt-14 flex max-w-[1240px] flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-cream/10 pt-6">
+    <div class="mx-auto mt-12 flex max-w-[1240px] flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-cream/10 pt-6 sm:mt-14">
         <span class="text-[.78rem] opacity-60">© {{ date('Y') }} {{ $domain }} · Gemaakt door <a href="https://halfmanmedia.nl" target="_blank" rel="noopener" class="font-medium transition-colors hover:text-gold">HalfmanMedia</a></span>
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
             @foreach ($legalLinks as $link)
-                <a href="{{ $link['url'] }}" class="text-[.78rem] opacity-60 transition-all hover:text-gold hover:opacity-100">{{ $link['label'] }}</a>
+                <a href="{{ $link['url'] }}" class="py-1 text-[.78rem] opacity-60 transition-all hover:text-gold hover:opacity-100">{{ $link['label'] }}</a>
             @endforeach
         </div>
         <div class="flex items-center gap-3">

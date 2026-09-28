@@ -31,16 +31,17 @@
     </p>
 @endif
 
-<div class="load-reveal mt-7 grid items-start gap-6 lg:grid-cols-[1.25fr_1fr]">
+{{-- minmax(0,…): een lange, afgekapte productnaam mag de kolom op mobiel niet breder maken dan het scherm --}}
+<div class="load-reveal mt-7 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
 
     {{-- Artikelen + totalen --}}
-    <div class="rounded-card border border-primary/15 bg-offwhite p-6 sm:p-7">
+    <div class="rounded-card border border-primary/15 bg-offwhite p-5 sm:p-7">
         <h2 class="font-serif text-[1.2rem] font-medium">Artikelen</h2>
 
         <div class="mt-2 divide-y divide-primary/10">
             @foreach ($order->items as $regel)
                 @php $product = $producten[$regel->product_slug] ?? null; @endphp
-                <div class="flex items-center gap-4 py-4">
+                <div class="flex items-center gap-3 py-4 sm:gap-4">
                     <span class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl"
                           @if ($product) style="background:linear-gradient(160deg,{{ $product->bg_from }},{{ $product->bg_to }})" @else style="background:var(--color-cream-deep)" @endif>
                         @if ($product?->image)
@@ -57,7 +58,7 @@
                         @endif
                         <p class="mt-0.5 text-[.8rem] text-dark-soft">{{ $regel->qty }} × €{{ number_format($regel->price, 2, ',', '.') }}</p>
                     </div>
-                    <span class="font-serif text-[1rem] font-semibold">€{{ number_format($regel->price * $regel->qty, 2, ',', '.') }}</span>
+                    <span class="shrink-0 font-serif text-[1rem] font-semibold">€{{ number_format($regel->price * $regel->qty, 2, ',', '.') }}</span>
                 </div>
             @endforeach
         </div>
@@ -91,7 +92,7 @@
             <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-user text-[.95rem] text-primary-deep"></i> Klant</h2>
             <div class="mt-3 flex flex-col gap-1.5 text-[.9rem] leading-[1.7]">
                 <p class="font-medium">{{ $order->name }}</p>
-                <a href="mailto:{{ $order->email }}" class="font-light text-dark-soft transition-colors hover:text-primary-deep">{{ $order->email }}</a>
+                <a href="mailto:{{ $order->email }}" class="font-light break-all text-dark-soft transition-colors hover:text-primary-deep">{{ $order->email }}</a>
                 @if ($order->phone)
                     <a href="tel:{{ preg_replace('/\s+/', '', $order->phone) }}" class="font-light text-dark-soft transition-colors hover:text-primary-deep">{{ $order->phone }}</a>
                 @endif
@@ -133,7 +134,7 @@
                     <p>Interne opname: telt niet mee in de omzet en krijgt geen factuur.</p>
                 @elseif ($order->mollie_payment_id)
                     <p>Betaald via <b class="font-medium text-dark">Mollie</b></p>
-                    <p class="text-[.8rem]">Betalings-ID: <code class="rounded bg-cream-deep px-1.5 py-0.5 text-[.75rem]">{{ $order->mollie_payment_id }}</code></p>
+                    <p class="text-[.8rem]">Betalings-ID: <code class="rounded bg-cream-deep px-1.5 py-0.5 text-[.75rem] break-all">{{ $order->mollie_payment_id }}</code></p>
                 @else
                     <p>Geen online betaling gekoppeld.</p>
                 @endif
@@ -152,7 +153,7 @@
             @csrf
             @method('PATCH')
             <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-arrows-rotate text-[.95rem] text-primary-deep"></i> Status wijzigen</h2>
-            <div class="mt-4 flex items-center gap-3">
+            <div class="mt-4 flex flex-wrap items-center gap-3 min-[400px]:flex-nowrap">
                 <select name="status" class="w-full cursor-pointer rounded-full border border-primary/20 bg-offwhite px-5 py-3 text-[.9rem] outline-none transition-colors focus:border-primary">
                     @foreach ($statussen as $statusKey => $statusLabel)
                         <option value="{{ $statusKey }}" @selected($order->status === $statusKey)>{{ $statusLabel }}</option>

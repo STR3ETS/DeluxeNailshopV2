@@ -27,7 +27,8 @@
             @endforeach
         </div>
 
-        <div class="grid items-start gap-10 lg:grid-cols-[280px_1fr]">
+        {{-- grid-cols-1 + break-words: lange URL's in de tekst mogen de kolom op mobiel niet oprekken --}}
+        <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-[280px_minmax(0,1fr)]">
 
             {{-- Inhoudsopgave --}}
             <aside class="load-reveal sticky top-24 hidden max-h-[calc(100vh-8rem)] overflow-y-auto rounded-card border border-primary/15 bg-offwhite p-5 lg:block">
@@ -40,7 +41,7 @@
             </aside>
 
             {{-- Artikelen --}}
-            <div class="load-reveal flex flex-col gap-10">
+            <div class="load-reveal flex flex-col gap-10 break-words">
                 @foreach ($articles as $i => $article)
                     <article id="artikel-{{ $i + 1 }}" class="scroll-mt-28">
                         <h2 class="mb-3.5 font-serif text-[1.35rem] leading-[1.3] font-medium">{{ $article['title'] }}</h2>

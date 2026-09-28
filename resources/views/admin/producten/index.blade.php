@@ -33,23 +33,28 @@
 
     <div class="mt-6 divide-y divide-primary/10 overflow-hidden rounded-card border border-primary/15 bg-offwhite">
         @forelse ($producten as $p)
-            <div class="grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-x-6 px-6 py-5 sm:grid-cols-[56px_minmax(0,1fr)_130px_auto] md:grid-cols-[56px_minmax(0,1fr)_160px_130px_auto] lg:grid-cols-[64px_minmax(0,1fr)_160px_130px_180px_auto]"
+            {{-- Op mobiel: kleinere tussenruimtes en knoppen, naam over twee regels en prijs + voorraad onder de naam --}}
+            <div class="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-x-3 px-4 py-4 sm:grid-cols-[56px_minmax(0,1fr)_130px_auto] sm:gap-x-6 sm:px-6 sm:py-5 md:grid-cols-[56px_minmax(0,1fr)_160px_130px_auto] lg:grid-cols-[64px_minmax(0,1fr)_160px_130px_180px_auto]"
                  x-show="zoek.trim() === '' || $el.dataset.zoek.includes(zoek.toLowerCase())"
                  data-zoek="{{ mb_strtolower($p->brand.' '.$p->name.' '.($catNames[$p->category] ?? '')) }}">
 
-                <span class="grid h-14 w-14 place-items-center overflow-hidden rounded-xl lg:h-16 lg:w-16" style="background:linear-gradient(160deg,{{ $p->bg_from }},{{ $p->bg_to }})">
+                <span class="grid h-12 w-12 place-items-center overflow-hidden rounded-xl sm:h-14 sm:w-14 lg:h-16 lg:w-16" style="background:linear-gradient(160deg,{{ $p->bg_from }},{{ $p->bg_to }})">
                     @if ($p->image)
-                        <img src="{{ asset($p->image) }}" alt="" class="max-h-12 w-auto object-contain">
+                        <img src="{{ asset($p->image) }}" alt="" class="max-h-10 w-auto object-contain sm:max-h-12">
                     @endif
                 </span>
 
                 <div class="min-w-0">
-                    <a href="{{ route('admin.producten.bewerken', $p) }}" class="block truncate text-[.95rem] font-medium transition-colors hover:text-primary-deep">{{ $p->name }}</a>
-                    <p class="mt-0.5 flex items-center gap-2 text-[.68rem] font-bold tracking-[.16em] text-primary-deep uppercase">
+                    <a href="{{ route('admin.producten.bewerken', $p) }}" class="line-clamp-2 text-[.9rem] leading-snug font-medium transition-colors hover:text-primary-deep sm:line-clamp-1 sm:text-[.95rem]">{{ $p->name }}</a>
+                    <p class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[.64rem] font-bold tracking-[.14em] text-primary-deep uppercase sm:text-[.68rem] sm:tracking-[.16em]">
                         {{ $p->brand }}
                         @unless ($p->actief)
                             <span class="rounded-full border border-dark/15 px-2 py-0.5 text-[.6rem] font-semibold tracking-[.08em] text-dark-soft normal-case">Inactief</span>
                         @endunless
+                    </p>
+                    <p class="mt-1 flex flex-col text-[.8rem] leading-snug sm:hidden">
+                        <span class="font-serif font-semibold">€{{ number_format($p->price, 2, ',', '.') }}</span>
+                        <span class="text-[.75rem] {{ $p->voorraad === 0 ? 'font-semibold text-red-700' : ($p->voorraad < 10 ? 'font-semibold text-orange-700' : 'text-dark-soft') }}">{{ $p->voorraad }} op voorraad</span>
                     </p>
                 </div>
 
@@ -69,20 +74,20 @@
                     @endif
                 </span>
 
-                <div class="flex items-center justify-end gap-1.5">
-                    <a href="{{ route('admin.producten.bewerken', $p) }}" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Bewerken" title="Bewerken">
+                <div class="flex items-center justify-end gap-0.5 sm:gap-1.5">
+                    <a href="{{ route('admin.producten.bewerken', $p) }}" class="grid h-9 w-9 place-items-center rounded-full transition-colors hover:bg-cream-deep sm:h-10 sm:w-10" aria-label="Bewerken" title="Bewerken">
                         <i class="fa-light fa-pen text-[.9rem]"></i>
                     </a>
                     <form method="POST" action="{{ route('admin.producten.dupliceren', $p) }}">
                         @csrf
-                        <button type="submit" class="grid h-10 w-10 place-items-center rounded-full text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark" aria-label="Dupliceren" title="Dupliceren">
+                        <button type="submit" class="grid h-9 w-9 place-items-center rounded-full text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark sm:h-10 sm:w-10" aria-label="Dupliceren" title="Dupliceren">
                             <i class="fa-light fa-copy text-[.9rem]"></i>
                         </button>
                     </form>
                     <form method="POST" action="{{ route('admin.producten.verwijderen', $p) }}" x-data="{ bevestig: false }" @click.outside="bevestig = false">
                         @csrf
                         @method('DELETE')
-                        <button type="button" x-show="!bevestig" @click="bevestig = true" class="grid h-10 w-10 place-items-center rounded-full text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark" aria-label="Verwijderen" title="Verwijderen">
+                        <button type="button" x-show="!bevestig" @click="bevestig = true" class="grid h-9 w-9 place-items-center rounded-full sm:h-10 sm:w-10 text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark" aria-label="Verwijderen" title="Verwijderen">
                             <i class="fa-light fa-trash-can text-[.9rem]"></i>
                         </button>
                         <span x-cloak x-show="bevestig" class="flex items-center gap-1">

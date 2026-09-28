@@ -36,7 +36,7 @@
     <div x-cloak x-show="show"
          x-transition:enter="transition duration-500 ease-out" x-transition:enter-start="translate-y-6 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
          x-transition:leave="transition duration-300 ease-in" x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-6 opacity-0"
-         class="fixed right-4 bottom-4 left-4 z-[90] rounded-card border border-primary/15 bg-offwhite p-6 shadow-card sm:left-auto sm:right-6 sm:bottom-6 sm:w-[420px]"
+         class="fixed right-4 bottom-4 left-4 z-[90] max-h-[calc(100svh-2rem)] overflow-y-auto rounded-card border border-primary/15 bg-offwhite p-5 shadow-card sm:left-auto sm:right-6 sm:bottom-6 sm:w-[420px] sm:p-6"
          role="dialog" aria-label="Cookievoorkeuren">
 
         <div class="flex items-start gap-3.5">
@@ -82,9 +82,9 @@
         <div class="mt-5 flex flex-col gap-2.5">
             <div x-show="!settings" class="flex flex-col gap-2.5">
                 <button type="button" @click="acceptAll()" class="w-full rounded-full bg-primary px-6 py-3 text-[.88rem] font-semibold text-white transition-colors hover:bg-primary-deep">Alles accepteren</button>
-                <div class="flex gap-2.5">
-                    <button type="button" @click="necessaryOnly()" class="flex-1 rounded-full border border-dark/20 px-5 py-2.5 text-[.85rem] font-semibold transition-colors hover:border-dark">Alleen noodzakelijk</button>
-                    <button type="button" @click="settings = true" class="flex-1 rounded-full px-5 py-2.5 text-[.85rem] font-semibold text-primary-deep transition-colors hover:bg-cream-deep">Voorkeuren</button>
+                <div class="flex gap-2">
+                    <button type="button" @click="necessaryOnly()" class="flex-1 rounded-full border border-dark/20 px-4 py-2.5 text-[.82rem] font-semibold transition-colors hover:border-dark sm:px-5 sm:text-[.85rem]">Alleen noodzakelijk</button>
+                    <button type="button" @click="settings = true" class="shrink-0 rounded-full px-4 py-2.5 text-[.82rem] font-semibold text-primary-deep transition-colors hover:bg-cream-deep sm:flex-1 sm:px-5 sm:text-[.85rem]">Voorkeuren</button>
                 </div>
             </div>
             <button x-cloak x-show="settings" type="button" @click="save()" class="w-full rounded-full bg-primary px-6 py-3 text-[.88rem] font-semibold text-white transition-colors hover:bg-primary-deep">Voorkeuren opslaan</button>

@@ -1,0 +1,14 @@
+{
+    "name": "Deluxe Nail Shop",
+    "short_name": "Deluxe Nail Shop",
+    "description": "Professionele nagelproducten voor salon en thuis.",
+    "lang": "nl",
+    "start_url": "/",
+    "display": "browser",
+    "background_color": "#faf4ee",
+    "theme_color": "#faf4ee",
+    "icons": [
+        { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+        { "src": "/favicon.png", "sizes": "512x512", "type": "image/png" }
+    ]
+}

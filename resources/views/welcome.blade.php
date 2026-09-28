@@ -1,8 +1,12 @@
 @extends('layouts.shop')
 
 @section('title', config('app.name') . ' - Professionele nagelproducten voor salon en thuis')
-@section('meta_description', 'Dé webshop voor professionele nagelproducten. Shop rubber base, gellak, builder gel, acrygel en nail art van DNKa\', Valeri en Touch. Gratis verzending vanaf €75 (NL) en €100 (BE).')
+@section('meta_description', 'Professionele nagelproducten van DNKa\', Valeri en Touch: rubber base, gellak, builder gel, acrygel en nail art. Gratis verzending vanaf €'.config('shop.verzending.NL.gratis_vanaf').' (NL) en €'.config('shop.verzending.BE.gratis_vanaf').' (BE).')
 @section('meta_keywords', 'nagelproducten, nagelproducten kopen, gellak, gelpolish, rubber base, cover base, builder gel, acrygel, polygel, nail art, DNKa, Valeri, Touch, nagelstyliste, salonkwaliteit')
+
+@push('structured-data')
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::winkel()])
+@endpush
 
 @php
     /*
@@ -58,7 +62,8 @@
 @section('content')
 
 {{-- Hero --}}
-<section class="relative mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-12 px-6 pt-12 pb-[5.5rem] lg:grid-cols-[1.05fr_.95fr] lg:pt-[4.5rem]">
+{{-- Zolang de sectie schermbreed is, knipt overflow-x-clip de blobs en de waaier af zodat mobiel niet zijwaarts kan scrollen --}}
+<section class="relative mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-10 px-6 pt-8 pb-16 max-[1240px]:overflow-x-clip sm:gap-12 sm:pt-12 sm:pb-[5.5rem] lg:grid-cols-[1.05fr_.95fr] lg:pt-[4.5rem]">
     <div class="hero-blob b1 pointer-events-none absolute -top-20 right-[6%] z-0 h-[420px] w-[420px] rounded-[46%_54%_60%_40%/48%_44%_56%_52%] bg-accent opacity-50 blur-[60px]"></div>
     <div class="hero-blob b2 pointer-events-none absolute -bottom-[120px] -left-[60px] z-0 h-[340px] w-[340px] rounded-[46%_54%_60%_40%/48%_44%_56%_52%] bg-gold opacity-35 blur-[60px]"></div>
 
@@ -69,34 +74,35 @@
             <span class="line block overflow-hidden"><span class="inline-block"><em class="font-medium text-primary italic">voor zich</em> spreken</span></span>
         </h1>
         <p id="heroText" class="mt-6 mb-9 max-w-[44ch] text-[1.05rem] leading-[1.7] font-light text-dark-soft">{{ $heroText }}</p>
-        <div id="heroCta" class="flex flex-wrap items-center gap-4">
-            <a href="#bestsellers" class="btn inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-[translate,box-shadow,background-color] duration-300 ease-spring hover:-translate-y-[3px] hover:bg-primary-deep hover:shadow-[0_20px_36px_-12px_color-mix(in_srgb,var(--color-primary-deep)_75%,transparent)]">
+        <div id="heroCta" class="flex flex-wrap items-center gap-3 sm:gap-4">
+            <a href="#bestsellers" class="btn inline-flex items-center justify-center gap-2.5 rounded-full max-sm:w-full bg-primary px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-[translate,box-shadow,background-color] duration-300 ease-spring hover:-translate-y-[3px] hover:bg-primary-deep hover:shadow-[0_20px_36px_-12px_color-mix(in_srgb,var(--color-primary-deep)_75%,transparent)]">
                 Shop bestsellers <i class="fa-light fa-arrow-right"></i>
             </a>
-            <a href="#categorieen" class="btn inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-dark/25 px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-[translate,border-color] duration-300 ease-spring hover:-translate-y-[3px] hover:border-dark">
+            <a href="#categorieen" class="btn inline-flex items-center justify-center gap-2.5 rounded-full max-sm:w-full border-[1.5px] border-dark/25 px-7 py-4 text-[.92rem] font-semibold tracking-[.02em] transition-[translate,border-color] duration-300 ease-spring hover:-translate-y-[3px] hover:border-dark">
                 Ontdek categorieën
             </a>
         </div>
-        <div id="heroStats" class="mt-12 flex gap-6 sm:gap-10">
+        <div id="heroStats" class="mt-10 grid grid-cols-3 gap-3 sm:mt-12 sm:flex sm:gap-10">
             @foreach ($stats as $stat)
                 <div class="stat">
                     @if (isset($stat['count']))
-                        <b class="block font-serif text-[1.6rem] font-medium" data-count="{{ $stat['count'] }}">0</b>
+                        <b class="block font-serif text-[1.35rem] font-medium sm:text-[1.6rem]" data-count="{{ $stat['count'] }}">0</b>
                     @else
-                        <b class="block font-serif text-[1.6rem] font-medium">{{ $stat['text'] }}@if ($stat['star'] ?? false)<i class="fa-solid fa-star ml-1 text-[.9rem] text-primary"></i>@endif</b>
+                        <b class="block font-serif text-[1.35rem] font-medium sm:text-[1.6rem]">{{ $stat['text'] }}@if ($stat['star'] ?? false)<i class="fa-solid fa-star ml-1 text-[.9rem] text-primary"></i>@endif</b>
                     @endif
-                    <small class="text-[.76rem] tracking-[.1em] text-dark-soft uppercase">{{ $stat['label'] }}</small>
+                    <small class="block text-[.66rem] leading-[1.5] tracking-[.08em] text-dark-soft uppercase sm:inline sm:text-[.76rem] sm:tracking-[.1em]">{{ $stat['label'] }}</small>
                 </div>
             @endforeach
         </div>
     </div>
 
     {{-- Kleurenwaaier --}}
-    <div class="relative z-[1] order-first grid min-h-[430px] place-items-center lg:order-none lg:min-h-[480px]">
-        <div id="fan" class="relative h-[400px] w-[120px]">
+    {{-- Op mobiel is de waaier kleiner en minder ver uitgewaaierd (--fan-spread) zodat hij binnen het scherm blijft --}}
+    <div class="relative z-[1] order-first grid min-h-[350px] place-items-center sm:min-h-[430px] lg:order-none lg:min-h-[480px]">
+        <div id="fan" class="relative h-[330px] w-[120px] [--fan-spread:.72] sm:h-[400px] sm:[--fan-spread:1]">
             @foreach ($swatches as $i => $swatch)
-                <div class="swatch absolute bottom-0 left-1/2 -ml-[37px] h-[340px] w-[74px] origin-[50%_92%] rounded-[60px_60px_18px_18px] border border-white/50 shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--color-dark)_35%,transparent)] after:absolute after:inset-0 after:rounded-[inherit] after:bg-[linear-gradient(115deg,rgba(255,255,255,.55)_0%,rgba(255,255,255,0)_38%)] after:content-['']"
-                     style="background:linear-gradient(180deg,{{ $swatch[0] }},{{ $swatch[1] }});transform:rotate({{ $angles[$i] }}deg)">
+                <div class="swatch absolute bottom-0 left-1/2 -ml-[32px] h-[280px] w-[64px] origin-[50%_92%] sm:-ml-[37px] sm:h-[340px] sm:w-[74px] rounded-[60px_60px_18px_18px] border border-white/50 shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--color-dark)_35%,transparent)] after:absolute after:inset-0 after:rounded-[inherit] after:bg-[linear-gradient(115deg,rgba(255,255,255,.55)_0%,rgba(255,255,255,0)_38%)] after:content-['']"
+                     style="background:linear-gradient(180deg,{{ $swatch[0] }},{{ $swatch[1] }});transform:rotate(calc({{ $angles[$i] }}deg * var(--fan-spread, 1)))">
                     <span class="absolute bottom-3.5 left-1/2 grid h-[26px] w-[26px] -translate-x-1/2 place-items-center rounded-full bg-white/85 text-[.55rem] font-bold tracking-[.02em] text-dark">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
                 </div>
             @endforeach
@@ -108,29 +114,30 @@
 
 {{-- USP-strip --}}
 <div class="border-y border-primary/15 bg-offwhite px-6 py-3.5">
-    <div class="mx-auto flex max-w-[1240px] flex-wrap items-center justify-center gap-x-11 gap-y-3">
+    <div class="mx-auto flex w-fit max-w-[1240px] flex-col items-start gap-x-11 sm:w-auto gap-y-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-y-3">
         @foreach ($uspStrip as $usp)
-            <span class="inline-flex items-center gap-2.5 text-[.86rem] font-medium tracking-[.02em] text-dark-soft">
-                <i class="fa-light {{ $usp['icon'] }} text-base text-primary-deep"></i>{{ $usp['text'] }}
+            <span class="inline-flex items-center gap-2.5 text-[.84rem] font-medium tracking-[.02em] text-dark-soft sm:text-[.86rem]">
+                <i class="fa-light {{ $usp['icon'] }} w-5 shrink-0 text-center text-base text-primary-deep"></i>{{ $usp['text'] }}
             </span>
         @endforeach
     </div>
 </div>
 
 {{-- Categorieën --}}
-<section id="categorieen" class="px-6 py-[5.5rem]">
+<section id="categorieen" class="scroll-mt-24 px-6 py-16 sm:py-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
-        <div class="reveal mb-12 flex flex-wrap items-end justify-between gap-8">
+        <div class="reveal mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-3 sm:mb-12">
             <h2 class="font-serif text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[1.15] font-normal">Shop per <em class="text-primary italic">categorie</em></h2>
             <a href="{{ url('/producten') }}" class="inline-flex items-center gap-2 text-[.86rem] font-semibold tracking-[.04em] text-primary-deep transition-all hover:gap-3.5">Alle producten <i class="fa-light fa-arrow-right"></i></a>
         </div>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-5">
+        {{-- Op mobiel twee compacte kaarten naast elkaar (onder 360px één) --}}
+        <div class="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] sm:gap-5">
             @foreach (config('shop.categories') as $category)
-                <a href="{{ url('/producten') }}?categorie={{ $category['slug'] }}" class="reveal group relative flex min-h-[170px] flex-col gap-3.5 overflow-hidden rounded-card border border-primary/15 bg-offwhite p-7 pb-6 transition-[translate,box-shadow,border-color] duration-[350ms] ease-spring hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card">
-                    <span class="h-[52px] w-[52px] rounded-[58%_42%_55%_45%/50%_60%_40%_50%] transition-transform duration-500 ease-spring group-hover:rotate-[18deg] group-hover:scale-[1.12]" style="background:linear-gradient(135deg,{{ $category['dab'][0] }},{{ $category['dab'][1] }})"></span>
-                    <span class="absolute top-5 right-5 grid h-8 w-8 place-items-center rounded-full border border-dark/20 text-[.85rem] transition-all duration-300 group-hover:-rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-white"><i class="fa-light fa-arrow-right"></i></span>
-                    <h3 class="mt-auto font-serif text-[1.18rem] font-medium">{{ $category['name'] }}</h3>
-                    <small class="text-[.78rem] tracking-[.02em] text-dark-soft">{{ $category['sub'] }}</small>
+                <a href="{{ url('/producten') }}?categorie={{ $category['slug'] }}" class="reveal group relative flex min-h-[140px] flex-col gap-2.5 overflow-hidden rounded-card border border-primary/15 bg-offwhite p-4 pb-4 transition-[translate,box-shadow,border-color] duration-[350ms] ease-spring hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card sm:min-h-[170px] sm:gap-3.5 sm:p-7 sm:pb-6">
+                    <span class="h-10 w-10 rounded-[58%_42%_55%_45%/50%_60%_40%_50%] transition-transform duration-500 ease-spring group-hover:rotate-[18deg] group-hover:scale-[1.12] sm:h-[52px] sm:w-[52px]" style="background:linear-gradient(135deg,{{ $category['dab'][0] }},{{ $category['dab'][1] }})"></span>
+                    <span class="absolute top-4 right-4 grid h-7 w-7 place-items-center rounded-full border border-dark/20 text-[.75rem] transition-all duration-300 group-hover:-rotate-45 group-hover:border-primary group-hover:bg-primary group-hover:text-white sm:top-5 sm:right-5 sm:h-8 sm:w-8 sm:text-[.85rem]"><i class="fa-light fa-arrow-right"></i></span>
+                    <h3 class="mt-auto font-serif text-[1rem] leading-tight font-medium sm:text-[1.18rem]">{{ $category['name'] }}</h3>
+                    <small class="text-[.74rem] leading-[1.45] tracking-[.02em] text-dark-soft sm:text-[.78rem]">{{ $category['sub'] }}</small>
                 </a>
             @endforeach
         </div>
@@ -138,13 +145,13 @@
 </section>
 
 {{-- Bestsellers --}}
-<section id="bestsellers" class="bg-linear-to-b from-cream to-cream-deep px-6 py-[5.5rem]">
+<section id="bestsellers" class="scroll-mt-24 bg-linear-to-b from-cream to-cream-deep px-6 py-16 sm:py-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
-        <div class="reveal mb-12 flex flex-wrap items-end justify-between gap-8">
+        <div class="reveal mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-3 sm:mb-12">
             <h2 class="font-serif text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[1.15] font-normal">Deze week <em class="text-primary italic">favoriet</em></h2>
             <a href="{{ url('/producten') }}" class="inline-flex items-center gap-2 text-[.86rem] font-semibold tracking-[.04em] text-primary-deep transition-all hover:gap-3.5">Bekijk alle bestsellers <i class="fa-light fa-arrow-right"></i></a>
         </div>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(255px,1fr))] gap-6">
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(255px,1fr))] sm:gap-6">
             @foreach ($bestsellers as $product)
                 @include('partials.product-card', ['product' => $product, 'reveal' => true])
             @endforeach
@@ -153,12 +160,12 @@
 </section>
 
 {{-- Merken --}}
-<section class="px-6 py-[5.5rem]">
+<section class="px-6 py-16 sm:py-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
-        <div class="reveal mb-12 flex flex-wrap items-end justify-between gap-8">
+        <div class="reveal mb-8 flex flex-wrap items-end justify-between gap-8 sm:mb-12">
             <h2 class="font-serif text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[1.15] font-normal">Onze <em class="text-primary italic">merken</em></h2>
         </div>
-        <div class="grid gap-6 lg:grid-cols-3">
+        <div class="grid gap-4 sm:gap-6 lg:grid-cols-3">
             @foreach ($brandPanels as $panel)
                 @php
                     $isDark = $panel['style'] === 'dark';
@@ -169,8 +176,8 @@
                     };
                 @endphp
                 {{-- Ruime bovenpadding houdt de grote merknaam vrij van de titel; knoppen lijnen onderaan uit --}}
-                <div class="reveal relative flex flex-col overflow-hidden rounded-[calc(var(--radius)+8px)] px-8 pt-[7.5rem] pb-[3.2rem] sm:px-10 lg:pt-[8.5rem] {{ $panelBg }}">
-                    <span class="pointer-events-none absolute top-6 right-7 font-serif text-[clamp(4rem,7vw,6rem)] leading-none whitespace-nowrap italic opacity-[.14] {{ $isDark ? 'text-gold' : 'text-white' }}">{{ $panel['name'] }}</span>
+                <div class="reveal relative flex flex-col overflow-hidden rounded-[calc(var(--radius)+8px)] px-6 pt-[6.5rem] pb-10 sm:px-10 sm:pt-[7.5rem] sm:pb-[3.2rem] lg:pt-[8.5rem] {{ $panelBg }}">
+                    <span class="pointer-events-none absolute top-5 right-5 font-serif text-[clamp(3.6rem,7vw,6rem)] sm:top-6 sm:right-7 leading-none whitespace-nowrap italic opacity-[.14] {{ $isDark ? 'text-gold' : 'text-white' }}">{{ $panel['name'] }}</span>
                     <h3 class="font-serif text-[2rem] leading-tight font-medium">{{ $panel['name'] }}</h3>
                     <p class="mt-1 mb-4 font-serif text-[1.1rem] italic {{ $isDark ? 'text-gold' : 'text-primary-deep' }}">{{ $panel['tagline'] }}</p>
                     <p class="mb-8 max-w-[44ch] leading-[1.7] font-light opacity-85">{{ $panel['text'] }}</p>
@@ -184,7 +191,7 @@
 </section>
 
 {{-- Nieuwsbrief --}}
-<section id="nieuwsbrief" class="scroll-mt-28 px-6 pt-4 pb-[5.5rem]">
+<section id="nieuwsbrief" class="scroll-mt-28 px-6 pt-4 pb-4 sm:pb-[5.5rem]">
     <div class="mx-auto max-w-[1240px]">
         <div x-data="{
                 email: '',
@@ -207,13 +214,13 @@
                     } catch { this.fout = 'Inschrijven lukte niet, probeer het opnieuw.'; }
                     this.status = 'open';
                 },
-             }" class="reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-16 text-center text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[110px] after:h-[220px] after:w-[220px] after:rounded-full after:bg-white/10 after:content-['']">
+             }" class="reveal relative overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-6 py-12 text-center sm:px-8 sm:py-16 text-white before:absolute before:-top-[140px] before:-left-20 before:h-[300px] before:w-[300px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[110px] after:h-[220px] after:w-[220px] after:rounded-full after:bg-white/10 after:content-['']">
             <h2 class="relative z-[1] mb-3 font-serif text-[clamp(1.8rem,3.4vw,2.6rem)] font-normal">Als eerste de <em class="italic">nieuwe tinten</em> zien?</h2>
             <p class="relative z-[1] mb-8 font-light opacity-90">Schrijf je in en ontvang {{ $nieuwsbriefKorting }}% korting op je eerste bestelling.</p>
             <form method="POST" action="{{ route('nieuwsbrief.inschrijven') }}" x-show="status !== 'klaar'" @submit.prevent="inschrijven()" class="relative z-[1] mx-auto flex max-w-[460px] flex-wrap justify-center gap-3">
                 @csrf
-                <input type="email" name="email" x-model="email" required placeholder="jouw@email.nl" aria-label="E-mailadres" class="min-w-[230px] flex-1 rounded-full bg-white/95 px-6 py-4 text-[.92rem] text-dark outline-none">
-                <button type="submit" :disabled="status === 'bezig'" class="inline-flex items-center gap-2.5 rounded-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)] disabled:opacity-70">
+                <input type="email" name="email" x-model="email" required placeholder="jouw@email.nl" aria-label="E-mailadres" autocomplete="email" class="w-full min-w-0 rounded-full bg-white/95 px-6 py-4 text-[.92rem] text-dark outline-none sm:w-auto sm:min-w-[230px] sm:flex-1">
+                <button type="submit" :disabled="status === 'bezig'" class="inline-flex items-center justify-center gap-2.5 rounded-full max-sm:w-full bg-dark px-7 py-4 text-[.92rem] font-semibold text-white transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--color-dark)_70%,black)] disabled:opacity-70">
                     <span x-text="status === 'bezig' ? 'Even geduld…' : 'Inschrijven'">Inschrijven</span>
                 </button>
                 <p x-cloak x-show="fout !== ''" x-text="fout" class="w-full text-[.85rem] font-medium"></p>
@@ -249,7 +256,9 @@
 {{-- Hero-animaties (GSAP komt uit resources/js/app.js; reveals/tellers zitten daar ook) --}}
 <script type="module">
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const angles = @json($angles);
+// Op mobiel waaiert de kleurenwaaier minder ver uit (zie --fan-spread op #fan)
+const spread = parseFloat(getComputedStyle(document.getElementById("fan")).getPropertyValue("--fan-spread")) || 1;
+const angles = @json($angles).map(a => a * spread);
 
 if (window.gsap && !reduce) {
     const gsap = window.gsap;

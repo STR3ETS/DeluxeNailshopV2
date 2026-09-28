@@ -22,7 +22,7 @@
 </div>
 
 <form method="POST" action="{{ route('admin.bestellingen.opslaan') }}"
-      class="load-reveal mt-7 rounded-card border border-primary/15 bg-offwhite p-6 sm:p-8"
+      class="load-reveal mt-7 rounded-card border border-primary/15 bg-offwhite p-5 sm:p-8"
       x-data="{
         producten: @js($producten->map(fn ($p) => [
             'slug' => $p->slug,
@@ -63,10 +63,11 @@
         <span class="{{ $labelKlassen }}">Producten</span>
         <div class="flex flex-col gap-3">
             <template x-for="(rij, i) in rijen" :key="i">
-                <div class="grid grid-cols-[minmax(0,1fr)_110px_44px] items-center gap-3">
+                {{-- Op mobiel: productkiezer over de volle breedte, aantal + verwijderen eronder --}}
+                <div class="grid grid-cols-[110px_44px_minmax(0,1fr)] items-center gap-3 border-b border-primary/10 pb-3 last:border-b-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_110px_44px] sm:border-b-0 sm:pb-0">
 
                     {{-- Zoekbare productkiezer --}}
-                    <div class="relative" @click.outside="if (openRij === i) openRij = null" @keydown.escape="openRij = null">
+                    <div class="relative col-span-3 sm:col-span-1" @click.outside="if (openRij === i) openRij = null" @keydown.escape="openRij = null">
                         <input type="hidden" :name="`regels[${i}][slug]`" :value="rij.slug">
 
                         <button type="button" @click="openRij = openRij === i ? null : i; zoek = ''"
@@ -149,7 +150,7 @@
 
     <div class="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-primary/15 pt-6">
         <p class="text-[.9rem] text-dark-soft">Waarde van de producten: <b class="font-serif text-[1.15rem] font-semibold text-dark" x-text="format(waarde)"></b></p>
-        <button type="submit" class="inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">
+        <button type="submit" class="inline-flex items-center justify-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep max-sm:w-full">
             <i class="fa-light fa-check"></i> Bestelling aanmaken
         </button>
     </div>

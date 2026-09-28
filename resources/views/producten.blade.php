@@ -1,8 +1,51 @@
 @extends('layouts.shop')
 
-@section('title', 'Alle producten - ' . config('app.name'))
-@section('meta_description', 'Bekijk het complete assortiment professionele nagelproducten: base & top coats, gellak, gel & acrygel, nail art, liquids en benodigdheden. Filter op categorie, merk en aanbiedingen.')
+@php
+    /*
+    | SEO: ?categorie=, ?merk= en ?sale=1 zijn eigen landingspagina's met een
+    | eigen titel, omschrijving en canonical (zodat bijv. "gellak kopen" op
+    | de gellak-pagina landt). Andere combinaties vallen terug op /producten.
+    */
+    $seoCategorie = collect(config('shop.categories'))->firstWhere('slug', request('categorie'));
+    $seoMerk = in_array(request('merk'), config('shop.brands'), true) ? request('merk') : null;
+    $seoSale = ! $seoCategorie && ! $seoMerk && request()->boolean('sale');
+    $gratisVanaf = 'Gratis verzending vanaf €'.config('shop.verzending.NL.gratis_vanaf').' (NL) en €'.config('shop.verzending.BE.gratis_vanaf').' (BE).';
+
+    if ($seoCategorie) {
+        $seoTitel = $seoCategorie['name'].' kopen - '.config('app.name');
+        $seoOmschrijving = $seoCategorie['name'].' van salonkwaliteit: '.lcfirst($seoCategorie['sub']).' van DNKa\', Valeri en Touch. '.$gratisVanaf;
+        $seoCanonical = url('/producten').'?categorie='.$seoCategorie['slug'];
+        $seoKruimel = $seoCategorie['name'];
+    } elseif ($seoMerk) {
+        $seoTitel = $seoMerk.' nagelproducten kopen - '.config('app.name');
+        $seoOmschrijving = 'Shop het complete assortiment van '.$seoMerk.': gellak, bases, gels en meer van salonkwaliteit. '.$gratisVanaf;
+        $seoCanonical = url('/producten').'?merk='.urlencode($seoMerk);
+        $seoKruimel = $seoMerk;
+    } elseif ($seoSale) {
+        $seoTitel = 'Sale: nagelproducten in de aanbieding - '.config('app.name');
+        $seoOmschrijving = 'Nagelproducten in de aanbieding: gellak, bases, gels en nail art van DNKa\', Valeri en Touch met korting. '.$gratisVanaf;
+        $seoCanonical = url('/producten').'?sale=1';
+        $seoKruimel = 'Sale';
+    } else {
+        $seoTitel = 'Alle nagelproducten - '.config('app.name');
+        $seoOmschrijving = 'Het complete assortiment professionele nagelproducten: base & top coats, gellak, gel & acrygel, nail art, liquids en benodigdheden. Filter op categorie en merk.';
+        $seoCanonical = url('/producten');
+        $seoKruimel = null;
+    }
+@endphp
+
+@section('title', $seoTitel)
+@section('meta_description', $seoOmschrijving)
 @section('meta_keywords', 'nagelproducten assortiment, gellak kopen, rubber base kopen, builder gel kopen, acrygel kopen, nail art producten, cat eye gellak, top coat, cover base, DNKa, Valeri, Touch')
+@section('canonical', $seoCanonical)
+
+@push('structured-data')
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::kruimelpad(array_filter([
+        ['Home', url('/')],
+        ['Producten', url('/producten')],
+        $seoKruimel ? [$seoKruimel, $seoCanonical] : null,
+    ]))])
+@endpush
 
 @php
     /*
@@ -78,7 +121,7 @@
         if (this.saleOnly) q.set('sale', '1');
         history.replaceState(null, '', q.toString() ? location.pathname + '?' + q.toString() : location.pathname);
     },
-}">
+}" x-effect="document.documentElement.classList.toggle('overflow-hidden', mobileFilters)" @keydown.escape.window="mobileFilters = false">
     <div class="mx-auto max-w-[1240px]">
 
         {{-- Breadcrumb + paginakop --}}
@@ -88,7 +131,7 @@
             <span class="font-medium text-dark" x-text="title">{{ $initialTitle }}</span>
         </nav>
 
-        <div class="load-reveal mb-10 flex flex-wrap items-end justify-between gap-6">
+        <div class="load-reveal mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 sm:mb-10">
             <div>
                 <h1 class="font-serif text-[clamp(2.2rem,4vw,3.2rem)] leading-[1.1] font-normal" x-text="title">{{ $initialTitle }}</h1>
                 <p class="mt-2 font-light text-dark-soft"><span x-text="visible.length">{{ $totalCount }}</span> producten</p>
@@ -121,7 +164,7 @@
 
             {{-- Productgrid --}}
             <div>
-                <div class="load-reveal grid grid-cols-[repeat(auto-fill,minmax(255px,1fr))] gap-6">
+                <div class="load-reveal grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(255px,1fr))] sm:gap-6">
                     @foreach ($products as $i => $product)
                         @include('partials.product-card', ['product' => $product, 'filterable' => true, 'index' => $i])
                     @endforeach
@@ -144,14 +187,23 @@
         <aside x-show="mobileFilters"
                x-transition:enter="transition-transform duration-300 ease-out" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
                x-transition:leave="transition-transform duration-200 ease-in" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
-               class="absolute top-0 right-0 h-full w-[320px] max-w-[85vw] overflow-y-auto bg-cream p-6">
-            <div class="mb-6 flex items-center justify-between">
+               class="absolute top-0 right-0 flex h-full w-[320px] max-w-[85vw] flex-col bg-cream"
+               role="dialog" aria-modal="true" aria-label="Filters">
+            <div class="flex items-center justify-between px-6 pt-6 pb-4">
                 <h2 class="font-serif text-[1.3rem] font-medium">Filters</h2>
                 <button type="button" @click="mobileFilters = false" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Sluiten">
                     <i class="fa-light fa-xmark text-[1.1rem]"></i>
                 </button>
             </div>
-            @include('partials.product-filters')
+            <div class="flex-1 overflow-y-auto overscroll-contain px-6 pb-6">
+                @include('partials.product-filters')
+            </div>
+            {{-- Resultaatknop onderin, zodat je na het filteren direct terug bent bij de producten --}}
+            <div class="border-t border-primary/15 bg-cream px-6 py-4">
+                <button type="button" @click="mobileFilters = false" class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">
+                    Toon <span x-text="visible.length">{{ $totalCount }}</span> producten
+                </button>
+            </div>
         </aside>
     </div>
 </section>

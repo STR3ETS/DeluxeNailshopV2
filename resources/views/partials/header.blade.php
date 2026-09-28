@@ -6,8 +6,10 @@
     */
     $freeFrom = config('shop.free_shipping_from');
     $announcement = [
-        'text' => 'Gratis verzending',
-        'em'   => 'Vanaf €'.config('shop.verzending.NL.gratis_vanaf').' NL / Vanaf €'.config('shop.verzending.BE.gratis_vanaf').' BE',
+        'text'     => 'Gratis verzending',
+        'em'       => 'Vanaf €'.config('shop.verzending.NL.gratis_vanaf').' NL / Vanaf €'.config('shop.verzending.BE.gratis_vanaf').' BE',
+        // Korte variant zodat de balk op mobiel op één regel past
+        'em_kort'  => 'vanaf €'.config('shop.verzending.NL.gratis_vanaf').' NL / €'.config('shop.verzending.BE.gratis_vanaf').' BE',
     ];
 
     $headerCategories = config('shop.categories');
@@ -17,8 +19,8 @@
 @endphp
 
 {{-- Announcement --}}
-<div class="bg-dark px-4 py-2.5 text-center text-[.78rem] tracking-[.14em] text-cream uppercase">
-    {{ $announcement['text'] }} &nbsp;·&nbsp; <em class="font-serif tracking-[.02em] normal-case italic text-gold">{{ $announcement['em'] }}</em>
+<div class="bg-dark px-4 py-2.5 text-center text-[.7rem] tracking-[.1em] text-cream uppercase sm:text-[.78rem] sm:tracking-[.14em]">
+    {{ $announcement['text'] }} &nbsp;·&nbsp; <em class="hidden font-serif tracking-[.02em] normal-case italic text-gold sm:inline">{{ $announcement['em'] }}</em><em class="font-serif tracking-[.02em] normal-case italic text-gold sm:hidden">{{ $announcement['em_kort'] }}</em>
 </div>
 
 {{-- Navigatie --}}
@@ -48,8 +50,10 @@
                aria-label="{{ auth()->check() ? 'Mijn account' : 'Inloggen' }}">
                 <i class="{{ auth()->check() ? 'fa-solid' : 'fa-light' }} fa-user text-[1.1rem]"></i>
             </a>
-            {{-- Winkelwagen + dropdown --}}
-            <div class="relative" @click.outside="$store.cart.open = false">
+            {{-- Winkelwagen + dropdown. Op mobiel hangt de dropdown aan de
+                 (sticky) header in plaats van aan de knop, zodat hij over de
+                 volle breedte past en niet links buiten beeld valt. --}}
+            <div class="sm:relative" @click.outside="$store.cart.open = false">
                 <button type="button" id="cartButton" @click="$store.cart.open = !$store.cart.open"
                         class="relative grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep"
                         aria-label="Winkelwagen" :aria-expanded="$store.cart.open">
@@ -62,7 +66,7 @@
                 <div x-cloak x-show="$store.cart.open"
                      x-transition:enter="transition duration-200 ease-out" x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100"
                      x-transition:leave="transition duration-150 ease-in" x-transition:leave-start="scale-100 opacity-100" x-transition:leave-end="scale-95 opacity-0"
-                     class="absolute top-[calc(100%+.75rem)] right-0 z-[70] w-[350px] max-w-[calc(100vw-2rem)] origin-top-right rounded-card border border-primary/15 bg-offwhite p-5 shadow-card">
+                     class="absolute inset-x-4 top-[calc(100%+.5rem)] z-[70] origin-top-right rounded-card border border-primary/15 bg-offwhite p-5 shadow-card sm:inset-x-auto sm:top-[calc(100%+.75rem)] sm:right-0 sm:w-[350px]">
 
                     <div class="mb-1 flex items-center justify-between">
                         <h3 class="font-serif text-[1.15rem] font-medium">Winkelwagen</h3>

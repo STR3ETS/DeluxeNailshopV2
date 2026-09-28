@@ -79,6 +79,19 @@
     $totalQuestions = $faqMeta->count();
 @endphp
 
+@push('structured-data')
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::faq(
+        collect($faqGroups)->flatMap(fn ($g) => collect($g['items'])->map(fn ($item) => [
+            $item['q'],
+            trim($item['a'].' '.implode('. ', $item['list'] ?? [])),
+        ]))->all()
+    )])
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::kruimelpad([
+        ['Home', url('/')],
+        ['Veelgestelde vragen', route('faq')],
+    ])])
+@endpush
+
 @section('content')
 
 <section class="px-6 pt-10 pb-16" x-data="{
@@ -137,12 +150,12 @@
                             @php $itemId = $item['id'] ?? $group['slug'].'-'.$i; @endphp
                             <div id="{{ $itemId }}" data-faq-open="{{ $itemId }}" x-show="match(@js(mb_strtolower($item['q'].' '.$item['a'].' '.implode(' ', $item['list'] ?? []))))" class="scroll-mt-28 border-b border-primary/10 last:border-b-0">
                                 <button type="button" @click="open = open === '{{ $itemId }}' ? '' : '{{ $itemId }}'"
-                                        class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-cream-deep/50"
+                                        class="flex w-full items-center justify-between gap-4 px-5 py-4.5 text-left transition-colors hover:bg-cream-deep/50 sm:px-6 sm:py-5"
                                         :aria-expanded="open === '{{ $itemId }}'">
                                     <span class="text-[.98rem] font-medium">{{ $item['q'] }}</span>
                                     <i class="fa-light fa-chevron-down shrink-0 text-[.8rem] text-dark-soft transition-transform duration-300" :class="open === '{{ $itemId }}' && 'rotate-180'"></i>
                                 </button>
-                                <div x-show="open === '{{ $itemId }}'" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="px-6 pb-5">
+                                <div x-show="open === '{{ $itemId }}'" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="px-5 pb-5 sm:px-6">
                                     <p class="max-w-[62ch] leading-[1.75] font-light text-dark-soft">{{ $item['a'] }}</p>
                                     @if (!empty($item['list']))
                                         <ul class="mt-3 flex flex-col gap-1.5">
@@ -168,7 +181,7 @@
         </div>
 
         {{-- Contact-CTA --}}
-        <div class="load-reveal relative mt-14 overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-8 py-12 text-center text-white before:absolute before:-top-[120px] before:-left-16 before:h-[240px] before:w-[240px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[100px] after:h-[200px] after:w-[200px] after:rounded-full after:bg-white/10 after:content-['']">
+        <div class="load-reveal relative mt-14 overflow-hidden rounded-[calc(var(--radius)+10px)] bg-linear-[120deg] from-primary to-primary-deep px-6 py-10 text-center sm:px-8 sm:py-12 text-white before:absolute before:-top-[120px] before:-left-16 before:h-[240px] before:w-[240px] before:rounded-full before:bg-white/10 before:content-[''] after:absolute after:-right-10 after:-bottom-[100px] after:h-[200px] after:w-[200px] after:rounded-full after:bg-white/10 after:content-['']">
             <h2 class="relative z-[1] mb-2 font-serif text-[clamp(1.5rem,2.8vw,2rem)] font-normal">Staat je vraag er <em class="italic">niet tussen</em>?</h2>
             <p class="relative z-[1] mb-7 font-light opacity-90">Ons team denkt graag met je mee - we reageren meestal binnen enkele uren.</p>
             <div class="relative z-[1] flex flex-wrap items-center justify-center gap-3.5">

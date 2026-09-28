@@ -35,6 +35,9 @@ Route::get('/producten', function () {
     ]);
 })->name('producten');
 
+Route::get('/sitemap.xml', [App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [App\Http\Controllers\SeoController::class, 'robots'])->name('robots');
+
 Route::view('/faq', 'faq')->name('faq');
 Route::view('/over-ons', 'over-ons')->name('over-ons');
 

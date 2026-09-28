@@ -72,7 +72,19 @@
         'price' => $product['price'],
         'image' => $product['image'] ? asset($product['image']) : null,
     ];
+
+    $categorieUrl = url('/producten').'?categorie='.$product['category'];
 @endphp
+
+@push('structured-data')
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::product($product, $description, $catName)])
+    @include('partials.structured-data', ['schema' => \App\Support\StructuredData::kruimelpad([
+        ['Home', url('/')],
+        ['Producten', url('/producten')],
+        [$catName, $categorieUrl],
+        [$product['brand'].' '.$product['name'], route('product.show', $product['slug'])],
+    ])])
+@endpush
 
 @section('content')
 
@@ -85,7 +97,7 @@
             <i class="fa-light fa-angle-right text-[.65rem]"></i>
             <a href="{{ url('/producten') }}" class="transition-colors hover:text-primary-deep">Producten</a>
             <i class="fa-light fa-angle-right text-[.65rem]"></i>
-            <a href="{{ url('/producten') }}?categorie={{ $product['category'] }}" class="transition-colors hover:text-primary-deep">{{ $catName }}</a>
+            <a href="{{ $categorieUrl }}" class="transition-colors hover:text-primary-deep">{{ $catName }}</a>
             <i class="fa-light fa-angle-right text-[.65rem]"></i>
             <span class="font-medium text-dark">{{ $product['name'] }}</span>
         </nav>
@@ -93,7 +105,7 @@
         <div class="grid items-start gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
 
             {{-- Productbeeld --}}
-            <div x-data="{ wished: false, foto: 0 }" class="load-reveal relative grid min-h-[420px] place-items-center overflow-hidden rounded-[calc(var(--radius)+10px)] lg:sticky lg:top-24 lg:min-h-[520px]" style="background:linear-gradient(160deg,{{ $product['bg'][0] }},{{ $product['bg'][1] }})">
+            <div x-data="{ wished: false, foto: 0 }" class="load-reveal relative grid min-h-[340px] place-items-center overflow-hidden rounded-[calc(var(--radius)+10px)] sm:min-h-[420px] lg:sticky lg:top-24 lg:min-h-[520px]" style="background:linear-gradient(160deg,{{ $product['bg'][0] }},{{ $product['bg'][1] }})">
                 @if ($badge)
                     <span class="absolute top-5 left-5 z-[2] rounded-full px-3.5 py-1.5 text-[.7rem] font-semibold tracking-[.14em] text-cream uppercase {{ $badgeGold ? 'bg-primary' : 'bg-dark' }}">{{ $badge }}</span>
                 @endif
@@ -103,7 +115,7 @@
                 @foreach ($fotos as $fotoIndex => $foto)
                     <img @if ($fotoIndex > 0) x-cloak @endif x-show="foto === {{ $fotoIndex }}"
                          src="{{ asset($foto) }}" alt="{{ $product['brand'] }} {{ $product['name'] }}{{ $fotoIndex > 0 ? ' - extra foto' : '' }}"
-                         class="relative z-[1] max-h-[340px] w-auto object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] lg:max-h-[400px] {{ $opVoorraad ? '' : 'opacity-50 saturate-50' }}">
+                         class="relative z-[1] max-h-[260px] w-auto max-w-[85%] object-contain drop-shadow-[0_24px_30px_color-mix(in_srgb,var(--color-dark)_25%,transparent)] sm:max-h-[340px] lg:max-h-[400px] {{ $opVoorraad ? '' : 'opacity-50 saturate-50' }}">
                 @endforeach
 
                 {{-- Miniaturen om te wisselen (alleen bij meerdere foto's) --}}
@@ -159,7 +171,7 @@
                                 data-cart-item="{{ json_encode($cartItem) }}"
                                 @click="added = true; pop = true; setTimeout(() => pop = false, 180); $store.cart.add(JSON.parse($el.dataset.cartItem), qty); qty = 1; setTimeout(() => added = false, 1600)"
                                 :class="[added ? 'bg-primary-deep' : 'bg-primary hover:bg-primary-deep', pop ? 'scale-95' : '']"
-                                class="relative inline-flex items-center gap-2.5 rounded-full bg-primary px-8 py-4 text-[.95rem] font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-all duration-300">
+                                class="relative inline-flex flex-1 items-center justify-center gap-2.5 rounded-full bg-primary px-8 py-4 text-[.95rem] sm:flex-none font-semibold tracking-[.02em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--color-primary)_70%,transparent)] transition-all duration-300">
                             <i x-show="!added" class="fa-light fa-bag-shopping-plus text-[1.05rem]"></i>
                             <i x-show="added" x-cloak class="fa-solid fa-check text-[1.05rem]"></i>
                             In winkelwagen
@@ -245,12 +257,12 @@
 
         {{-- Gerelateerde producten --}}
         @if (count($related))
-            <div class="mt-24">
-                <div class="reveal mb-10 flex flex-wrap items-end justify-between gap-6">
+            <div class="mt-16 sm:mt-24">
+                <div class="reveal mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 sm:mb-10">
                     <h2 class="font-serif text-[clamp(1.7rem,3vw,2.4rem)] leading-[1.15] font-normal">Meer uit <em class="text-primary italic">{{ $catName }}</em></h2>
-                    <a href="{{ url('/producten') }}?categorie={{ $product['category'] }}" class="inline-flex items-center gap-2 text-[.86rem] font-semibold tracking-[.04em] text-primary-deep transition-all hover:gap-3.5">Bekijk alles <i class="fa-light fa-arrow-right"></i></a>
+                    <a href="{{ $categorieUrl }}" class="inline-flex items-center gap-2 text-[.86rem] font-semibold tracking-[.04em] text-primary-deep transition-all hover:gap-3.5">Bekijk alles <i class="fa-light fa-arrow-right"></i></a>
                 </div>
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(255px,1fr))] gap-6">
+                <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(255px,1fr))] sm:gap-6">
                     @foreach ($related as $relatedProduct)
                         @include('partials.product-card', ['product' => $relatedProduct, 'reveal' => true])
                     @endforeach

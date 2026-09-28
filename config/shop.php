@@ -118,6 +118,18 @@ return [
             'Maandag t/m vrijdag: 09:00 - 18:00',
             'Zaterdag & zondag: gesloten',
         ],
+
+        // Hetzelfde adres en dezelfde tijden, maar in losse velden voor de
+        // structured data (Google). Pas ze samen met de regels hierboven aan.
+        'adres_velden' => [
+            'straat'   => 'Thorbeckestraat 3',
+            'postcode' => '6904 BS',
+            'plaats'   => 'Zevenaar',
+            'land'     => 'NL',
+        ],
+        'openingsuren' => [
+            ['dagen' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], 'open' => '09:00', 'dicht' => '18:00'],
+        ],
     ],
 
     // Nieuwsbrief: iedere inschrijver krijgt een persoonlijke, eenmalig
