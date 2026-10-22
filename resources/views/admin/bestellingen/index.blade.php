@@ -70,7 +70,7 @@
             <a href="{{ route('admin.bestellingen.detail', $b) }}"
                class="grid grid-cols-[minmax(0,1fr)_auto_24px] items-center gap-x-5 px-6 py-5 transition-colors hover:bg-cream-deep/50 sm:grid-cols-[110px_minmax(0,1fr)_130px_auto_24px] lg:grid-cols-[110px_minmax(0,1fr)_120px_130px_110px_24px]"
                x-show="(zoek.trim() === '' || $el.dataset.zoek.includes(zoek.toLowerCase())) && (st === '' || $el.dataset.status === st)"
-               data-zoek="{{ mb_strtolower($b->nummer().' '.$b->name.' '.$b->email) }}"
+               data-zoek="{{ mb_strtolower($b->nummer().' '.$b->name.' '.$b->email.' '.$b->tracking_code) }}"
                data-status="{{ $b->status }}">
 
                 <span class="hidden font-serif text-[1rem] font-semibold sm:block">{{ $b->nummer() }}</span>

@@ -134,17 +134,29 @@ class BestellingController extends Controller
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $data = $request->validate([
-            'status' => ['required', 'in:'.implode(',', array_keys(self::STATUSSEN))],
+            'status'        => ['required', 'in:'.implode(',', array_keys(self::STATUSSEN))],
+            'tracking_code' => ['nullable', 'string', 'max:100'],
         ], [
-            'status.required' => 'Kies een status.',
-            'status.in'       => 'Kies een geldige status.',
+            'status.required'   => 'Kies een status.',
+            'status.in'         => 'Kies een geldige status.',
+            'tracking_code.max' => 'De track & trace-code mag maximaal 100 tekens zijn.',
         ]);
 
         $nieuw = $data['status'];
         $oud = $order->status;
 
+        // Track & trace-code (alleen intern zichtbaar) los van de status opslaan
+        $trackingCode = trim((string) ($data['tracking_code'] ?? '')) ?: null;
+        $trackingGewijzigd = $trackingCode !== $order->tracking_code;
+
+        if ($trackingGewijzigd) {
+            $order->update(['tracking_code' => $trackingCode]);
+        }
+
         if ($nieuw === $oud) {
-            return back();
+            return $trackingGewijzigd
+                ? back()->with('status', 'Track & trace-code van '.$order->nummer().' '.($trackingCode ? 'opgeslagen' : 'verwijderd').'.')
+                : back();
         }
 
         // Annuleren geeft de gereserveerde voorraad terug; een geannuleerde

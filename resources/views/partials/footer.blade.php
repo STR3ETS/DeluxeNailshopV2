@@ -13,6 +13,7 @@
         ],
     ];
 
+    $bedrijf = config('shop.bedrijf');
     $contactGegevens = config('shop.contact');
     $footerContact = [
         ['icon' => 'fa-light fa-envelope',  'label' => 'E-mail',     'value' => 'info@deluxenailshop.nl', 'url' => 'mailto:info@deluxenailshop.nl'],
@@ -107,7 +108,16 @@
 
     {{-- Onderbalk --}}
     <div class="mx-auto mt-12 flex max-w-[1240px] flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-cream/10 pt-6 sm:mt-14">
-        <span class="text-[.78rem] opacity-60">© {{ date('Y') }} {{ $domain }} · Gemaakt door <a href="https://halfmanmedia.nl" target="_blank" rel="noopener" class="font-medium transition-colors hover:text-gold">HalfmanMedia</a></span>
+        <span class="text-[.78rem] leading-[1.7] opacity-60">
+            © {{ date('Y') }} {{ $domain }} · Gemaakt door <a href="https://halfmanmedia.nl" target="_blank" rel="noopener" class="font-medium transition-colors hover:text-gold">HalfmanMedia</a>
+            @if ($bedrijf['kvk'] || $bedrijf['btw'])
+                <span class="block">
+                    @if ($bedrijf['kvk'])KVK {{ $bedrijf['kvk'] }}@endif
+                    @if ($bedrijf['kvk'] && $bedrijf['btw']) · @endif
+                    @if ($bedrijf['btw'])BTW {{ $bedrijf['btw'] }}@endif
+                </span>
+            @endif
+        </span>
         <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
             @foreach ($legalLinks as $link)
                 <a href="{{ $link['url'] }}" class="py-1 text-[.78rem] opacity-60 transition-all hover:text-gold hover:opacity-100">{{ $link['label'] }}</a>

@@ -140,4 +140,44 @@ class ShopAanpassingenTest extends TestCase
 
         $this->get('/afrekenen')->assertSee('algemene voorwaarden')->assertSee('name="voorwaarden"', false);
     }
+
+    /**
+     * Gratis verzending wordt getoetst op het bedrag ná korting: een
+     * winkelwagen van €83,42 met 20% korting komt op €66,74 en zit daarmee
+     * onder de drempel van €75, dus de verzendkosten (€7,45) gelden gewoon.
+     */
+    public function test_gratis_verzending_wordt_berekend_na_korting(): void
+    {
+        $base = $this->product('Cover Base #0027', ['price' => 12.99]);
+        $burgundy = $this->product('Gellak #014', ['price' => 8.99]);
+        $cocoa = $this->product('Gellak #027', ['price' => 8.99]);
+        $this->product('Builder Gel', ['price' => 52.45]);
+
+        DiscountCode::create(['code' => 'DIANA', 'type' => 'procent', 'waarde' => 20, 'actief' => true]);
+
+        // Ongeldige Mollie-sleutel: de bestelling wordt aangemaakt, de betaling
+        // start niet en de bestelling blijft als geannuleerd staan.
+        config(['services.mollie.key' => 'test_'.str_repeat('x', 30)]);
+
+        $this->from('/afrekenen')->post('/afrekenen', [
+            'voornaam' => 'Diana', 'achternaam' => 'Gevorgyan', 'email' => 'diana@example.nl',
+            'levering' => 'bezorgen', 'land' => 'NL',
+            'straat' => 'Oud Ambacht 52', 'postcode' => '9201 XC', 'plaats' => 'Drachten',
+            'voorwaarden' => '1',
+            'kortingscode' => 'DIANA',
+            'winkelwagen' => json_encode([
+                ['id' => $base->slug, 'qty' => 1],
+                ['id' => $burgundy->slug, 'qty' => 1],
+                ['id' => $cocoa->slug, 'qty' => 1],
+                ['id' => 'builder-gel', 'qty' => 1],
+            ]),
+        ]);
+
+        $order = \App\Models\Order::latest('id')->first();
+
+        $this->assertNotNull($order);
+        $this->assertSame('16.68', (string) $order->discount);
+        $this->assertSame('7.45', (string) $order->shipping);
+        $this->assertSame('74.19', (string) $order->total);
+    }
 }

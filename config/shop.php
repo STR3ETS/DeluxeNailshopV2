@@ -98,14 +98,14 @@ return [
 
     'brands' => ['DNKa\'', 'Valeri', 'Deluxe Nail Shop', 'Touch'],
 
-    // Bedrijfsgegevens voor op de factuur. Vul kvk/btw in zodra bekend;
-    // lege velden worden niet afgedrukt.
+    // Bedrijfsgegevens voor op de factuur en in de footer; lege velden
+    // worden niet afgedrukt.
     'bedrijf' => [
         'naam'  => 'Deluxe Nail Shop',
         'email' => 'info@deluxenailshop.nl',
         'site'  => 'deluxenailshop.nl',
-        'kvk'   => null,
-        'btw'   => null,
+        'kvk'   => '84373466',
+        'btw'   => 'NL005232943B93',
     ],
 
     // Contactgegevens voor footer, FAQ en de Over ons-pagina.

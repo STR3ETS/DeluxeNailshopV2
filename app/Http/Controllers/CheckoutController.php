@@ -126,8 +126,9 @@ class CheckoutController extends Controller
                 if ($afhalen) {
                     $verzendkosten = 0;
                 } else {
+                    // Gratis verzending geldt op het bedrag ná korting
                     $tarief = config('shop.verzending.'.$gegevens['land']);
-                    $verzendkosten = $subtotaal >= $tarief['gratis_vanaf'] ? 0 : $tarief['kosten'];
+                    $verzendkosten = max(0, $subtotaal - $korting) >= $tarief['gratis_vanaf'] ? 0 : $tarief['kosten'];
                 }
 
                 $order = Order::create([

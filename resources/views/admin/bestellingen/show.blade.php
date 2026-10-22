@@ -117,6 +117,9 @@
             @else
                 <h2 class="flex items-center gap-2.5 font-serif text-[1.2rem] font-medium"><i class="fa-light fa-truck-fast text-[.95rem] text-primary-deep"></i> Bezorgadres</h2>
                 <p class="mt-3 text-[.9rem] leading-[1.7] font-light text-dark-soft">{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}</p>
+                @if ($order->tracking_code)
+                    <p class="mt-3 text-[.8rem] font-light text-dark-soft">Track &amp; trace: <code class="rounded bg-cream-deep px-1.5 py-0.5 font-mono text-[.78rem] break-all text-dark">{{ $order->tracking_code }}</code></p>
+                @endif
             @endif
         </div>
 
@@ -163,6 +166,19 @@
             </div>
             <p class="mt-3 text-[.78rem] leading-[1.6] font-light text-dark-soft">Bij "Geannuleerd" gaat de voorraad automatisch terug naar de producten; maak je een annulering ongedaan, dan wordt de voorraad opnieuw gereserveerd.</p>
             @error('status')<p class="mt-2 text-[.8rem] font-medium text-red-600">{{ $message }}</p>@enderror
+
+            @unless ($afhalen)
+                <label class="mt-5 block border-t border-primary/15 pt-5">
+                    <span class="mb-2 block text-[.72rem] font-semibold tracking-[.16em] text-dark-soft uppercase">Track &amp; trace-code <span class="font-normal normal-case">(alleen voor jezelf)</span></span>
+                    <span class="relative block">
+                        <i class="fa-light fa-truck-fast pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-[.9rem] text-primary-deep"></i>
+                        <input type="text" name="tracking_code" value="{{ old('tracking_code', $order->tracking_code) }}" maxlength="100" placeholder="3SABCD1234567890" autocomplete="off" spellcheck="false"
+                               class="w-full rounded-full border border-primary/20 bg-offwhite py-3 pr-5 pl-12 font-mono text-[.88rem] tracking-[.04em] outline-none transition-colors placeholder:font-sans placeholder:tracking-normal placeholder:text-dark-soft/50 focus:border-primary">
+                    </span>
+                    <span class="mt-2 block text-[.78rem] leading-[1.6] font-light text-dark-soft">Interne notitie van de PostNL-code; de klant ziet dit niet. Wordt samen met de status opgeslagen.</span>
+                    @error('tracking_code')<span class="mt-2 block text-[.8rem] font-medium text-red-600">{{ $message }}</span>@enderror
+                </label>
+            @endunless
         </form>
     </div>
 </div>

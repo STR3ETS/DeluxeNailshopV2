@@ -26,12 +26,14 @@
             kortingFout: '',
             kortingBezig: false,
             get tarief() { return this.tarieven[this.land] ?? this.tarieven.NL; },
+            get kortingBedrag() { return this.korting ? Math.min(this.korting.bedrag, this.$store.cart.total) : 0; },
+            // Bedrag na korting: hierop wordt de drempel voor gratis verzending getoetst
+            get naKorting() { return Math.max(0, this.$store.cart.total - this.kortingBedrag); },
             get verzend() {
                 if (this.levering === 'afhalen' || this.$store.cart.items.length === 0) return 0;
-                return this.$store.cart.total >= this.tarief.gratis_vanaf ? 0 : this.tarief.kosten;
+                return this.naKorting >= this.tarief.gratis_vanaf ? 0 : this.tarief.kosten;
             },
-            get kortingBedrag() { return this.korting ? Math.min(this.korting.bedrag, this.$store.cart.total) : 0; },
-            get totaal() { return Math.max(0, this.$store.cart.total - this.kortingBedrag) + this.verzend; },
+            get totaal() { return this.naKorting + this.verzend; },
             init() { if (this.kortingInput.trim() !== '') this.pasKortingToe(); },
             async pasKortingToe() {
                 const code = this.kortingInput.trim();
@@ -271,7 +273,7 @@
                             <span class="font-medium" x-text="verzend === 0 ? 'Gratis' : $store.cart.format(verzend)"></span>
                         </div>
                         <template x-if="levering === 'bezorgen' && verzend > 0">
-                            <p class="mt-2 text-[.78rem] font-light text-dark-soft">Nog <b class="font-semibold" x-text="$store.cart.format(tarief.gratis_vanaf - $store.cart.total)"></b> tot gratis verzending <span x-text="land === 'BE' ? 'naar België' : 'binnen Nederland'"></span>.</p>
+                            <p class="mt-2 text-[.78rem] font-light text-dark-soft">Nog <b class="font-semibold" x-text="$store.cart.format(tarief.gratis_vanaf - naKorting)"></b> tot gratis verzending <span x-text="land === 'BE' ? 'naar België' : 'binnen Nederland'"></span>.</p>
                         </template>
                         <div class="mt-4 flex items-center justify-between border-t border-primary/15 pt-4">
                             <span class="font-medium">Totaal</span>
