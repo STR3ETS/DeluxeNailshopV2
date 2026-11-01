@@ -54,6 +54,7 @@
     data-price="{{ (int) round($product['price'] * 100) }}"
     data-reviews="{{ $product['reviews'] }}"
     data-index="{{ $index ?? 0 }}"
+    data-zoek="{{ \App\Models\Product::zoektekst($product) }}"
     x-show="matches($el.dataset)"
     :style="{ order: orderOf($el.dataset) }"
     @endif

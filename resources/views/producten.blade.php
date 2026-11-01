@@ -70,6 +70,7 @@
         'price'   => (int) round($p['price'] * 100),
         'reviews' => $p['reviews'],
         'index'   => $i,
+        'zoek'    => \App\Models\Product::zoektekst($p),
     ]);
     $totalCount  = count($products);
     $catCounts   = collect($products)->countBy('category');
@@ -80,7 +81,9 @@
     $initialSale = request()->boolean('sale');
     // ?merk=Touch (vanuit merkpanelen en footer) zet het merkfilter aan
     $initialBrand = in_array(request('merk'), config('shop.brands'), true) ? request('merk') : null;
-    $initialTitle = $initialSale && ! $initialCat ? 'Sale' : ($catNames[$initialCat] ?? ($initialBrand ?? 'Alle producten'));
+    // ?zoek= komt uit de zoekbalk in de header
+    $initialZoek = mb_substr(trim((string) request('zoek', '')), 0, 100);
+    $initialTitle = $initialZoek !== '' && ! $initialCat ? 'Zoekresultaten' : ($initialSale && ! $initialCat ? 'Sale' : ($catNames[$initialCat] ?? ($initialBrand ?? 'Alle producten')));
 @endphp
 
 @section('content')
@@ -90,6 +93,7 @@
     subs: [],
     brands: @js($initialBrand ? [$initialBrand] : []),
     saleOnly: @js($initialSale),
+    zoek: @js($initialZoek),
     sort: 'aanbevolen',
     mobileFilters: false,
     products: @js($productMeta),
@@ -98,8 +102,10 @@
         return (this.cat === '' || p.cat === this.cat)
             && (this.subs.length === 0 || this.subs.includes(p.sub))
             && (this.brands.length === 0 || this.brands.includes(p.brand))
-            && (!this.saleOnly || p.sale == 1);
+            && (!this.saleOnly || p.sale == 1)
+            && this.zoekTermen.every(t => (p.zoek ?? '').includes(t));
     },
+    get zoekTermen() { return this.zoek.toLowerCase().trim().split(/\s+/).filter(t => t !== ''); },
     orderOf(p) {
         if (this.sort === 'prijs-asc') return parseInt(p.price);
         if (this.sort === 'prijs-desc') return -parseInt(p.price);
@@ -109,14 +115,17 @@
     get visible() { return this.products.filter(p => this.matches(p)); },
     get activeCount() { return (this.cat ? 1 : 0) + this.subs.length + this.brands.length + (this.saleOnly ? 1 : 0); },
     get title() {
+        if (this.zoek.trim() !== '' && !this.cat) return 'Zoekresultaten';
         if (this.saleOnly && !this.cat) return 'Sale';
         if (!this.cat && this.brands.length === 1) return this.brands[0];
         return this.cat ? this.catNames[this.cat] : 'Alle producten';
     },
     selectCat(slug) { this.cat = this.cat === slug ? '' : slug; this.subs = []; this.sync(); },
-    reset() { this.cat = ''; this.subs = []; this.brands = []; this.saleOnly = false; this.sync(); },
+    reset() { this.cat = ''; this.subs = []; this.brands = []; this.saleOnly = false; this.zoek = ''; this.sync(); },
+    wisZoek() { this.zoek = ''; this.sync(); },
     sync() {
         const q = new URLSearchParams();
+        if (this.zoek.trim()) q.set('zoek', this.zoek.trim());
         if (this.cat) q.set('categorie', this.cat);
         if (this.saleOnly) q.set('sale', '1');
         history.replaceState(null, '', q.toString() ? location.pathname + '?' + q.toString() : location.pathname);
@@ -134,7 +143,16 @@
         <div class="load-reveal mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 sm:mb-10">
             <div>
                 <h1 class="font-serif text-[clamp(2.2rem,4vw,3.2rem)] leading-[1.1] font-normal" x-text="title">{{ $initialTitle }}</h1>
-                <p class="mt-2 font-light text-dark-soft"><span x-text="visible.length">{{ $totalCount }}</span> producten</p>
+                <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 font-light text-dark-soft">
+                    <span><span x-text="visible.length">{{ $totalCount }}</span> producten</span>
+                    <span x-cloak x-show="zoek.trim() !== ''" class="inline-flex items-center gap-1.5 rounded-full bg-accent-soft/70 py-1 pr-1 pl-3.5 text-[.85rem] text-dark">
+                        <i class="fa-light fa-magnifying-glass text-[.75rem] text-primary-deep"></i>
+                        <span>"<span class="font-medium" x-text="zoek.trim()">{{ $initialZoek }}</span>"</span>
+                        <button type="button" @click="wisZoek()" class="grid h-7 w-7 place-items-center rounded-full transition-colors hover:bg-white" aria-label="Zoekterm wissen">
+                            <i class="fa-light fa-xmark text-[.75rem]"></i>
+                        </button>
+                    </span>
+                </p>
             </div>
             <div class="flex items-center gap-3">
                 <button type="button" @click="mobileFilters = true" class="inline-flex items-center gap-2 rounded-full border border-dark/20 px-5 py-2.5 text-[.88rem] font-semibold transition-colors hover:border-dark lg:hidden">
@@ -174,7 +192,7 @@
                 <div x-cloak x-show="visible.length === 0" class="rounded-card border border-primary/15 bg-offwhite p-12 text-center">
                     <i class="fa-light fa-magnifying-glass mb-4 text-[2rem] text-primary"></i>
                     <h3 class="mb-2 font-serif text-[1.4rem] font-medium">Geen producten gevonden</h3>
-                    <p class="mb-6 font-light text-dark-soft">Probeer een andere combinatie van filters.</p>
+                    <p class="mb-6 font-light text-dark-soft" x-text="zoek.trim() !== '' ? 'Probeer een andere zoekterm of wis de filters.' : 'Probeer een andere combinatie van filters.'">Probeer een andere combinatie van filters.</p>
                     <button type="button" @click="reset()" class="inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-[.9rem] font-semibold text-white transition-colors hover:bg-primary-deep">Wis alle filters</button>
                 </div>
             </div>

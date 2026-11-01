@@ -35,6 +35,10 @@ Route::get('/producten', function () {
     ]);
 })->name('producten');
 
+Route::get('/zoeken', App\Http\Controllers\ZoekController::class)
+    ->middleware('throttle:120,1')
+    ->name('zoeken');
+
 Route::get('/sitemap.xml', [App\Http\Controllers\SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [App\Http\Controllers\SeoController::class, 'robots'])->name('robots');
 

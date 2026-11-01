@@ -64,6 +64,33 @@ class Product extends Model
     }
 
     /**
+     * Doorzoekbare tekst van een product (merk, naam, categorie en
+     * subcategorie), in kleine letters. Gebruikt door de zoekbalk in de
+     * header en het zoekfilter op de productenpagina.
+     */
+    public static function zoektekst(array $product): string
+    {
+        $categorie = collect(config('shop.categories'))->firstWhere('slug', $product['category'] ?? null);
+        $sub = collect($categorie['subcategories'] ?? [])->firstWhere('slug', $product['subcategory'] ?? null);
+
+        return mb_strtolower(implode(' ', array_filter([
+            $product['brand'] ?? null,
+            $product['name'] ?? null,
+            $categorie['name'] ?? null,
+            $sub['name'] ?? null,
+        ])));
+    }
+
+    /**
+     * Splitst een zoekopdracht in losse termen; een product matcht als
+     * alle termen in de zoektekst voorkomen.
+     */
+    public static function zoektermen(string $zoek): array
+    {
+        return array_values(array_filter(preg_split('/\s+/', mb_strtolower(trim($zoek))) ?: []));
+    }
+
+    /**
      * De array-vorm die de shop-views (productkaart, detailpagina) verwachten.
      * Badges zijn automatisch: 'Bestseller' voor de top-verkopers, en de
      * productkaart hangt zelf 'Sale' aan producten met een oude prijs.

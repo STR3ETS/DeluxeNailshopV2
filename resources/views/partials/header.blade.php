@@ -24,7 +24,44 @@
 </div>
 
 {{-- Navigatie --}}
-<header x-data="{ mobileOpen: false }" class="sticky top-0 z-[60] border-b border-primary/20 bg-cream/85 backdrop-blur-[14px]">
+<header x-data="{
+            mobileOpen: false,
+            zoekOpen: false,
+            zoekterm: '',
+            resultaten: [],
+            totaal: 0,
+            zoekBezig: false,
+            zoekFout: false,
+            zoekVerzoek: 0,
+            gezocht: '',
+            openZoeken() {
+                this.zoekOpen = !this.zoekOpen;
+                this.mobileOpen = false;
+                this.$store.cart.open = false;
+                if (this.zoekOpen) this.$nextTick(() => this.$refs.zoekveld.focus());
+            },
+            async zoek() {
+                const q = this.zoekterm.trim();
+                const nr = ++this.zoekVerzoek;
+                if (q.length < 2) { this.resultaten = []; this.totaal = 0; this.gezocht = ''; this.zoekBezig = false; return; }
+                this.zoekBezig = true;
+                this.zoekFout = false;
+                try {
+                    const res = await fetch(@js(route('zoeken')) + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } });
+                    const data = await res.json();
+                    if (nr !== this.zoekVerzoek) return;
+                    this.resultaten = data.resultaten;
+                    this.totaal = data.totaal;
+                    this.gezocht = q;
+                } catch {
+                    if (nr === this.zoekVerzoek) this.zoekFout = true;
+                }
+                if (nr === this.zoekVerzoek) this.zoekBezig = false;
+            },
+            get alleResultatenUrl() { return @js(url('/producten')) + '?zoek=' + encodeURIComponent(this.zoekterm.trim()); },
+        }"
+        @keydown.escape.window="zoekOpen = false"
+        class="sticky top-0 z-[60] border-b border-primary/20 bg-cream/85 backdrop-blur-[14px]">
     <nav class="mx-auto flex max-w-[1240px] items-center gap-8 px-6 py-3.5">
         <a href="{{ url('/') }}" class="shrink-0">
             <img src="{{ asset('logo/deluxenailshop_transp_primair_v1.png') }}" alt="{{ config('app.name') }}" class="h-11 w-auto">
@@ -42,8 +79,11 @@
         </div>
 
         <div class="ml-auto flex items-center gap-2.5 lg:ml-0">
-            <button type="button" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep" aria-label="Zoeken">
-                <i class="fa-light fa-magnifying-glass text-[1.1rem]"></i>
+            <button type="button" data-zoekknop @click="openZoeken()"
+                    class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep"
+                    :class="zoekOpen ? 'bg-cream-deep text-primary-deep' : ''"
+                    aria-label="Zoeken" aria-controls="zoekpaneel" :aria-expanded="zoekOpen">
+                <i class="fa-light text-[1.1rem]" :class="zoekOpen ? 'fa-xmark' : 'fa-magnifying-glass'"></i>
             </button>
             <a href="{{ auth()->check() ? auth()->user()->portalUrl() : url('/login') }}"
                class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep {{ request()->is('login') || request()->is('account') ? 'bg-cream-deep text-primary-deep' : '' }}"
@@ -127,11 +167,67 @@
                     </div>
                 </div>
             </div>
-            <button type="button" @click="mobileOpen = !mobileOpen" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep lg:hidden" aria-label="Menu">
+            <button type="button" @click="mobileOpen = !mobileOpen; zoekOpen = false" class="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-cream-deep lg:hidden" aria-label="Menu">
                 <i class="fa-light text-[1.1rem]" :class="mobileOpen ? 'fa-xmark' : 'fa-bars'"></i>
             </button>
         </div>
     </nav>
+
+    {{-- Zoekpaneel: live resultaten terwijl je typt; Enter (ook zonder
+         JavaScript) opent de productenpagina gefilterd op de zoekterm --}}
+    <div x-cloak x-show="zoekOpen" x-transition.opacity.duration.200ms id="zoekpaneel"
+         @click.outside="if (! $event.target.closest('[data-zoekknop]')) zoekOpen = false"
+         class="border-t border-primary/15 px-4 py-4 sm:px-6">
+        <div class="mx-auto max-w-[720px]">
+            <form method="GET" action="{{ url('/producten') }}" role="search" class="relative" @submit="if (zoekterm.trim() === '') $event.preventDefault()">
+                <i class="fa-light fa-magnifying-glass pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-[.95rem] text-dark-soft"></i>
+                <input type="search" name="zoek" x-ref="zoekveld" x-model="zoekterm" @input.debounce.250ms="zoek()"
+                       placeholder="Zoek op product, merk of categorie…" aria-label="Zoek producten"
+                       autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
+                       class="w-full rounded-full border border-primary/25 bg-offwhite py-3.5 pr-12 pl-12 text-[1rem] outline-none transition-colors placeholder:text-dark-soft/60 focus:border-primary [&::-webkit-search-cancel-button]:hidden">
+                <span x-show="zoekBezig" class="absolute top-1/2 right-5 -translate-y-1/2 text-dark-soft"><i class="fa-light fa-spinner-third animate-spin text-[.95rem]"></i></span>
+                <button type="button" x-show="!zoekBezig && zoekterm !== ''" @click="zoekterm = ''; zoek(); $refs.zoekveld.focus()"
+                        class="absolute top-1/2 right-2.5 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-dark-soft transition-colors hover:bg-cream-deep hover:text-dark" aria-label="Zoekterm wissen">
+                    <i class="fa-light fa-xmark text-[.9rem]"></i>
+                </button>
+            </form>
+
+            {{-- Resultaten --}}
+            <div x-show="zoekterm.trim().length >= 2" class="mt-3">
+                <p x-show="zoekFout" class="px-2 py-3 text-[.88rem] text-red-600">Zoeken lukte niet, probeer het opnieuw.</p>
+
+                <p x-show="!zoekFout && !zoekBezig && gezocht === zoekterm.trim() && totaal === 0" class="px-2 py-3 text-[.9rem] font-light text-dark-soft">
+                    Geen producten gevonden voor "<span class="font-medium text-dark" x-text="zoekterm.trim()"></span>".
+                </p>
+
+                <ul x-show="!zoekFout && resultaten.length > 0" class="scroll-slim max-h-[min(60svh,420px)] overflow-y-auto overscroll-contain rounded-card border border-primary/15 bg-offwhite p-2">
+                    <template x-for="p in resultaten" :key="p.url">
+                        <li>
+                            <a :href="p.url" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors hover:bg-cream-deep">
+                                <span class="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl" :style="`background:linear-gradient(160deg,${p.tint[0]},${p.tint[1]})`">
+                                    <img x-show="p.foto" :src="p.foto" alt="" loading="lazy" class="max-h-10 w-auto object-contain">
+                                    <i x-show="!p.foto" class="fa-light fa-bottle-droplet text-[1rem] text-primary"></i>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block truncate text-[.9rem] font-medium" x-text="p.naam"></span>
+                                    <span class="mt-0.5 block text-[.66rem] font-bold tracking-[.14em] text-primary-deep uppercase" x-text="p.merk"></span>
+                                </span>
+                                <span class="shrink-0 text-right">
+                                    <s x-show="p.oudePrijs" class="block text-[.75rem] text-dark-soft" x-text="$store.cart.format(p.oudePrijs)"></s>
+                                    <span class="font-serif text-[.95rem] font-semibold" x-text="$store.cart.format(p.prijs)"></span>
+                                </span>
+                            </a>
+                        </li>
+                    </template>
+                </ul>
+
+                <a x-show="!zoekFout && totaal > 0" :href="alleResultatenUrl"
+                   class="mt-3 flex w-full items-center justify-center gap-2.5 rounded-full border border-dark/20 px-6 py-3 text-[.88rem] font-semibold transition-colors hover:border-dark">
+                    <span x-text="totaal === 1 ? 'Bekijk resultaat' : `Bekijk alle ${totaal} resultaten`"></span> <i class="fa-light fa-arrow-right text-[.8rem]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
 
     {{-- Mobiel menu --}}
     <div x-cloak x-show="mobileOpen" x-transition.opacity.duration.200ms @click.outside="mobileOpen = false" class="border-t border-primary/15 px-6 py-4 lg:hidden">
