@@ -23,6 +23,7 @@
                 ['q' => 'Hoe plaats ik een bestelling?', 'a' => 'Kies je favoriete producten, voeg ze toe aan je winkelmandje en reken veilig af via iDEAL, creditcard, PayPal, Bancontact of KBC/CBC.'],
                 ['q' => 'Kan ik mijn bestelling nog wijzigen of annuleren?', 'a' => 'Dat kan zolang je bestelling nog niet is verzonden. Stuur ons binnen 2 uur na je bestelling een berichtje via de e-mail, dan passen we het direct aan.'],
                 ['id' => 'betaalmethoden', 'q' => 'Welke betaalmethodes accepteren jullie?', 'a' => 'We accepteren iDEAL, creditcard, PayPal, Bancontact of KBC/CBC. Zo kies je wat voor jou het makkelijkst is.'],
+                ['q' => 'Kan ik een kortingscode gebruiken op sale-producten?', 'a' => 'Nee, korting op korting is niet mogelijk. Een kortingscode geldt voor alle producten die niet in de sale staan. Heb je ook sale-producten in je winkelmandje, dan betaal je daarvoor gewoon de saleprijs.'],
             ],
         ],
         [

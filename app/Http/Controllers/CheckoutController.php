@@ -73,6 +73,7 @@ class CheckoutController extends Controller
             $order = DB::transaction(function () use ($gegevens, $regels, $request) {
                 $subtotaal = 0;
                 $orderRegels = [];
+                $kortingsRegels = [];
 
                 foreach ($regels as $regel) {
                     $product = Product::where('slug', $regel['slug'])
@@ -101,9 +102,11 @@ class CheckoutController extends Controller
                         'price'        => $product->price,
                         'qty'          => $regel['qty'],
                     ];
+                    $kortingsRegels[] = ['price' => $product->price, 'old_price' => $product->old_price, 'qty' => $regel['qty']];
                 }
 
-                // Kortingscode server-side controleren en verzilveren
+                // Kortingscode server-side controleren en verzilveren. Geen
+                // korting op korting: sale-producten tellen niet mee.
                 $korting = 0.0;
                 $kortingCode = null;
 
@@ -112,12 +115,15 @@ class CheckoutController extends Controller
                         ->lockForUpdate()
                         ->first();
 
-                    $fout = $code ? $code->valideer($subtotaal) : 'Deze kortingscode bestaat niet.';
+                    $basis = DiscountCode::kortingsbasis($kortingsRegels);
+                    $metSale = collect($kortingsRegels)->contains(fn ($r) => ! empty($r['old_price']));
+
+                    $fout = $code ? $code->valideer($basis, $metSale) : 'Deze kortingscode bestaat niet.';
                     if ($fout) {
                         throw new \RuntimeException($fout);
                     }
 
-                    $korting = $code->kortingVoor($subtotaal);
+                    $korting = $code->kortingVoor($basis);
                     $kortingCode = $code->code;
                     $code->increment('gebruikt');
                 }
@@ -207,30 +213,40 @@ class CheckoutController extends Controller
             'winkelwagen' => ['required', 'json'],
         ]);
 
-        $subtotaal = collect(json_decode($gegevens['winkelwagen'], true))
+        $regels = collect(json_decode($gegevens['winkelwagen'], true))
             ->map(fn ($regel) => [
                 'slug' => (string) ($regel['id'] ?? ''),
                 'qty'  => max(1, (int) ($regel['qty'] ?? 1)),
             ])
-            ->filter(fn ($regel) => $regel['slug'] !== '')
-            ->reduce(function ($som, $regel) {
-                $product = Product::where('slug', $regel['slug'])->where('actief', true)->first();
+            ->filter(fn ($regel) => $regel['slug'] !== '');
 
-                return $som + ($product ? (float) $product->price * $regel['qty'] : 0);
-            }, 0.0);
+        $producten = Product::whereIn('slug', $regels->pluck('slug'))->where('actief', true)->get()->keyBy('slug');
+
+        $kortingsRegels = $regels
+            ->filter(fn ($regel) => $producten->has($regel['slug']))
+            ->map(fn ($regel) => [
+                'price'     => $producten[$regel['slug']]->price,
+                'old_price' => $producten[$regel['slug']]->old_price,
+                'qty'       => $regel['qty'],
+            ]);
+
+        // Geen korting op korting: sale-producten tellen niet mee
+        $basis = DiscountCode::kortingsbasis($kortingsRegels);
+        $metSale = $kortingsRegels->contains(fn ($r) => ! empty($r['old_price']));
 
         $code = DiscountCode::whereRaw('UPPER(code) = ?', [mb_strtoupper(trim($gegevens['code']))])->first();
-        $fout = $code ? $code->valideer($subtotaal) : 'Deze kortingscode bestaat niet.';
+        $fout = $code ? $code->valideer($basis, $metSale) : 'Deze kortingscode bestaat niet.';
 
         if ($fout) {
             return response()->json(['geldig' => false, 'melding' => $fout]);
         }
 
         return response()->json([
-            'geldig' => true,
-            'code'   => $code->code,
-            'bedrag' => $code->kortingVoor($subtotaal),
-            'label'  => $code->omschrijving(),
+            'geldig'  => true,
+            'code'    => $code->code,
+            'bedrag'  => $code->kortingVoor($basis),
+            'label'   => $code->omschrijving(),
+            'metSale' => $metSale,
         ]);
     }
 

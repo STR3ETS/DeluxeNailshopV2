@@ -91,6 +91,9 @@ return [
                 ['name' => 'Penselen / tools', 'slug' => 'penselen-tools'],
                 ['name' => 'Top nail forms',   'slug' => 'top-nail-forms'],
                 ['name' => 'Gel tips',         'slug' => 'gel-tips'],
+                ['name' => 'Bitjes',           'slug' => 'bitjes'],
+                ['name' => 'Scharen',          'slug' => 'scharen'],
+                ['name' => 'Pushers',          'slug' => 'pushers'],
                 ['name' => 'Diversen',         'slug' => 'diversen'],
             ],
         ],
@@ -106,6 +109,8 @@ return [
         'site'  => 'deluxenailshop.nl',
         'kvk'   => '84373466',
         'btw'   => 'NL005232943B93',
+        // Rekeningnummer voor handmatige facturen die nog betaald moeten worden
+        'iban'  => null,
     ],
 
     // Contactgegevens voor footer, FAQ en de Over ons-pagina.

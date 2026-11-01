@@ -40,6 +40,9 @@
 
     .betaald-stempel { display: inline-block; margin-top: 26px; padding: 7px 16px; border: 1.4px solid {{ $kleuren['primary'] }}; border-radius: 999px; color: {{ $kleuren['primary-deep'] }}; font-size: 9px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
 
+    .opmerking { margin-top: 26px; line-height: 1.65; color: {{ $kleuren['dark-soft'] }}; }
+    .betaalinstructie { margin-top: 26px; padding: 12px 16px; border: 1.4px solid {{ $kleuren['primary'] }}; border-radius: 10px; line-height: 1.6; color: {{ $kleuren['dark'] }}; }
+
     .voet { position: fixed; bottom: 30px; left: 52px; right: 52px; border-top: 0.7px solid {{ $kleuren['bg-deep'] }}; padding-top: 12px; font-size: 8.5px; color: {{ $kleuren['dark-soft'] }}; line-height: 1.7; text-align: center; }
 </style>
 </head>
@@ -57,19 +60,20 @@
         </tr>
     </table>
 
+    {{-- Klant- en detailregels worden in Invoice::pdfGegevens() al ge-escaped --}}
     <table class="blokken">
         <tr>
             <td>
                 <div class="blok-label">Factuur aan</div>
-                <p><b>{{ $order->name }}</b>@if ($order->address)<br>{{ $order->address }}<br>{{ $order->postcode }} {{ $order->city }}<br>{{ $landen[$order->country] ?? $order->country }}@endif<br>{{ $order->email }}</p>
+                <p>{!! implode('<br>', $g['klant']) !!}</p>
             </td>
             <td>
-                <div class="blok-label">Bestelling</div>
-                <p>Bestelnummer: <b>{{ $order->nummer() }}</b><br>Besteldatum: {{ $order->created_at->translatedFormat('j F Y') }}<br>Levering: {{ $order->levering === 'afhalen' ? 'Afhalen' : 'Bezorgen' }}<br>Betaalwijze: {{ $order->mollie_payment_id ? 'Mollie (online)' : 'Handmatig' }}</p>
+                <div class="blok-label">{{ $g['details']['label'] }}</div>
+                <p>{!! implode('<br>', $g['details']['regels']) !!}</p>
             </td>
             <td>
                 <div class="blok-label">{{ $bedrijf['naam'] }}</div>
-                <p>{{ $bedrijf['site'] }}<br>{{ $bedrijf['email'] }}@if ($bedrijf['kvk'])<br>KVK: {{ $bedrijf['kvk'] }}@endif @if ($bedrijf['btw'])<br>BTW: {{ $bedrijf['btw'] }}@endif</p>
+                <p>{{ $bedrijf['site'] }}<br>{{ $bedrijf['email'] }}@if ($bedrijf['kvk'])<br>KVK: {{ $bedrijf['kvk'] }}@endif @if ($bedrijf['btw'])<br>BTW: {{ $bedrijf['btw'] }}@endif @if ($bedrijf['iban'] ?? null)<br>IBAN: {{ $bedrijf['iban'] }}@endif</p>
             </td>
         </tr>
     </table>
@@ -84,43 +88,55 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($order->items as $regel)
+            @foreach ($g['regels'] as $regel)
                 <tr>
-                    <td>{{ $regel->name }}</td>
-                    <td class="recht">{{ $regel->qty }}</td>
-                    <td class="recht">€ {{ number_format($regel->price, 2, ',', '.') }}</td>
-                    <td class="recht">€ {{ number_format($regel->price * $regel->qty, 2, ',', '.') }}</td>
+                    <td>{{ $regel['naam'] }}</td>
+                    <td class="recht">{{ $regel['aantal'] }}</td>
+                    <td class="recht">{{ $regel['prijs'] < 0 ? '- ' : '' }}€ {{ number_format(abs($regel['prijs']), 2, ',', '.') }}</td>
+                    <td class="recht">{{ $regel['prijs'] < 0 ? '- ' : '' }}€ {{ number_format(abs($regel['prijs'] * $regel['aantal']), 2, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <table class="totalen">
-        <tr class="subtiel">
-            <td>Subtotaal</td>
-            <td class="recht">€ {{ number_format($subtotaal, 2, ',', '.') }}</td>
-        </tr>
-        @if ((float) $order->discount > 0)
+        @if ($g['korting'] || $g['verzending'])
             <tr class="subtiel">
-                <td>Korting ({{ $order->discount_code }})</td>
-                <td class="recht">- € {{ number_format($order->discount, 2, ',', '.') }}</td>
+                <td>Subtotaal</td>
+                <td class="recht">€ {{ number_format($g['subtotaal'], 2, ',', '.') }}</td>
             </tr>
         @endif
-        <tr class="subtiel">
-            <td>{{ $order->levering === 'afhalen' ? 'Afhalen' : 'Verzendkosten' }}</td>
-            <td class="recht">{{ (float) $order->shipping === 0.0 ? 'Gratis' : '€ '.number_format($order->shipping, 2, ',', '.') }}</td>
-        </tr>
+        @if ($g['korting'])
+            <tr class="subtiel">
+                <td>Korting ({{ $g['korting']['code'] }})</td>
+                <td class="recht">- € {{ number_format($g['korting']['bedrag'], 2, ',', '.') }}</td>
+            </tr>
+        @endif
+        @if ($g['verzending'])
+            <tr class="subtiel">
+                <td>{{ $g['verzending']['label'] }}</td>
+                <td class="recht">{{ $g['verzending']['bedrag'] === 0.0 ? 'Gratis' : '€ '.number_format($g['verzending']['bedrag'], 2, ',', '.') }}</td>
+            </tr>
+        @endif
         <tr class="totaal">
             <td>Totaal</td>
-            <td class="recht">€ {{ number_format($order->total, 2, ',', '.') }}</td>
+            <td class="recht">€ {{ number_format($g['totaal'], 2, ',', '.') }}</td>
         </tr>
         <tr class="btw">
             <td>Waarvan BTW (21%)</td>
-            <td class="recht">€ {{ number_format($btw, 2, ',', '.') }}</td>
+            <td class="recht">€ {{ number_format($g['btw'], 2, ',', '.') }}</td>
         </tr>
     </table>
 
-    <div class="betaald-stempel">Betaald - bedankt voor je bestelling</div>
+    @if ($g['opmerking'])
+        <p class="opmerking">{!! nl2br(e($g['opmerking'])) !!}</p>
+    @endif
+
+    @if ($g['betaald'])
+        <div class="betaald-stempel">Betaald - bedankt{{ $factuur->isHandmatig() ? '' : ' voor je bestelling' }}</div>
+    @else
+        <p class="betaalinstructie">Graag binnen 14 dagen voldoen @if ($bedrijf['iban'] ?? null)op {{ $bedrijf['iban'] }} t.n.v. {{ $bedrijf['naam'] }} @endif onder vermelding van factuurnummer <b>{{ $factuur->number }}</b>.</p>
+    @endif
 
     <div class="voet">
         {{ $bedrijf['naam'] }} · {{ $bedrijf['site'] }} · {{ $bedrijf['email'] }}@if ($bedrijf['kvk']) · KVK {{ $bedrijf['kvk'] }}@endif @if ($bedrijf['btw']) · BTW {{ $bedrijf['btw'] }}@endif<br>

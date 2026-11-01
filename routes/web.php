@@ -111,6 +111,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/bestellingen/{order}', [BestellingController::class, 'show'])->name('bestellingen.detail');
     Route::patch('/bestellingen/{order}/status', [BestellingController::class, 'updateStatus'])->name('bestellingen.status');
     Route::get('/facturen', [FactuurController::class, 'index'])->name('facturen');
+    Route::get('/facturen/nieuw', [FactuurController::class, 'create'])->name('facturen.nieuw');
+    Route::post('/facturen', [FactuurController::class, 'store'])->name('facturen.opslaan');
+    Route::patch('/facturen/{invoice}/betaald', [FactuurController::class, 'toggleBetaald'])->name('facturen.betaald');
     Route::get('/facturen/{invoice}/download', [FactuurController::class, 'download'])->name('facturen.download');
     Route::get('/instellingen', [InstellingController::class, 'index'])->name('instellingen');
     Route::post('/instellingen/kortingscodes', [InstellingController::class, 'storeKortingscode'])->name('instellingen.kortingscodes.opslaan');

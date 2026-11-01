@@ -255,6 +255,9 @@
                                 </button>
                             </div>
                         </template>
+                        <template x-if="korting && korting.metSale">
+                            <p class="mt-2 pl-4 text-[.78rem] font-light text-dark-soft"><i class="fa-light fa-circle-info mr-1 text-primary-deep"></i>Geen korting op korting: de code geldt niet voor producten in de sale.</p>
+                        </template>
                     </div>
 
                     <div class="mt-4 border-t border-primary/15 pt-4">

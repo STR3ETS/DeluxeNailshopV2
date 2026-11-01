@@ -24,10 +24,30 @@ class DiscountCode extends Model
     }
 
     /**
-     * Controleert of de code bruikbaar is voor dit subtotaal.
-     * Geeft null terug als alles klopt, anders een Nederlandse foutmelding.
+     * Geen korting op korting: een kortingscode geldt alleen voor producten
+     * die niet in de sale staan. Geeft het bedrag terug waarover de code
+     * berekend wordt, op basis van regels met 'price', 'old_price' en 'qty'.
      */
-    public function valideer(float $subtotaal): ?string
+    public static function kortingsbasis(iterable $regels): float
+    {
+        $basis = 0.0;
+
+        foreach ($regels as $regel) {
+            if (empty($regel['old_price'])) {
+                $basis += (float) $regel['price'] * (int) $regel['qty'];
+            }
+        }
+
+        return round($basis, 2);
+    }
+
+    /**
+     * Controleert of de code bruikbaar is voor dit subtotaal (exclusief
+     * sale-producten). Geeft null terug als alles klopt, anders een
+     * Nederlandse foutmelding. $metSale: er liggen ook sale-producten in de
+     * winkelwagen, die niet meetellen.
+     */
+    public function valideer(float $subtotaal, bool $metSale = false): ?string
     {
         if (! $this->actief) {
             return 'Deze kortingscode is niet meer actief.';
@@ -41,8 +61,13 @@ class DiscountCode extends Model
             return 'Deze kortingscode is al gebruikt.';
         }
 
+        if ($metSale && $subtotaal <= 0) {
+            return 'Kortingscodes gelden niet voor producten in de sale.';
+        }
+
         if ($this->min_bedrag && $subtotaal < (float) $this->min_bedrag) {
-            return 'Deze code geldt vanaf €'.number_format((float) $this->min_bedrag, 2, ',', '.').' aan producten.';
+            return 'Deze code geldt vanaf €'.number_format((float) $this->min_bedrag, 2, ',', '.').' aan producten'
+                .($metSale ? ' (sale-producten tellen niet mee).' : '.');
         }
 
         return null;
